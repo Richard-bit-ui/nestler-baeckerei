@@ -1388,10 +1388,11 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    (nachgerechnet) und wäre damit unlesbar – dieselbe Falle wie schon bei
    .btn--accent auf der roten Sonderwünsche-Fläche.
 
-   Bilder sind vorerst Platzhalter (assets/img/schautorten/platzhalter.svg,
-   Kundenwunsch "Nutze zunächst dummy Bilder, ich reiche die richtigen
-   Tortenbilder nach") – ein <img> je Torte, beim Ersetzen nur die src
-   tauschen. JS-Logik: main.js, IIFE "Schautorten: Kategorie-Browser". */
+   Die Tortenbilder sind inzwischen echte Fotos (assets/img/schautorten/,
+   je Anlass eine Datei) – die früheren Platzhalter sind entfernt. Je
+   Torte steht ein <img> in der Listen- und eines in der Rasteransicht;
+   zum Austauschen nur die beiden src-Angaben tauschen.
+   JS-Logik: main.js, IIFE "Schautorten: Kategorie-Browser". */
 
 /* Ausnahmsweise dunkel und randlos statt creme mit eingebetteter Karte:
    das Vorbild ist hier eine Vollbild-Bühne, und die angepinnte
