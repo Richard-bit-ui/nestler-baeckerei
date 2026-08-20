@@ -1,0 +1,8 @@
+# System- und Editordateien
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Persönliche Claude-Code-Einstellungen (die Startkonfiguration
+# .claude/launch.json gehört dagegen ins Repo)
+.claude/settings.local.json

@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Titel bewusst unter ~55 Zeichen, damit er in Suchergebnissen nicht
+     abgeschnitten wird (Google kappt ab ca. 580px / 55–60 Zeichen). -->
+<title>Nestler Spezialitäten-Bäckerei Geising</title>
+<meta name="description" content="Spezialitäten-Bäckerei im Geisinger Bahnhof: Erzgebirgischer Stollen, Kranzkuchen nach Familientradition und der Geisinger Rungsen. Seit 1973 in Familienhand.">
+<link rel="canonical" href="https://mnestler.uber.space/">
+<meta name="theme-color" content="#F3E9D7">
+
+<!-- Vorschaubild für Facebook, LinkedIn, WhatsApp & Co. Eigens auf das
+     Standardformat 1200×630 zugeschnitten (nicht gestreckt) – ohne diese
+     Tags greifen Plattformen sonst wahllos auf Logo/Favicon zurück und
+     verzerren es beim Einpassen in die Vorschaukachel. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nestler Spezialitäten-Bäckerei">
+<meta property="og:locale" content="de_DE">
+<meta property="og:url" content="https://mnestler.uber.space/">
+<meta property="og:title" content="Nestler Spezialitäten-Bäckerei Geising">
+<meta property="og:description" content="Spezialitäten-Bäckerei im Geisinger Bahnhof: Erzgebirgischer Stollen, Kranzkuchen nach Familientradition und der Geisinger Rungsen. Seit 1973 in Familienhand.">
+<meta property="og:image" content="https://mnestler.uber.space/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Frisch gebackene Brötchen, Croissants und Fladenbrot der Nestler Spezialitäten-Bäckerei">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nestler Spezialitäten-Bäckerei Geising">
+<meta name="twitter:description" content="Spezialitäten-Bäckerei im Geisinger Bahnhof: Erzgebirgischer Stollen, Kranzkuchen nach Familientradition und der Geisinger Rungsen. Seit 1973 in Familienhand.">
+<meta name="twitter:image" content="https://mnestler.uber.space/assets/img/og-image.jpg">
+
+<!-- Schrift des Vorbilds (modernbakery.com) ist „Season Sans" – eine
+     proprietäre Trial-Schrift von Webflow, nicht frei lizenzierbar.
+     Direkter Seite-an-Seite-Vergleich mehrerer freier Kandidaten (an
+     Season Sans selbst gerendert) ergab „Onest" (Google Fonts, SIL OFL)
+     als nächste Verwandte: dieselbe runde G-Spore, dieselbe geschwungene
+     R-Bein-Form, sehr ähnliche Proportionen und Strichstärke. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=58">
+<link rel="icon" href="assets/img/logo.png">
+</head>
+<body>
+
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+<header class="nav" id="nav" data-theme="dark">
+  <div class="nav__inner">
+    <a class="nav__logo" href="#" aria-label="Nestler Spezialitäten-Bäckerei – Startseite">
+      <img class="nav__logo-img nav__logo-img--light" src="assets/img/logo-light.png" alt="" width="800" height="451">
+      <img class="nav__logo-img nav__logo-img--dark" src="assets/img/logo.png" alt="" width="800" height="451">
+    </a>
+
+    <nav class="nav__center" aria-label="Hauptnavigation">
+      <ul class="nav__list">
+        <li class="nav__item"><a class="nav__link" href="#spezialitaeten">Spezialitäten</a></li>
+        <li class="nav__item nav__item--menu">
+          <button class="nav__link nav__link--menu" type="button" aria-expanded="false" aria-controls="menu-baeckerei">
+            Bäckerei
+            <svg class="nav__caret" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dropdown" id="menu-baeckerei" hidden>
+            <a class="dropdown__link" href="historie.html"><span>Historie</span><small>Drei Generationen in Bildern</small></a>
+            <a class="dropdown__link" href="team.html"><span>Team</span><small>Die Menschen hinter der Theke</small></a>
+            <a class="dropdown__link" href="ausbildung.html"><span>Ausbildung</span><small>Lerne das Handwerk bei uns</small></a>
+          </div>
+        </li>
+        <li class="nav__item"><a class="nav__link" href="schautorten.html">Schautorten</a></li>
+        <li class="nav__item nav__item--menu">
+          <button class="nav__link nav__link--menu" type="button" aria-expanded="false" aria-controls="menu-besuch">
+            Besuch
+            <svg class="nav__caret" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dropdown" id="menu-besuch" hidden>
+            <a class="dropdown__link" href="#oeffnungszeiten"><span>Öffnungszeiten</span><small>Bahnhof und Filiale Hauptstraße</small></a>
+            <a class="dropdown__link" href="anfahrt.html"><span>So finden Sie uns</span><small>Mit der Bahn oder dem Auto</small></a>
+          </div>
+        </li>
+        <li class="nav__item"><a class="nav__link" href="kontakt.html">Kontakt</a></li>
+      </ul>
+    </nav>
+
+    <a class="btn btn--accent nav__cta" href="#oeffnungszeiten">
+      Öffnungszeiten
+      <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+
+    <button class="burger" type="button" aria-expanded="false" aria-controls="mobilmenue" aria-label="Menü öffnen">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobilmenu" id="mobilmenue" data-scroll-native>
+  <ul class="mobilmenu__list">
+    <li><a href="#spezialitaeten">Spezialitäten</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="team.html">Team</a></li>
+    <li><a href="schautorten.html">Schautorten</a></li>
+    <li><a href="#oeffnungszeiten">Öffnungszeiten</a></li>
+    <li><a href="anfahrt.html">So finden Sie uns</a></li>
+    <li><a href="kontakt.html">Kontakt</a></li>
+  </ul>
+  <a class="btn btn--accent mobilmenu__cta" href="tel:+493505622810">
+    035056 / 22810
+    <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</div>
+
+<main id="inhalt">
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="hero" data-nav-theme="dark">
+    <img class="hero__img" src="assets/img/hero.jpg" alt="Brötchen, Croissants, Fladenbrot und Gebäck von oben auf einer warm beleuchteten Fläche" fetchpriority="high" width="1500" height="704">
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="hero__inner">
+      <p class="hero__eyebrow reveal">Seit 1973 in Familienhand</p>
+      <h1 class="hero__title reveal">Tradition in<br>jedem Korn</h1>
+      <p class="hero__lede reveal">Spezialitäten-Bäckerei im Geisinger Bahnhof. Jeden Morgen frisch gebacken – vom Erzgebirgischen Stollen bis zum Geisinger Rungsen.</p>
+    </div>
+  </section>
+
+  <!-- ── Spezialitäten ────────────────────────────────────── -->
+  <section class="section spez" id="spezialitaeten" data-nav-theme="light" aria-labelledby="spez-heading">
+    <h2 class="visually-hidden" id="spez-heading">Unsere Spezialitäten</h2>
+    <div class="spez__word" aria-hidden="true">Spezialitäten</div>
+
+    <div class="spez__stage reveal">
+
+      <p class="spez__name" data-slot="name">Erzgebirgischer Stollen</p>
+
+      <div class="spez__deckwrap">
+        <ul class="deck" data-deck>
+          <li class="deck__card" data-card data-offset="0" style="--card:#EFD7B3;--card-foot:#E7CDA9"
+              data-name="Erzgebirgischer Stollen"
+              data-tag="Weihnachtsbäckerei"
+              data-sub="Schwer, saftig, dick gepudert"
+              data-text="Butterstollen nach Erzgebirgs-Art, mit Rosinen, Mandeln und Zitronat. Er reift wochenlang, bevor er in Butter und Puderzucker gehüllt wird – Weihnachten zum Aufheben.">
+            <img class="deck__media" src="assets/img/stollen.jpg" alt="Erzgebirgischer Stollen, dick mit Puderzucker bestäubt" loading="lazy" width="900" height="900">
+            <span class="deck__veil" aria-hidden="true"></span>
+            <span class="tag">Weihnachtsbäckerei</span>
+          </li>
+          <li class="deck__card" data-card data-offset="1" style="--card:#ECD8B7;--card-foot:#E8D5B5"
+              data-name="Kranzkuchen"
+              data-tag="Familienrezept"
+              data-sub="Blättrig gezogen, fein glasiert"
+              data-text="Ein Hefekranz nach dem Rezept unserer Großeltern: in Schichten gezogen, mit Rosinen gefüllt und mit Zuckerguss überzogen. Der Kuchen, der bei uns auf jedem Familientisch steht.">
+            <img class="deck__media" src="assets/img/kranzkuchen.jpg" alt="Goldbrauner Kranzkuchen mit Zuckerguss" loading="lazy" width="864" height="864">
+            <span class="deck__veil" aria-hidden="true"></span>
+            <span class="tag">Familienrezept</span>
+          </li>
+          <li class="deck__card" data-card data-offset="2" style="--card:#ECD7B7;--card-foot:#E7D2B1"
+              data-name="Geisinger Rungsen"
+              data-tag="Hausspezialität"
+              data-sub="Kräftige Kruste, lockere Krume"
+              data-text="Unser Brötchen mit dem Geisinger Namen: rustikal aufgerissen, kräftig ausgebacken, nur hier zu bekommen. Am besten noch warm, direkt aus dem Bahnhof.">
+            <img class="deck__media" src="assets/img/rungsen.jpg" alt="Drei Geisinger Rungsen mit heller, bemehlter Kruste" loading="lazy" width="900" height="900">
+            <span class="deck__veil" aria-hidden="true"></span>
+            <span class="tag">Hausspezialität</span>
+          </li>
+          <li class="deck__card" data-card data-offset="3" style="--card:#E6D2B4;--card-foot:#E4CEAF"
+              data-name="Gemischte Partybrötchen"
+              data-tag="Für große Runden"
+              data-sub="Mohn, Sesam, Körner, Butterhörnchen"
+              data-text="Von der Mohnschnecke bis zum Butterhörnchen: gemischtes Kleingebäck für Feiern, Vereinsabende und Familientreffen. Auf Wunsch belegt – bitte ein paar Tage vorher bestellen.">
+            <img class="deck__media" src="assets/img/partybroetchen.jpg" alt="Bunt gemischte Brötchen mit Mohn, Sesam und Körnern" loading="lazy" width="864" height="864">
+            <span class="deck__veil" aria-hidden="true"></span>
+            <span class="tag">Für große Runden</span>
+          </li>
+        </ul>
+
+        <a class="btn btn--accent deck__cta" href="tel:+493505622810">
+          Anfragen
+          <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="spez__copy" aria-live="polite">
+        <h3 class="spez__sub" data-slot="sub">Schwer, saftig, dick gepudert</h3>
+        <p class="spez__text" data-slot="text">Butterstollen nach Erzgebirgs-Art, mit Rosinen, Mandeln und Zitronat. Er reift wochenlang, bevor er in Butter und Puderzucker gehüllt wird – Weihnachten zum Aufheben.</p>
+      </div>
+
+      <div class="spez__nav">
+        <p class="spez__counter"><span data-slot="index">01</span> / <span data-slot="total">04</span></p>
+        <div class="spez__arrows">
+          <button class="arrow" type="button" data-dir="-1" aria-label="Vorherige Spezialität">
+            <svg viewBox="0 0 30 30" aria-hidden="true">
+              <circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1"/>
+              <path d="M17 9.5 11.5 15l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="arrow" type="button" data-dir="1" aria-label="Nächste Spezialität">
+            <svg viewBox="0 0 30 30" aria-hidden="true">
+              <circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1"/>
+              <path d="M13 9.5 18.5 15 13 20.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Öffnungszeiten ───────────────────────────────────────────────
+       Eigene, stilisierte Karte von Geising statt Textkarten oder
+       Google-Maps-Einbettung – nach dem Vorbild der Weltkarten-Sektion
+       "Smart logistics & scalable distribution" (flache Flächen statt
+       echter Kartenkacheln, auf dunklem Grund, wenige Länder weiß
+       hervorgehoben). Übertragen auf unseren Maßstab: echte OSM-Daten
+       für Geising (Straßen, Bahnlinie, Müglitz, Gebäudeumrisse), verein-
+       facht und in Hausfarben gezeichnet – siehe assets/img/geising-map.svg
+       und den Kommentar dort zur Herkunft der Daten. Die beiden Standorte
+       sind Pins darauf; Hover/Fokus öffnet eine Karte mit Foto, Live-
+       Status, Kurz-Öffnungszeiten und einem Navigieren-Button.
+       Beide Popups zeigen inzwischen echte, aktuelle Außenansichten
+       (assets/img/bahnhof-aussenansicht.jpg und
+       assets/img/filiale-aussenansicht.jpg). -->
+  <section class="section oeff-wrap" id="oeffnungszeiten" data-nav-theme="dark" aria-labelledby="oeff-heading">
+    <div class="oeff__card">
+      <h2 class="visually-hidden" id="oeff-heading">Öffnungszeiten</h2>
+
+      <div class="geismap">
+        <div class="geismap__frame">
+          <img class="geismap__art" src="assets/img/geising-map.svg" alt="" loading="lazy" width="1000" height="885">
+        </div>
+
+        <!-- Text-Überzug im Stil des Vorbild-Screenshots (Eyebrow +
+             große Headline oben links auf der Kartenfläche). Rein
+             dekorativ, daher <p> statt einer weiteren Überschrift –
+             die eigentliche Section-Überschrift ist der visually-hidden
+             H2 oben. pointer-events:none, damit nichts die Pins/Popups
+             darunter blockiert. -->
+        <div class="geismap__caption">
+          <p class="geismap__eyebrow">Zwei Standorte</p>
+          <p class="geismap__headline">Frisch aus<br>Geising</p>
+        </div>
+
+        <!-- data-hours: Wochenplan als Minuten-seit-Mitternacht, Schlüssel
+             0=So … 6=Sa (JS-Konvention von Date#getDay) – treibt dieselbe
+             Live-Anzeige wie zuvor bei den Textkarten. Der Feiertags-
+             Sonderfall bleibt ohne Feiertagskalender unberücksichtigt,
+             siehe Kurz-Öffnungszeiten unten. -->
+        <div class="geismap__marker" style="--x:29.3%;--y:35.2%">
+          <button class="geismap__pin" type="button" aria-expanded="false" aria-controls="pin-bahnhof">
+            <span class="geismap__dot" aria-hidden="true"></span>
+            <span class="visually-hidden">Geisinger Bahnhof – Öffnungszeiten anzeigen</span>
+          </button>
+          <div class="geismap__popup" id="pin-bahnhof" data-hours='{"0":[[420,600],[840,1080]],"1":[[360,1080]],"2":[[360,1080]],"3":[[360,1080]],"4":[[360,1080]],"5":[[360,1080]],"6":[[360,1080]]}'>
+            <img class="geismap__photo" src="assets/img/bahnhof-aussenansicht.jpg" alt="Außenansicht der Nestler Spezialitäten-Bäckerei im Geisinger Bahnhof, weißes Gebäude mit rotem Giebel" loading="lazy">
+            <div class="geismap__body">
+              <div class="geismap__title-row">
+                <h3 class="geismap__name">Geisinger Bahnhof</h3>
+                <p class="pill oeff__status" data-status><span class="oeff__status-dot" aria-hidden="true"></span><span data-status-text>&nbsp;</span></p>
+              </div>
+              <p class="geismap__addr">Bahnhofplatz 3 · 01778 Altenberg</p>
+              <dl class="geismap__hours">
+                <div><dt>Mo–Sa</dt><dd>06:00–18:00</dd></div>
+                <div><dt>So</dt><dd>07–10 &amp; 14–18</dd></div>
+                <div><dt>Feiertag</dt><dd>14:00–18:00</dd></div>
+              </dl>
+              <a class="btn btn--accent geismap__cta" href="https://www.google.com/maps/dir/?api=1&destination=Bahnhofplatz+3%2C+01778+Altenberg" target="_blank" rel="noopener">
+                Navigieren
+                <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="geismap__marker geismap__marker--up" style="--x:71.3%;--y:72.8%">
+          <button class="geismap__pin" type="button" aria-expanded="false" aria-controls="pin-filiale">
+            <span class="geismap__dot" aria-hidden="true"></span>
+            <span class="visually-hidden">Filiale Hauptstraße – Öffnungszeiten anzeigen</span>
+          </button>
+          <div class="geismap__popup" id="pin-filiale" data-hours='{"0":[],"1":[[420,780]],"2":[[420,780]],"3":[[420,780]],"4":[[420,780]],"5":[[420,780]],"6":[[420,660]]}'>
+            <img class="geismap__photo" src="assets/img/filiale-aussenansicht.jpg" alt="Eingang der Filiale Hauptstraße 41 in Geising, Fachwerkhaus mit Nestler-Schild" loading="lazy">
+            <div class="geismap__body">
+              <div class="geismap__title-row">
+                <h3 class="geismap__name">Filiale Hauptstraße</h3>
+                <p class="pill oeff__status" data-status><span class="oeff__status-dot" aria-hidden="true"></span><span data-status-text>&nbsp;</span></p>
+              </div>
+              <p class="geismap__addr">Hauptstraße 41 · 01778 Altenberg</p>
+              <dl class="geismap__hours">
+                <div><dt>Mo–Fr</dt><dd>07:00–13:00</dd></div>
+                <div><dt>Sa</dt><dd>07:00–11:00</dd></div>
+              </dl>
+              <a class="btn btn--accent geismap__cta" href="https://www.google.com/maps/dir/?api=1&destination=Hauptstra%C3%9Fe+41%2C+01778+Altenberg+Geising" target="_blank" rel="noopener">
+                Navigieren
+                <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sonderwünsche ────────────────────────────────────────────────
+       Vorbild: die modernbakery.com-Startseite ("Custom bakery solutions
+       for all") – satte Akzentfläche mit Wasserzeichen-Muster, Pill +
+       Headline + Absatz + zwei Buttons links, rechts eine rotierende
+       Wortliste (main.js tauscht alle ~2s die Wörter, das mittlere ist
+       immer fett hervorgehoben). Bewusst als letzter Programmpunkt direkt
+       vor dem Footer statt ganz oben wie im Vorbild – hier als
+       Abschluss-CTA, nachdem alle Inhalte schon gezeigt wurden.
+
+       Eingebettet wie die Öffnungszeiten-Karte (.oeff-wrap/.oeff__card):
+       die äußere .section bleibt creme und Teil des Kachelstapels, das
+       Rot liegt als eigene, auf allen vier Seiten gerundete Karte
+       (.sw__card) mit sichtbarem Cremerand darin – sonst wirkte die
+       Vollfläche zwischen den cremefarbenen Sektionen wie ein fremder,
+       eingeworfener Farbklotz statt Teil des Seitenflusses. -->
+  <section class="section sonderwuensche" id="sonderwuensche" data-nav-theme="dark" aria-labelledby="sw-heading">
+    <div class="sw__card">
+      <div class="sw__inner">
+        <div class="sw__intro reveal">
+          <span class="pill pill--light">Sonderwünsche</span>
+          <h2 class="sw__title" id="sw-heading">Für jeden Anlass<br>etwas Besonderes</h2>
+          <p class="sw__lede">Ob Hochzeit, runder Geburtstag oder Firmenfeier – wir fertigen Torten und Gebäck ganz nach Ihren Vorstellungen. Sprechen Sie mit uns über Form, Füllung und Anlass, wir beraten Sie gern.</p>
+          <div class="sw__actions">
+            <a class="btn btn--light" href="kontakt.html">
+              Jetzt anfragen
+              <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="btn btn--dark" href="#spezialitaeten">
+              Spezialitäten entdecken
+              <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Wortliste in einem festen Fenster (.sw__words). Das Band laeuft
+             rein per CSS-Animation (@keyframes sw-roll, siehe styles.css)
+             gleichmaessig nach oben - kein JavaScript, kein Scroll-Bezug,
+             startet von selbst und haelt nie an.
+             Alle Begriffe sind gestochen scharf; die Betonung entsteht allein
+             ueber die Maske auf .sw__words, die nach oben hin ausblendet: unten
+             steht der Begriff voll deckend (im Fokus), darueber werden sie
+             stufenlos blasser - genau wie beim Vorbild.
+             Die sieben Begriffe stehen zweimal hintereinander: bei
+             translateY(-50 Prozent) liegt die zweite Haelfte (.sw__dup)
+             pixelgenau am Startpunkt der ersten, dadurch laeuft die Schleife
+             nahtlos. Im statischen Fallback (mobil / reduzierte Bewegung)
+             wird die zweite Haelfte ausgeblendet. -->
+        <div class="sw__words" aria-hidden="true">
+          <ul class="sw__words-list">
+            <li>Hochzeitstorten</li>
+            <li>Geburtstagstorten</li>
+            <li>Motivtorten</li>
+            <li>Firmenfeiern</li>
+            <li>Konfirmation</li>
+            <li>Trauerfeiern</li>
+            <li>Weihnachtsgebäck</li>
+            <li class="sw__dup">Hochzeitstorten</li>
+            <li class="sw__dup">Geburtstagstorten</li>
+            <li class="sw__dup">Motivtorten</li>
+            <li class="sw__dup">Firmenfeiern</li>
+            <li class="sw__dup">Konfirmation</li>
+            <li class="sw__dup">Trauerfeiern</li>
+            <li class="sw__dup">Weihnachtsgebäck</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<footer class="footer">
+ <div class="footer__card">
+  <div class="footer__inner">
+
+    <div class="footer__brand">
+      <img class="footer__logo" src="assets/img/logo.png" alt="Nestler Spezialitäten-Bäckerei" width="800" height="451">
+      <p class="footer__tagline">Seit 1973 in Familienhand – Spezialitäten-Bäckerei im Geisinger Bahnhof.</p>
+      <div class="footer__contact">
+        <a href="tel:+493505622810">035056 / 22810</a>
+        <a href="mailto:nestler-baecker@web.de">nestler-baecker@web.de</a>
+        <p>Bahnhofplatz 3 · 01778 Altenberg</p>
+      </div>
+    </div>
+
+    <nav class="footer__col" aria-label="Entdecken">
+      <p class="footer__col-title pill">Entdecken</p>
+      <ul>
+        <li><a href="#spezialitaeten">Spezialitäten</a></li>
+        <li><a href="historie.html">Historie</a></li>
+        <li><a href="schautorten.html">Schautorten</a></li>
+        <li><a href="#oeffnungszeiten">Öffnungszeiten</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Bäckerei">
+      <p class="footer__col-title pill">Bäckerei</p>
+      <ul>
+        <li><a href="team.html">Team</a></li>
+        <li><a href="ausbildung.html">Ausbildung</a></li>
+        <li><a href="anfahrt.html">So finden Sie uns</a></li>
+        <li><a href="kontakt.html">Kontakt</a></li>
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <p class="footer__col-title pill">Öffnungszeiten</p>
+      <dl class="footer__hours">
+        <div><dt>Bahnhof Mo–Sa</dt><dd>06:00–18:00</dd></div>
+        <div><dt>Bahnhof So</dt><dd>07–10 &amp; 14–18</dd></div>
+        <div><dt>Filiale Mo–Fr</dt><dd>07:00–13:00</dd></div>
+        <div><dt>Filiale Sa</dt><dd>07:00–11:00</dd></div>
+      </dl>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <p>© <span data-year>2026</span> Nestler Spezialitäten-Bäckerei</p>
+    <a href="impressum.html">Impressum</a>
+  </div>
+ </div>
+</footer>
+
+
+
+<script src="assets/js/main.js?v=58" defer></script>
+</body>
+</html>

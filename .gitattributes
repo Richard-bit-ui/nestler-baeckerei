@@ -1,0 +1,3 @@
+# Keine automatische Zeilenenden-Umwandlung: was eingecheckt wird, ist
+# byte-genau das, was ausgeliefert wird.
+* -text

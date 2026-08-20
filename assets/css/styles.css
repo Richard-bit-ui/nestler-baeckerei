@@ -1,0 +1,2046 @@
+/* =====================================================================
+   Nestler Spezialitäten-Bäckerei — Design-System
+   Modernisierung Hero + Spezialitäten
+   ===================================================================== */
+
+:root{
+  /* Farben */
+  --cream:      #F3E9D7;   /* Flächen */
+  --card:       #F0DAB7;   /* Kartenfläche, auf den Fotohintergrund abgestimmt */
+  --card-foot:  #E8D1AD;
+  --ink:        #5B3217;   /* Schrift */
+  --ink-70:     rgba(91,50,23,.72);
+  --ink-45:     rgba(91,50,23,.45);
+  --ink-25:     rgba(91,50,23,.25);
+  --deep:       #3A2011;   /* Grund hinter den Sektionen */
+  --accent:     #C8102E;   /* Nestler-Rot aus dem Logo */
+  --accent-dark:#A50C25;
+  --accent-ink: #FFF4E7;
+  --light:      #F6EFE2;   /* Schrift auf Bild */
+
+  /* Radien */
+  --r:    clamp(.75rem, .83vw, 1rem);
+  --r-lg: clamp(1rem, 1.25vw, 1.5rem);
+  --r-pill: 100rem;
+
+  /* Maße */
+  --pad: clamp(1.25rem, 1.67vw, 2rem);
+  --wrap: 120rem;
+  --btn-h: clamp(2.75rem, 3.33vw, 4rem);
+
+  /* Typo */
+  --fs-nav:   clamp(.9375rem, 1.05vw, 1.1875rem);
+  --fs-body:  clamp(1rem, 1.05vw, 1.25rem);
+  --fs-h1:    clamp(2.75rem, 6.7vw, 8rem);
+  --fs-h2:    clamp(1.875rem, 2.9vw, 3.5rem);
+  --fs-h3:    clamp(1.25rem, 1.67vw, 2rem);
+  --fs-word:  clamp(3.5rem, 16vw, 19rem);
+
+  --ease: cubic-bezier(.22,.9,.24,1);
+
+  /* Aus dem Vorbild ausgelesene Zeitkonstanten fürs Mobilmenü */
+  --duration-normal: .525s;
+  --duration-fast: .2s;
+  --cubic-menu: cubic-bezier(.525,0,0,1);
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body,h1,h2,h3,p,ul,figure{margin:0}
+ul{padding:0;list-style:none}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+html{scroll-behavior:smooth;scroll-padding-top:7rem}
+/* Wenn das sanfte Scrollen per Skript läuft, muss der Browser sich raushalten */
+html.has-smooth{scroll-behavior:auto}
+
+body{
+  background:var(--deep);
+  color:var(--ink);
+  font-family:'Onest','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  font-size:var(--fs-body);
+  font-weight:400;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+
+.visually-hidden{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
+.skip-link{
+  position:fixed;top:.75rem;left:.75rem;z-index:100;
+  padding:.75rem 1.25rem;border-radius:var(--r);
+  background:var(--cream);color:var(--ink);font-weight:600;
+  transform:translateY(-160%);transition:transform .2s var(--ease);
+}
+.skip-link:focus{transform:none}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+/* Markierter Text im Logo-Rot statt der Browser-Standardfarbe */
+::selection{background:var(--accent);color:var(--accent-ink)}
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:.75em;
+  height:var(--btn-h);padding:0 clamp(1rem,1.25vw,1.5rem);
+  border-radius:var(--r);
+  font-size:var(--fs-nav);font-weight:600;letter-spacing:-.01em;
+  white-space:nowrap;
+  transition:background-color .25s var(--ease), color .25s var(--ease), transform .25s var(--ease);
+}
+.btn--accent{background:var(--accent);color:var(--accent-ink)}
+.btn--accent:hover{background:var(--accent-dark)}
+.btn:active{transform:translateY(1px)}
+.btn__arrow{width:1em;height:1em;flex:none;transition:transform .3s var(--ease)}
+.btn:hover .btn__arrow{transform:translateX(.2em)}
+
+/* ── Navigation ────────────────────────────────────────────────────── */
+/* Immer transparent, blendet beim Runterscrollen aus und beim
+   Hochscrollen wieder ein. Farben richten sich nach der Sektion darunter. */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  transition:transform .45s var(--ease);
+}
+.nav[data-hidden="true"]{transform:translateY(-100%)}
+
+.nav[data-theme="dark"]{           /* über Bild / Rot */
+  --nav-fg:var(--cream);
+  --nav-pill:rgba(243,233,215,.08);
+  --nav-hover:rgba(243,233,215,.16);
+}
+.nav[data-theme="light"]{          /* über Cremeflächen */
+  --nav-fg:var(--ink);
+  --nav-pill:rgba(91,50,23,.08);
+  --nav-hover:rgba(91,50,23,.1);
+}
+
+.nav__inner{
+  position:relative;
+  max-width:var(--wrap);margin-inline:auto;
+  padding:var(--pad) var(--pad) 0;
+  display:flex;align-items:center;gap:1.5rem;
+}
+
+.nav__logo{
+  position:relative;display:block;flex:none;
+  height:clamp(2.875rem,4.4vw,5.25rem);
+}
+.nav__logo-img{
+  display:block;height:100%;width:auto;
+  transition:opacity .3s var(--ease);
+}
+.nav__logo-img--dark{position:absolute;top:0;left:0;opacity:0}
+.nav[data-theme="light"] .nav__logo-img--light{opacity:0}
+.nav[data-theme="light"] .nav__logo-img--dark{opacity:1}
+
+.nav__center{margin-inline:auto}
+.nav__list{
+  display:flex;align-items:center;
+  padding:clamp(.25rem,.42vw,.5rem);border-radius:var(--r);
+  background:var(--nav-pill);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:background-color .3s var(--ease);
+}
+.nav__item{position:relative}
+.nav__link{
+  display:inline-flex;align-items:center;gap:.4em;
+  padding:.75em 1em;border-radius:clamp(2px,.21vw,4px);
+  color:var(--nav-fg);
+  font-size:var(--fs-nav);font-weight:600;letter-spacing:-.01em;line-height:1.25;
+  transition:background-color .2s var(--ease), color .3s var(--ease);
+}
+.nav__link:hover,.nav__item--menu [aria-expanded="true"]{background:var(--nav-hover)}
+.nav__caret{width:.7em;height:.7em;transition:transform .3s var(--ease)}
+[aria-expanded="true"] .nav__caret{transform:rotate(180deg)}
+
+.dropdown{
+  position:absolute;top:calc(100% + .9rem);left:50%;
+  min-width:19rem;padding:.5rem;
+  border-radius:var(--r-lg);
+  background:var(--cream);
+  box-shadow:0 1.5rem 3rem -1rem rgba(58,32,17,.35);
+  display:grid;gap:.125rem;
+  transform:translate(-50%,-.5rem);opacity:0;pointer-events:none;
+  transition:opacity .25s var(--ease), transform .25s var(--ease);
+}
+.dropdown[data-open]{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.dropdown__link{
+  display:grid;gap:.1rem;padding:.7rem .9rem;border-radius:var(--r);
+  transition:background-color .2s var(--ease)
+}
+.dropdown__link:hover{background:rgba(91,50,23,.07)}
+.dropdown__link span{font-size:var(--fs-nav);font-weight:600;letter-spacing:-.01em}
+.dropdown__link small{font-size:.8em;color:var(--ink-70);line-height:1.3}
+
+.nav__cta{flex:none}
+
+/* Burger */
+.burger{
+  display:none;flex:none;width:2.75rem;height:2.75rem;
+  border-radius:var(--r);align-items:center;justify-content:center;
+  flex-direction:column;gap:.35rem;background:var(--nav-pill);
+}
+.burger span{
+  display:block;width:1.25rem;height:2px;border-radius:2px;
+  background:var(--nav-fg);
+  transition:transform var(--duration-normal) var(--cubic-menu);
+}
+.burger[aria-expanded="true"] span:first-child{transform:translateY(4.5px) rotate(45deg)}
+.burger[aria-expanded="true"] span:last-child{transform:translateY(-4.5px) rotate(-45deg)}
+
+/* ── Mobilmenü ─────────────────────────────────────────────────────────
+   Öffnen/Schließen 1:1 aus dem Vorbild übernommen (dessen `.nav-center`):
+   Verschiebung + Sichtbarkeit laufen in var(--duration-normal) = 0,525s,
+   die Deckkraft schneller in var(--duration-fast) = 0,2s, beide mit der
+   Kurve var(--cubic-menu) = cubic-bezier(.525,0,0,1). Nur beim ÖFFNEN
+   liegt zusätzlich 0,1s Verzögerung davor – beim Schließen setzt die
+   Bewegung sofort ein. Deshalb bleibt das Panel dauerhaft im DOM (wie
+   im Vorbild) und wird rein über Deckkraft/Sichtbarkeit ein- und
+   ausgeblendet, statt per [hidden] weg- und wieder hergestellt zu
+   werden – nur so lässt sich überhaupt etwas animieren. */
+.mobilmenu{
+  position:fixed;inset:0;z-index:55;
+  padding:7rem var(--pad) 2rem;
+  background:var(--cream);
+  display:flex;flex-direction:column;gap:2rem;
+  overflow-y:auto;
+  opacity:0;visibility:hidden;
+  transform:translateY(1em);
+  transition:transform var(--duration-normal) var(--cubic-menu),
+             visibility var(--duration-normal) var(--cubic-menu),
+             opacity var(--duration-fast) var(--cubic-menu);
+}
+.mobilmenu[data-open]{
+  opacity:1;visibility:visible;transform:translateY(0);
+  transition-delay:.1s;
+}
+.mobilmenu__list{display:grid;gap:.25rem}
+.mobilmenu__list a{
+  display:block;padding:.6rem 0;
+  font-size:clamp(1.5rem,7vw,2.25rem);font-weight:500;letter-spacing:-.02em;
+  border-bottom:1px solid var(--ink-25);
+}
+.mobilmenu__cta{align-self:flex-start}
+
+/* ── Hero ──────────────────────────────────────────────────────────── */
+.hero{
+  position:relative;z-index:0;
+  /* +1.5×r-lg unten drauf: genau der Betrag, um den die nächste .section
+     sich (per negativem margin-top, siehe dort) über die Kante schiebt.
+     Ohne den Zuschlag würde deren abgerundete Ecke schon im ersten
+     Bildschirm ins Hero-Foto hineinragen – so bleibt der erste Blick
+     ganz dem Hero vorbehalten, der Überlapp passiert unsichtbar unter
+     der Kante. hero__inner gleicht das mit derselben Zugabe im unteren
+     Innenabstand wieder aus, damit der Text optisch an Ort und Stelle
+     bleibt (auf Höhe der echten 100svh-Kante, nicht der vergrößerten). */
+  height:calc(100svh + var(--r-lg) * 1.5);min-height:calc(34rem + var(--r-lg) * 1.5);
+  overflow:hidden;background:var(--deep);
+}
+.hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero__scrim{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to top, rgba(58,32,17,.62) 0%, rgba(58,32,17,.18) 42%, rgba(58,32,17,0) 66%),
+    linear-gradient(to bottom, rgba(58,32,17,.34) 0%, rgba(58,32,17,0) 26%);
+}
+.hero__inner{
+  position:relative;height:100%;
+  text-shadow:0 .05em .9em rgba(58,32,17,.35);
+  max-width:var(--wrap);margin-inline:auto;
+  padding:0 var(--pad) calc(clamp(2.5rem,5vw,6rem) + var(--r-lg) * 1.5);
+  display:grid;align-items:end;align-content:end;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  grid-template-areas:"eyebrow ." "title lede";
+  column-gap:clamp(2rem,4vw,6rem);
+}
+.hero__eyebrow{
+  grid-area:eyebrow;
+  margin-bottom:clamp(.85rem,1.4vw,1.75rem);
+  color:var(--light);font-size:clamp(1rem,1.35vw,1.625rem);font-weight:500;letter-spacing:-.01em;
+}
+.hero__title{
+  grid-area:title;
+  color:var(--light);
+  font-size:var(--fs-h1);font-weight:500;line-height:.9;letter-spacing:-.025em;
+}
+.hero__lede{
+  grid-area:lede;justify-self:end;
+  max-width:32ch;padding-bottom:.5em;
+  color:var(--light);font-size:var(--fs-h3);font-weight:500;line-height:1.25;letter-spacing:-.01em;
+}
+
+/* ── Ladeanimation / Scroll-Reveal ────────────────────────────────────
+   Bisher nur im Hero (feuerte einmalig beim Laden, weil der Hero ohnehin
+   sofort im Bild ist). Jetzt sitegweit: main.js beobachtet jedes .reveal
+   per IntersectionObserver und setzt .is-in, sobald es in den Viewport
+   kommt – Inhalte "laden" dadurch ein, während man zu ihnen scrollt,
+   statt schon (unsichtbar) beim Laden der Seite zu animieren.
+   Sicherheitsnetz gegen Content, der unsichtbar bleibt: die verbergende
+   Deckkraft greift NUR unter html.js (die main.js beim Start synchron auf
+   <html> setzt). Läuft main.js aus irgendeinem Grund gar nicht erst
+   (Netzwerkfehler, JS deaktiviert), fehlt die Klasse `js` komplett und
+   .reveal-Elemente bleiben ganz normal sichtbar – kein Risiko, dass
+   Inhalte für immer bei opacity:0 hängen bleiben. */
+/* Nach Live-Analyse des Vorbilds (modernbakery.com, ".intro-title"/
+   ".intro-text" – der generische Reveal, der dort site-weit für Text-
+   Blöcke läuft, per GSAP onEnter/ScrollTrigger ausgelöst): Ausgangs-
+   zustand `transform:translate(0,2em); opacity:0; visibility:hidden`,
+   Ziel `y:0; autoAlpha:1` (opacity 1 + visibility visible), Dauer 0.8s,
+   Ease `power4.inOut`, 0.1s Stagger zwischen Elementen einer Gruppe.
+   Bewusst `2em` (nicht ein fester rem-Wert wie zuvor): das skaliert mit
+   der SCHRIFTGRÖSSE DES JEWEILIGEN ELEMENTS selbst – eine große
+   Überschrift rutscht dadurch automatisch weiter ein als ein kleiner
+   Fließtext, genau wie im Vorbild. `power4.inOut` ist eine reine
+   Potenzfunktion (t^5 vorne/hinten gespiegelt), keine kubische Bezier-
+   Kurve – daher wie schon bei der elastic-Kurve der Spezialitäten-Karten
+   Punkt für Punkt aus GSAP ausgelesen (`gsap.parseEase("power4.inOut")`,
+   41 Stützstellen) und als CSS `linear()` nachgebaut statt geschätzt. */
+html.js .reveal{
+  opacity:0;visibility:hidden;
+  transform:translate(0,2em);
+}
+html.js .reveal.is-in{
+  animation:rise .8s linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
+    .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
+    .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
+    .9988,.9995,.9998,1,1,1,1) forwards;
+}
+.kontakt__form.reveal{animation-delay:.1s}
+@keyframes rise{to{opacity:1;visibility:visible;transform:none}}
+
+/* Hero: eigene Mechanik statt der generischen .reveal-Basis oben – Live-
+   Analyse ergab, dass der Vorbild-Hero (".eyebrow-style"/".heading-xl"/
+   ".paragraph-xl") NICHT denselben Reveal nutzt wie der übrige Content:
+   Ausgangszustand dort `transform:translateY(25%); opacity:0` OHNE
+   visibility:hidden (bleibt durchgehend "visible", nur unsichtbar per
+   Opacity), Dauer ~1s, Ease `expo.out` (deutlich weicher/schneller
+   einschwingend als das potenzbasierte power4.inOut der Textblöcke).
+   `25%` statt `2em`: prozentual zur EIGENEN Höhe des Elements, nicht zur
+   Schriftgröße – bei den im Vergleich zu Fließtext sehr großen/hohen
+   Hero-Zeilen ergibt das einen spürbar dezenteren Weg als der 2em-Wert
+   der Textblock-Variante es hier gerissen hätte (Ursache für das erst
+   "ganz komische" Wirken). Kurve wie schon bei den anderen beiden
+   Kurven Punkt für Punkt aus GSAP ausgelesen (`gsap.parseEase("expo.out")`). */
+html.js .hero .reveal{
+  visibility:visible;
+  transform:translateY(25%);
+}
+html.js .hero .reveal.is-in{
+  animation-name:hero-rise;
+  animation-duration:1s;
+  animation-timing-function:linear(0,.1586,.2915,.403,.4969,.576,.6429,
+    .6995,.7476,.7883,.8229,.8523,.8772,.8983,.9162,.9312,.9438,.9544,
+    .9632,.9705,.9766,.9815,.9855,.9887,.9913,.9933,.9949,.9962,.9971,
+    .9979,.9984,.9989,.9992,.9994,.9996,.9997,.9998,.9999,.9999,1);
+}
+@keyframes hero-rise{to{opacity:1;transform:none}}
+.hero__eyebrow.reveal{animation-delay:.1s}
+.hero__title.reveal{animation-delay:.2s}
+.hero__lede.reveal{animation-delay:.3s}
+
+/* ── Sektion ───────────────────────────────────────────────────────── */
+.section{
+  position:relative;z-index:1;
+  /* Zieht die Kachel über die Kante der vorherigen Sektion. Ohne den
+     Überlapp zeigt die abgerundete Ecke sonst einen kleinen Zwickel der
+     dunklen Seitenfarbe (--deep), weil außerhalb der Rundung, aber noch
+     innerhalb der Bounding-Box, der Hintergrund dahinter durchscheint. */
+  margin-top:calc(var(--r-lg) * -1.5);
+  background:var(--cream);
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  overflow:hidden;
+}
+
+/* ── Spezialitäten ─────────────────────────────────────────────────────
+   Maße als vw-Konstanten, aus dem Vorbild gemessen (Basis 1440 px):
+   Karte 360×504 (25vw, 5:7) · Spalten 300 (20.833vw) · Rand 48 (3.333vw)
+   Sektionspolster 215 (14.93vw) · Bedienzeile 714 breit (49.583vw)      */
+.spez{
+  --card-w:clamp(11rem, 25vw, 30rem);      /* 360 @1440 · 480 @1920 */
+  --card-h:calc(var(--card-w) / .714);
+  --gutter:clamp(1.25rem, 3.333vw, 4rem);  /*  48 @1440 */
+  --col-w:clamp(11rem, 20.833vw, 25rem);   /* 300 @1440 */
+  --word-fs:16.3vw;                        /* auf „Spezialitäten" abgestimmt */
+  --word-h:calc(var(--word-fs) * .9);
+  --flick:cubic-bezier(.16,1,.3,1);
+  padding-block:clamp(3.5rem, 14.93vw, 17.9rem);
+}
+
+.spez__word{
+  position:absolute;top:var(--pad);left:var(--pad);
+  z-index:0;pointer-events:none;user-select:none;
+  font-size:var(--word-fs);font-weight:500;line-height:.9;letter-spacing:-.01em;
+  color:var(--ink);opacity:.05;white-space:nowrap;
+}
+
+.spez__stage{
+  position:relative;z-index:1;
+  max-width:var(--wrap);margin-inline:auto;
+  padding-inline:var(--gutter);
+  height:var(--card-h);
+  display:flex;align-items:center;justify-content:center;
+}
+/* Kundenwunsch: bei den Spezialitäten soll die Ladeanimation selbst das
+   Auffächern der Karten sein, statt die ganze Bühne generisch ein-/
+   auszublenden. Daher hier bewusst NICHT die opacity/transform-Regeln der
+   generischen html.js .reveal-Basis (siehe oben) – die Bühne bleibt normal
+   sichtbar. Stattdessen starten nur die KARTEN gestapelt/ungefächert
+   (transform:none überschreibt die sonst per data-offset gesetzte Fächer-
+   Position) und ziehen erst beim Sichtbarwerden (.is-in) in ihre echten
+   Positionen – das übernimmt die auf .deck__card ohnehin schon vorhandene
+   Elastic-Transition (0.6s, GSAP elastic.out(1.2,1) nachgebaut) von selbst,
+   sobald der Override unten wegfällt. Selektor extra spezifisch gehalten
+   (Klasse + :not + Attribut), damit er die data-offset-Regeln zuverlässig
+   schlägt, ohne !important zu brauchen. */
+html.js .spez__stage.reveal{opacity:1;visibility:visible;transform:none}
+html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
+
+/* Produktname – links, auf Kartenmitte ausgerichtet */
+.spez__name{
+  position:absolute;left:var(--gutter);top:50%;translate:0 -50%;
+  width:var(--col-w);
+  font-size:clamp(1.625rem, 2.917vw, 3.5rem);
+  font-weight:500;line-height:1;letter-spacing:-.01em;
+}
+
+/* Beschreibung – rechts, auf Kartenmitte ausgerichtet */
+.spez__copy{
+  position:absolute;right:var(--gutter);top:50%;translate:0 -50%;
+  width:var(--col-w);
+  display:flex;flex-direction:column;gap:.8em;
+}
+.spez__sub{
+  font-size:clamp(1.0625rem, 1.667vw, 2rem);
+  font-weight:500;line-height:1.1;letter-spacing:-.01em;
+}
+.spez__text{
+  font-size:clamp(.875rem, 1.042vw, 1.25rem);
+  line-height:1.4;color:var(--ink-70);
+}
+
+/* Bedienzeile – mittig über der Kartenunterkante */
+.spez__nav{
+  position:absolute;left:50%;translate:-50% 0;bottom:5.2%;
+  width:min(49.583vw, 60rem);
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.spez__counter{
+  font-size:clamp(.75rem, .833vw, 1rem);
+  font-weight:600;line-height:1.5;letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;
+}
+.spez__arrows{display:flex;gap:clamp(.25rem,.417vw,.5rem)}
+.arrow{
+  position:relative;
+  width:clamp(1.75rem, 2.083vw, 2.5rem);aspect-ratio:1;
+  display:grid;place-items:center;border-radius:50%;
+  transition:color .25s var(--ease), background-color .25s var(--ease), opacity .25s var(--ease);
+}
+.arrow svg{width:100%;height:100%}
+.arrow::after{content:"";position:absolute;inset:-.45rem;border-radius:50%} /* Tippfläche */
+.arrow:hover:not(:disabled){background:var(--ink);color:var(--cream)}
+.arrow:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── Kartenstapel ──────────────────────────────────────────────────── */
+.spez__deckwrap{position:relative;display:flex;justify-content:center;height:100%}
+.deck{
+  position:relative;width:var(--card-w);height:100%;
+  touch-action:pan-y;          /* senkrecht scrollen, waagerecht wischen */
+  user-select:none;-webkit-user-select:none;
+}
+/* Button wie im Vorbild: steigt aus der Karte auf und blendet ein.
+   Getrennte Zeiten – Deckkraft 0,4 s, Bewegung 1 s (aus dem Slider-CSS). */
+.deck__cta{
+  position:absolute;left:50%;bottom:calc(var(--btn-h) * -.25);z-index:6;
+  transform:translateX(-50%);
+  transition:opacity .4s cubic-bezier(.625,.05,0,1),
+             transform 1s cubic-bezier(.16,1,.3,1),
+             background-color .25s var(--ease);
+}
+/* Beim Ziehen tritt er zurück, wie die Buttons der abwandernden Karten */
+.deck.is-dragging ~ .deck__cta{
+  opacity:0;transform:translateX(-50%) translateY(50%);
+}
+
+/* Das Foto liegt bei 14,29 % bis 85,71 % der Kartenhöhe (quadratisch in 5:7).
+   Genau dort setzen die Farbstopps an, damit Karte und Fotohintergrund an der
+   Nahtstelle denselben Ton haben – die Farben stehen pro Karte im HTML. */
+.deck__card{
+  position:absolute;inset:0;overflow:hidden;
+  border-radius:clamp(.625rem, 1.042vw, 1.25rem);
+  background:linear-gradient(180deg,
+    var(--card) 0%, var(--card) 14.29%,
+    var(--card-foot) 85.71%, var(--card-foot) 100%);
+  transform-origin:50% 50%;
+  will-change:transform;
+  /* Rückfallkurve für ältere Browser … */
+  transition:transform .6s cubic-bezier(.16,1,.3,1), opacity .4s var(--ease);
+  /* … und die federnde Kurve des Vorbilds: GSAP elastic.out(1.2, 1),
+     Punkt für Punkt nachgerechnet. Überschwingt um 12 % bei t = 0,28. */
+  transition:transform .6s linear(0,0.2977,0.5391,0.7282,0.8708,0.9736,1.0436,
+    1.0874,1.1112,1.1202,1.1187,1.1104,1.098,1.0838,1.0691,1.0551,1.0423,1.0313,
+    1.0219,1.0144,1.0085,1.004,1.0008,0.9986,0.9973,0.9965,0.9962,0.9963,0.9966,
+    0.9969,0.9974,0.9978,0.9983,0.9987,1), opacity .4s var(--ease);
+}
+/* Beim Ziehen folgen die Karten dem Finger – ohne Nachlauf */
+.deck.is-dragging .deck__card{transition:none}
+.deck{cursor:grab}
+.deck.is-dragging{cursor:grabbing}
+.deck__media{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  pointer-events:none;-webkit-user-drag:none;   /* sonst startet der Browser ein Bild-Ziehen */
+  opacity:var(--media,1);
+  transition:opacity .5s var(--ease);
+  /* Weiche Ober- und Unterkante: das Foto läuft über ~25 px in die
+     Kartenfläche aus, statt mit einer sichtbaren Kante zu enden. */
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 14.29%, #000 19.5%, #000 82%, transparent 85.71%);
+  mask-image:linear-gradient(to bottom,
+    transparent 14.29%, #000 19.5%, #000 82%, transparent 85.71%);
+}
+/* Erst zeigen, wenn das Bild wirklich da ist – kein Aufblitzen */
+.deck__card:not(.is-ready) .deck__media{opacity:0}
+
+.deck__veil{
+  position:absolute;inset:0;background:var(--deep);pointer-events:none;
+  opacity:var(--veil,0);
+  transition:opacity .5s var(--ease);
+}
+.tag{
+  position:absolute;
+  top:clamp(.625rem, 1.25vw, 1.5rem);left:clamp(.625rem, 1.25vw, 1.5rem);
+  padding:clamp(.2rem,.417vw,.5rem) clamp(.45rem,.625vw,.75rem);
+  border:1px solid var(--ink);border-radius:var(--r-pill);
+  font-size:clamp(.8125rem, 1.042vw, 1.25rem);
+  font-weight:600;line-height:1.5;letter-spacing:-.01em;
+}
+
+/* Fächer – Verschiebung, Drehung und Skalierung 1:1 aus dem Vorbild.
+   ±3 und 4 sind die unsichtbaren Warteplätze des Ringlaufs. */
+.deck__card[data-offset="0"] {transform:none;                                        z-index:5;opacity:1}
+.deck__card[data-offset="1"] {transform:translate( 25%,1%) rotate( 10deg) scale(.9); z-index:4;opacity:1}
+.deck__card[data-offset="-1"]{transform:translate(-25%,1%) rotate(-10deg) scale(.9); z-index:4;opacity:1}
+.deck__card[data-offset="2"] {transform:translate( 45%,5%) rotate( 15deg) scale(.8); z-index:3;opacity:1}
+.deck__card[data-offset="-2"]{transform:translate(-45%,5%) rotate(-15deg) scale(.8); z-index:3;opacity:1}
+.deck__card[data-offset="3"],
+.deck__card[data-offset="4"] {transform:translate( 55%,5%) rotate( 20deg) scale(.6); z-index:2;opacity:0}
+.deck__card[data-offset="-3"]{transform:translate(-55%,5%) rotate(-20deg) scale(.6); z-index:2;opacity:0}
+
+/* Tiefenstaffelung: je weiter hinten, desto dunkler und flauer */
+.deck__card[data-offset="1"],
+.deck__card[data-offset="-1"]{--media:.9;  --veil:.14}
+.deck__card[data-offset="2"],
+.deck__card[data-offset="-2"]{--media:.75; --veil:.3}
+.deck__card[data-offset="3"],
+.deck__card[data-offset="4"],
+.deck__card[data-offset="-3"]{--media:.75; --veil:.3}
+
+.deck__card:not([data-offset="0"]){cursor:pointer}
+
+/* Hover auf allen Karten der Fächer-Kachelreihe – auch der vordersten
+   (zweiter Anlauf, erster war deutlich zu kräftig: kleinere Verschiebung/
+   Drehung/Skalierung, überall etwa halbiert). Bei den seitlichen Karten
+   (klickbar, um sie nach vorn zu holen) heben sie sich nur ein kleines
+   Stück an, richten sich minimal auf und werden etwas heller – dezentes
+   Feedback statt eines auffälligen Sprungs. Die vorderste Karte (nicht
+   klickbar) bekommt nur ein sehr sanftes Aufskalieren, keine Verschiebung/
+   Drehung, damit sie nicht fälschlich anklickbar wirkt. Der Elastic-
+   transition von .deck__card oben greift auch hier, daher federt der
+   Hover genauso weich wie der Kartenwechsel selbst. */
+.deck__card[data-offset="0"]:hover {transform:scale(1.015)}
+.deck__card[data-offset="1"]:hover {transform:translate( 24%,-.5%) rotate( 8.5deg) scale(.915)}
+.deck__card[data-offset="-1"]:hover{transform:translate(-24%,-.5%) rotate(-8.5deg) scale(.915)}
+.deck__card[data-offset="2"]:hover {transform:translate( 44%,3%)   rotate( 13.5deg) scale(.815)}
+.deck__card[data-offset="-2"]:hover{transform:translate(-44%,3%)   rotate(-13.5deg) scale(.815)}
+.deck__card[data-offset="1"]:hover,
+.deck__card[data-offset="-1"]:hover{--media:.95;  --veil:.095}
+.deck__card[data-offset="2"]:hover,
+.deck__card[data-offset="-2"]:hover{--media:.825; --veil:.23}
+
+/* Textwechsel – wie im Vorbild: kein Ausblenden, nur ein gestaffeltes
+   Einlaufen. GSAP: fromTo({opacity:0, y:8}, {duration:.45, ease:'power2.out',
+   stagger:.04}) – power2.out entspricht easeOutCubic. */
+@keyframes text-ein{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+.is-swapping .spez__name{animation:text-ein .45s cubic-bezier(.33,1,.68,1) both}
+.is-swapping .spez__sub {animation:text-ein .45s cubic-bezier(.33,1,.68,1) .04s both}
+.is-swapping .spez__text{animation:text-ein .45s cubic-bezier(.33,1,.68,1) .08s both}
+
+/* Der Button steigt bei jedem Wechsel neu auf – zwei Kurven, weil das
+   Vorbild Deckkraft und Bewegung unterschiedlich lange laufen lässt. */
+@keyframes cta-blende{from{opacity:0}to{opacity:1}}
+@keyframes cta-steigt{
+  from{transform:translateX(-50%) translateY(50%)}
+  to  {transform:translateX(-50%) translateY(0)}
+}
+.is-swapping .deck__cta{
+  animation:cta-blende .4s cubic-bezier(.625,.05,0,1) both,
+            cta-steigt 1s cubic-bezier(.16,1,.3,1) both;
+}
+
+/* Statisches Etikett im Stil von .tag (Pille mit Kontur), aber ohne die
+   absolute Positionierung, die dort auf die Deck-Karte zugeschnitten ist. */
+.pill{
+  display:inline-flex;align-items:center;
+  padding:clamp(.2rem,.417vw,.5rem) clamp(.45rem,.625vw,.75rem);
+  border:1px solid var(--ink);border-radius:var(--r-pill);
+  font-size:clamp(.8125rem, 1.042vw, 1.25rem);
+  font-weight:600;line-height:1.5;letter-spacing:-.01em;
+}
+
+/* ── Öffnungszeiten ────────────────────────────────────────────────────
+   Gleiches System wie bei „Spezialitäten": blasses Wort-Wasserzeichen
+   hinter dem Inhalt, zweispaltiger Aufbau wie im Hero (Text/Bild). Das
+   Vorbild selbst zeigt an dieser Stelle keine Öffnungszeiten (B2B-Seite
+   ohne Ladengeschäft) – übernommen ist daher konsequent das Systemdesign,
+   nicht ein 1:1-Vorbild-Element. Wortgröße 15vw statt 16,3vw, weil
+   „Öffnungszeiten" ein Zeichen länger ist als „Spezialitäten".
+
+   Der satte Rotton mit Blattmuster ist die Nestler-Variante der
+   „Become a partner"-Karte im Vorbild: dort liegt eine goldene Fläche
+   mit großzügigem Adernmuster eingebettet zwischen cremefarbenen Rand,
+   statt randlos die volle Breite einzunehmen. Die Einbettung bleibt:
+   die äußere .section bleibt creme und Teil des Kachelstapels, die
+   Karte (.oeff__card) liegt mit sichtbarem Cremerand darin und ist
+   selbst auf allen vier Seiten gerundet. Der Inhalt ist inzwischen
+   aber ein ganz anderer: keine rote Fläche mit Text mehr, sondern die
+   stilisierte Geising-Karte (.geismap) mit zwei Standort-Pins, siehe
+   Kommentar dort. overflow:visible statt :hidden auf .oeff-wrap, aus
+   demselben Grund wie schon bei .story (siehe dortiger Kommentar):
+   die Popups der Pins müssen über die Kachel hinausragen dürfen. */
+.oeff-wrap{
+  padding:clamp(1.25rem, 3vw, 2.5rem);
+  overflow:visible;
+}
+.oeff__card{
+  position:relative;
+  /* Size-Containment: macht die Kartenhöhe als cqh-Einheit für
+     .geismap__headline/__eyebrow abfragbar (siehe dort) – die Schrift
+     bleibt so immer im selben Verhältnis zur Kartenhöhe (und damit zum
+     Pin, dessen Position ja auch in % der Kartenhöhe steht), egal ob
+     die Karte durch Fensterbreite oder durch die max-height weiter
+     unten begrenzt wird. */
+  container-type:size;
+  width:100%;
+  aspect-ratio:16/11;
+  /* Volle Breite bleibt immer erhalten – nur die Höhe wird auf eine
+     Bildschirmhöhe gedeckelt. Auf sehr breiten/niedrigen Fenstern
+     weicht das Seitenverhältnis dadurch von 16:11 ab (die Karte wird
+     "breiter" als 16:11); .geismap__art füllt mit object-fit:cover
+     trotzdem lückenlos, es wird nur etwas mehr vom Kartenbild
+     seitlich abgeschnitten. Auf Mobil greift ohnehin die eigene
+     Media Query weiter unten ohne festes Seitenverhältnis. */
+  max-height:100svh;
+  border-radius:var(--r-lg);
+  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
+  background:var(--deep);
+}
+
+/* ── Geising-Karte ─────────────────────────────────────────────────────
+   Eigene, aus echten OpenStreetMap-Daten vereinfachte Illustration
+   (siehe assets/img/geising-map.svg) im Stil des Vorbild-Screenshots
+   „Smart logistics & scalable distribution": flache Flächen auf dunklem
+   Grund statt Kartenkacheln. .geismap__frame trägt die eigene Rundung
+   + overflow:hidden fürs Kartenbild – bewusst getrennt von .oeff__card,
+   damit dessen eigenes overflow:visible (s.o.) für die Pin-Popups gilt,
+   ohne dass die Karte selbst eckig über den Rand hinausragt. */
+.geismap{position:relative;width:100%;height:100%}
+.geismap__frame{position:absolute;inset:0;border-radius:var(--r-lg);overflow:hidden}
+.geismap__art{display:block;width:100%;height:100%;object-fit:cover}
+/* Weicher Verlauf hinter der Ecke mit dem Text – dieselbe Technik wie
+   .hero__scrim übers Hero-Foto. Wirkt nicht wie ein zugefügtes Element,
+   sondern wie eine natürliche Verdunklung der Karte in dieser Ecke,
+   hebt den Text darüber aber spürbar vom (teils hellen) Kartenbild ab. */
+.geismap__frame::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(58% 52% at 0% 0%, rgba(20,8,4,.5) 0%, rgba(20,8,4,.24) 48%, rgba(20,8,4,0) 78%);
+}
+
+/* Text-Überzug wie im Vorbild-Screenshot: Eyebrow + fette Headline
+   oben links auf der Kartenfläche. pointer-events:none, damit die
+   Pins/Popups darunter weiter bedienbar bleiben; kein eigenes
+   z-index nötig – als späteres Geschwister von .geismap__frame (beide
+   auto) rendert der Überzug schon von Natur aus darüber, die Pins mit
+   ihrem expliziten z-index:2 bleiben trotzdem zuoberst. */
+.geismap__caption{
+  /* Auch der Innenabstand in cqh statt fest in rem – sonst frisst er
+     bei einer niedrigen Karte unverhältnismäßig viel vom Platz zum
+     Pin weg, den die Schrift darunter (auch in cqh) ja gerade
+     einzuhalten versucht. */
+  position:absolute;top:clamp(.75rem, 4cqh, 1.75rem);left:clamp(.75rem, 4cqh, 1.75rem);right:clamp(.75rem, 4cqh, 1.75rem);
+  pointer-events:none;
+  /* Zwei Ebenen statt einer: eine enge, kräftigere für einen klaren
+     Rand direkt an den Buchstaben, eine weite, weiche fürs sanfte
+     Verschmelzen mit dem Verlauf aus .geismap__frame::after darunter –
+     zusammen mehr Kontrast, ohne wie ein hartes Schlagschatten-Preset
+     auszusehen. */
+  text-shadow:0 .02em .25em rgba(20,8,4,.55), 0 .06em 1.1em rgba(20,8,4,.45);
+}
+.geismap__eyebrow{
+  color:var(--light);opacity:.85;
+  /* cqh statt vw/vh: 1cqh = 1% der tatsächlichen Kartenhöhe (siehe
+     container-type:size auf .oeff__card). Damit bleibt der Abstand
+     zum Bahnhof-Pin (der ja auch in % der Kartenhöhe positioniert ist)
+     immer gleich groß, ganz gleich wie die Karte zustande kommt –
+     schmale UND niedrige Fenster eingeschlossen. */
+  font-size:clamp(1rem, 2.6cqh, 1.625rem);font-weight:600;letter-spacing:.01em;
+  margin-bottom:.4em;
+}
+.geismap__headline{
+  color:var(--light);
+  font-size:clamp(2rem, 9cqh, 8rem);font-weight:500;
+  line-height:.94;letter-spacing:-.02em;
+  max-width:11ch;
+}
+
+.geismap__marker{
+  position:absolute;left:var(--x);top:var(--y);
+  /* Zentrieren über feste Negativ-Margins (halbe Pin-Größe) statt
+     translate: jede transform-artige Eigenschaft (translate/scale/
+     rotate eingeschlossen) macht das Element zum Containing Block für
+     position:fixed-Nachfahren – genau das braucht das mobile Popup
+     weiter unten aber NICHT, das soll fest am Viewport hängen. */
+  margin:-.75rem 0 0 -.75rem;
+  z-index:2;
+}
+.geismap__pin{
+  position:relative;
+  width:1.5rem;height:1.5rem;
+  display:grid;place-items:center;
+  cursor:pointer;
+  /* Hebt sich beim Hover leicht an (siehe Regel unten). Bewusst auf
+     .geismap__pin, NICHT auf .geismap__marker: der Marker ist Elternteil
+     von .geismap__popup, und transform/translate/scale/rotate auf einem
+     Vorfahren macht diesen zum Containing Block für das mobile fixed-
+     position-Popup darunter (siehe Kommentar bei .geismap__marker) – das
+     würde die mobile Popup-Positionierung kaputt machen. .geismap__pin ist
+     kein Vorfahre von .geismap__popup (beide sind Geschwister unter
+     .geismap__marker), daher hier unbedenklich.
+     Bewusst `transform:translateY()` statt der sonst im Projekt üblichen
+     eigenständigen `translate`-Eigenschaft: in der Testumgebung ließ sich
+     eine Positionsänderung über CSS-Regeln auf genau diesem <button> nicht
+     per getBoundingClientRect messen (weder mit translate noch mit
+     transform) – über die Web Animations API (element.animate(), misst
+     unabhängig von der CSS-Kaskade) hat sich aber gezeigt, dass BEIDE
+     Schreibweisen auf dem Element technisch einwandfrei funktionieren;
+     das Mess-Problem lag an der Testumgebung, nicht am CSS. transform
+     bleibt hier trotzdem die sicherere Wahl (etwas breiter unterstützt),
+     nicht weil translate nachweislich kaputt wäre. */
+  transition:transform .25s var(--ease);
+}
+.geismap__marker:hover .geismap__pin,
+.geismap__marker:focus-within .geismap__pin,
+.geismap__marker.is-open .geismap__pin{transform:translateY(-.15rem)}
+/* Größere unsichtbare Tippfläche, wie schon bei .arrow */
+.geismap__pin::after{content:"";position:absolute;inset:-.6rem;border-radius:50%}
+.geismap__dot{
+  position:relative;
+  width:1.15rem;height:1.15rem;border-radius:50%;
+  background:var(--accent);
+  border:2.5px solid var(--light);
+  box-shadow:0 .2rem .5rem rgba(0,0,0,.45);
+  transition:scale .25s var(--ease);
+}
+/* Pulsierender Ring, jetzt auffälliger: zwei versetzte Ringe statt
+   einem (dichtere, "lebendigere" Wiederholung), kürzere Laufzeit,
+   höhere Deckkraft am Start. animation-delay zwischen den beiden
+   Pins, damit sie nicht synchron pulsieren. */
+.geismap__dot::before,
+.geismap__dot::after{
+  content:"";
+  position:absolute;inset:0;border-radius:50%;
+  background:var(--accent);
+  animation:geismap-puls 1.6s ease-out infinite;
+}
+.geismap__dot::after{animation-delay:.8s}
+.geismap__marker--up .geismap__dot::before{animation-delay:.4s}
+.geismap__marker--up .geismap__dot::after{animation-delay:1.2s}
+@keyframes geismap-puls{
+  0%{scale:1;opacity:.8}
+  100%{scale:3.6;opacity:0}
+}
+.geismap__marker:hover .geismap__dot,
+.geismap__marker:focus-within .geismap__dot,
+.geismap__marker.is-open .geismap__dot{scale:1.2}
+
+/* Beim Hover/Fokus/offenem Popup wird der Puls selbst kräftiger (nicht nur
+   der Punkt größer): weiterer Ring, höhere Start-Deckkraft. Nur der
+   Keyframe-NAME wird hier überschrieben – Dauer (1.6s) und die
+   Staffelung per animation-delay (oben, unverändert) bleiben exakt
+   gleich, sonst geraten die zwei versetzten Ringe aus dem Takt. */
+@keyframes geismap-puls-hover{
+  0%{scale:1;opacity:.95}
+  100%{scale:5;opacity:0}
+}
+.geismap__marker:hover .geismap__dot::before,
+.geismap__marker:hover .geismap__dot::after,
+.geismap__marker:focus-within .geismap__dot::before,
+.geismap__marker:focus-within .geismap__dot::after,
+.geismap__marker.is-open .geismap__dot::before,
+.geismap__marker.is-open .geismap__dot::after{
+  animation-name:geismap-puls-hover;
+}
+
+.geismap__popup{
+  position:absolute;
+  top:calc(100% + .75rem);left:50%;
+  translate:-50% .5rem;
+  width:min(18rem, calc(100vw - 3rem));
+  background:var(--cream);
+  border-radius:var(--r-lg);
+  box-shadow:0 1.5rem 3rem -1rem rgba(20,8,4,.5);
+  overflow:hidden;
+  opacity:0;visibility:hidden;pointer-events:none;
+  /* transform zusätzlich zur schon vorhandenen translate-Eigenschaft: beide
+     wirken unabhängig voneinander und addieren sich beim Rendern, daher
+     kann der Hover unten übers transform anheben, ohne die per translate
+     gesteuerte Zentrierung/Einblend-Bewegung (-50% ...) zu stören.
+     Kundenwunsch: die Popups sollen eine EIGENE Einblend-Qualität bekommen,
+     nicht nur unsichtbar an der Karte hängen (die Karte selbst trägt
+     deshalb auch kein .reveal mehr, siehe HTML – sie ist jetzt immer
+     normal sichtbar). Öffnen/Schließen läuft weiterhin über Hover/Fokus/
+     Tap, nicht über den Scroll-Reveal-Beobachter (ergibt für ein reines
+     Interaktions-Popup keinen Sinn) – dafür aber mit derselben sorgfältig
+     aus GSAP entnommenen power4.inOut-Kurve wie der Rest der Seite, statt
+     des schlichten var(--ease), für dieselbe hochwertige Anmutung. */
+  transition:opacity .4s linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
+      .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
+      .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
+      .9988,.9995,.9998,1,1,1,1),
+    translate .4s linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
+      .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
+      .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
+      .9988,.9995,.9998,1,1,1,1),
+    visibility .4s,
+    transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+/* Standorte in der unteren Kartenhälfte öffnen ihr Fenster nach oben,
+   sonst ragt es unten über die Karte (bzw. die ganze Sektion) hinaus. */
+.geismap__marker--up .geismap__popup{top:auto;bottom:calc(100% + .75rem);translate:-50% -.5rem}
+
+.geismap__marker:hover .geismap__popup,
+.geismap__marker:focus-within .geismap__popup,
+.geismap__marker.is-open .geismap__popup{
+  opacity:1;visibility:visible;pointer-events:auto;
+  translate:-50% 0;
+}
+
+/* Hover auf der Popup-Karte selbst (sobald sie offen ist): hebt sich noch
+   ein Stück weiter an und der Schatten vertieft sich – dasselbe dezente
+   "Kartenmuster" wie schon bei den Spezialitäten-Karten und den Pins,
+   nur eben auf dem Info-Fenster selbst. */
+.geismap__popup:hover{
+  transform:translateY(-.3rem);
+  box-shadow:0 2.25rem 4rem -1rem rgba(20,8,4,.6);
+}
+
+.geismap__photo{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.geismap__body{padding:.9rem 1.1rem 1.1rem;display:flex;flex-direction:column;gap:.4em}
+.geismap__title-row{display:flex;align-items:center;justify-content:space-between;gap:.6em}
+.geismap__title-row .geismap__name{flex:1;min-width:0}
+.geismap__title-row .oeff__status{flex:none;white-space:nowrap}
+.geismap__name{font-size:1.0625rem;font-weight:500;letter-spacing:-.01em;line-height:1.15;color:var(--ink)}
+.geismap__addr{font-size:.8125rem;color:var(--ink-70)}
+.geismap__hours{display:grid;gap:.3em;margin-top:.3em}
+.geismap__hours div{display:flex;justify-content:space-between;align-items:baseline;gap:1em}
+.geismap__hours dt{margin:0;color:var(--ink-45);font-size:.8125rem;font-weight:500}
+.geismap__hours dd{margin:0;color:var(--ink);font-size:.8125rem;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.geismap__cta{margin-top:.6em;width:100%;justify-content:center;height:2.75rem;font-size:.9375rem}
+
+/* Live-Status: Punkt + Text, in main.js aus data-hours berechnet und
+   alle 30s aktualisiert. Grün = geöffnet. Bewusst kleiner und dezenter
+   als ein normales .pill-Etikett gehalten – kein Rahmen/Hintergrund
+   mehr, nur ein kleiner Punkt mit leiser Beschriftung neben dem Titel,
+   damit der Name der Filiale die Aufmerksamkeit behält. */
+.oeff__status{
+  border:none;padding:0;
+  gap:.35em;
+  font-size:.75rem;font-weight:600;
+  color:var(--ink-45);
+  transition:color .3s var(--ease);
+}
+.oeff__status-dot{
+  position:relative;
+  width:.4em;height:.4em;flex:none;border-radius:50%;
+  background:var(--ink-25);
+  transition:background-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.oeff__status[data-open="true"]{color:#3F9142}
+.oeff__status[data-open="true"] .oeff__status-dot{
+  background:#3F9142;
+  box-shadow:0 0 0 .2em rgba(63,145,66,.2);
+}
+/* Puls bei „Jetzt geöffnet": ein Ring läuft vom Punkt aus und verblasst,
+   Endlosschleife – klassisches "live"-Signal, macht den geöffnet-Zustand
+   auf den ersten Blick erkennbar statt nur farblich. Eigenes ::after
+   (nicht der Punkt selbst), damit der Punkt seine feste Größe behält und
+   nur der Ring pulsiert. Reines transform/opacity (Compositor, kein
+   Layout-Trashing). Bei prefers-reduced-motion greift automatisch die
+   globale Regel am Dateiende (animation-duration:.01ms) – der Ring steht
+   dann praktisch still, der Punkt bleibt trotzdem grün erkennbar. */
+.oeff__status[data-open="true"] .oeff__status-dot::after{
+  content:"";
+  position:absolute;inset:0;
+  border-radius:50%;
+  background:#3F9142;
+  animation:oeff-pulse 2.2s ease-out infinite;
+}
+@keyframes oeff-pulse{
+  from{transform:scale(1);   opacity:.55}
+  to  {transform:scale(2.8); opacity:0}
+}
+
+/* ── Historie ──────────────────────────────────────────────────────────
+   1:1 nachgebaut nach modernbakery.com/our-story (Live-Analyse per
+   document.styleSheets + Original-Inline-Script ausgelesen, siehe
+   Projektnotizen für Details). Kernbefund: dort gibt es KEIN separates,
+   statisches Intro vor dem Zeitstrahl – die Intro-Karte (Headline+Foto)
+   ist die ERSTE Karte INNERHALB derselben angepinnten Horizontal-Scroll-
+   Strecke (.storyhz__intro, hier analog zu .timeline__info). Zweiter
+   Kernbefund: jeder Zeitstrahl-Punkt animiert NICHT als Ganzes auf einmal
+   ein, sondern Jahr/Titel/Punkt/Foto einzeln mit eigenen Trigger-
+   Schwellen (85 %/80 %/90 % Bildschirmbreite bzw. sofort bei Kanten-
+   eintritt fürs Foto) und eigenem Timing/Easing – siehe main.js für die
+   Schwellen-Logik, hier nur die Zielzustände/Kurven. Die drei Easings
+   sind exakte Bézier-Entsprechungen der Original-GSAP-Kurven (power1.out/
+   power2.out sind als kubische Polynome exakt in eine kubische Bézier
+   degree-elevierbar, dieselbe verlustfreie Technik wie schon bei
+   Schautorten; back.out(2) hat echten Überschwinger >1 und wird daher wie
+   dort als abgetastete linear()-Kurve mit 41 Stützstellen geführt statt
+   angenähert).
+
+   Bewusst NICHT übernommen (Kundenentscheidung nach Rückfrage): der
+   Vorbild-Effekt, bei dem der Sektionshintergrund gegen Ende sanft von
+   Warmbraun zu Grün wechselt (plus data-nav-theme wechselt auf "dark") –
+   Historie soll durchgehend creme bleiben, das wurde in diesem Projekt
+   schon einmal explizit verworfen (siehe ältere Notiz weiter oben in der
+   Historie dieser Datei). Ebenfalls bewusst NICHT übernommen: das Vorbild-
+   Abschluss-Panel (nochmal Headline+Foto ganz am Ende) – dort füllt es
+   die Lücke, weil der letzte datierte Punkt dort nur Text ohne Foto ist;
+   unser letzter Punkt ("Heute") hat schon ein eigenes Foto, ein zweites
+   Panel wäre redundant.
+
+   .section setzt sonst overflow:hidden fürs Kacheleck – bricht aber
+   position:sticky beim Zeitstrahl weiter unten, siehe Kommentar bei
+   .oeff-wrap weiter oben für die Begründung. Hier aus demselben Grund
+   aufgehoben. */
+.story{
+  --ease-power1-out: cubic-bezier(.3333,.6667,.6667,1);
+  --ease-power2-out: cubic-bezier(.3333,1,.6667,1);
+  --ease-back-out2: linear(0 0%,0.1207 2.5%,0.2329 5%,0.3369 7.5%,0.433 10%,0.5215 12.5%,0.6026 15%,0.6767 17.5%,0.744 20%,0.8048 22.5%,0.8594 25%,0.908 27.5%,0.951 30%,0.9886 32.5%,1.0211 35%,1.0488 37.5%,1.072 40%,1.0909 42.5%,1.1059 45%,1.1171 47.5%,1.125 50%,1.1297 52.5%,1.1316 55%,1.131 57.5%,1.128 60%,1.123 62.5%,1.1164 65%,1.1083 67.5%,1.099 70%,1.0889 72.5%,1.0781 75%,1.0671 77.5%,1.056 80%,1.0452 82.5%,1.0349 85%,1.0254 87.5%,1.017 90%,1.01 92.5%,1.0046 95%,1.0012 97.5%,1 100%);
+  padding-block:clamp(2rem, 5vw, 4rem);
+  overflow:visible;
+}
+
+.storyhz__spacer{
+  height:320vh;
+  position:relative;
+}
+.storyhz__sticky{
+  position:sticky;top:0;
+  height:100vh;
+  display:flex;align-items:center;
+  overflow:hidden;
+}
+.storyhz__track{
+  position:relative;
+  display:flex;align-items:center;
+  gap:clamp(5rem,10vw,9rem);
+  padding-inline:8vw;
+  will-change:transform;
+}
+.storyhz__line{
+  position:absolute;left:0;top:50%;height:3px;
+  transform:translateY(-50%);
+  background-image:repeating-linear-gradient(to right, var(--accent) 0 10px, transparent 10px 22px);
+}
+
+/* ── Intro-Karte (entspricht .timeline__info im Vorbild) ──────────────
+   Erste Karte im Track, volle Bildschirmbreite (wie dort width:100vw) –
+   dadurch steht sie beim Anpinnen einen vollen "Screen" lang für sich,
+   bevor die datierten Punkte hereinscrollen. Blendet über das
+   allgemeine .reveal-System ein (kein eigener Scroll-Trigger nötig, sie
+   liegt schon beim Anpinnen im sichtbaren Fenster). */
+.storyhz__intro{
+  flex:none;
+  min-width:100vw;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  gap:clamp(1.25rem,2.5vw,1.75rem);
+}
+.storyhz__intro-title{
+  max-width:18ch;
+  font-size:clamp(2.5rem,5.5vw,6.5rem);font-weight:500;line-height:.95;letter-spacing:-.025em;
+}
+.storyhz__intro-lede{
+  max-width:48ch;
+  color:var(--ink-70);font-style:italic;
+  font-size:clamp(1rem,1.2vw,1.25rem);line-height:1.5;
+}
+.storyhz__intro-image{
+  width:clamp(18rem,35vw,32rem);aspect-ratio:3/2;
+  border-radius:var(--r-lg);overflow:hidden;
+  background:var(--card);
+  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
+}
+.storyhz__intro-image img{display:block;width:100%;height:100%;object-fit:cover}
+
+.storyhz__item{
+  position:relative;flex:none;
+  width:clamp(20rem,26vw,30rem);
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+}
+
+/* Jahr/Titel/Punkt/Foto animieren einzeln, ausgelöst durch is-in-* auf
+   .storyhz__item (siehe main.js) – nicht mehr der ganze Punkt auf
+   einmal. Timing/Delay/Easing 1:1 vom Original-Script übernommen. */
+.storyhz__year{
+  color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;
+  font-size:clamp(1.375rem,1.8vw,1.75rem);
+  margin-bottom:.7em;
+  opacity:0;transform:translateY(.5em);
+  transition:opacity .5s var(--ease-power1-out) .12s, transform .5s var(--ease-power1-out) .12s;
+}
+.storyhz__item.is-in-year .storyhz__year{opacity:1;transform:translateY(0)}
+
+.storyhz__dot{
+  width:1.1rem;height:1.1rem;border-radius:50%;
+  background:var(--cream);border:3px solid var(--accent);
+  margin-bottom:1em;
+  opacity:0;transform:scale(0);
+  transition:opacity .5s var(--ease-back-out2), transform .5s var(--ease-back-out2);
+}
+.storyhz__dot--first{background:var(--accent)}
+.storyhz__item.is-in-dot .storyhz__dot{opacity:1;transform:scale(1)}
+
+.storyhz__caption{
+  max-width:28ch;color:var(--ink-70);
+  font-size:clamp(1.0625rem,1.3vw,1.3125rem);line-height:1.5;
+  opacity:0;transform:translateY(.6em);
+  transition:opacity .6s var(--ease-power1-out) .2s, transform .6s var(--ease-power1-out) .2s;
+}
+.storyhz__item.is-in-title .storyhz__caption{opacity:1;transform:translateY(0)}
+
+/* Foto: alternierender Dreheinstieg (-3°→3° bzw. umgekehrt, je nachdem
+   ob das Foto oben oder mittig sitzt – deckt sich im Markup exakt mit
+   dem bestehenden img-top/img-center-Wechsel), löst schon beim
+   Kanteneintritt aus (kein Warten auf 80/85/90%). */
+.storyhz__image{
+  width:100%;aspect-ratio:4/3;
+  border-radius:var(--r-lg);overflow:hidden;
+  background:var(--card);
+  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
+  margin-bottom:1.4em;
+  transform:rotate(var(--rot-start));
+  transition:transform .8s var(--ease-power2-out);
+}
+.storyhz__item--img-top .storyhz__image{--rot-start:-3deg;--rot-end:3deg}
+.storyhz__item--img-center .storyhz__image{--rot-start:3deg;--rot-end:-3deg;margin-bottom:0;margin-top:1.4em;order:3}
+.storyhz__item.is-in-img .storyhz__image{transform:rotate(var(--rot-end))}
+.storyhz__image img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* ── Statischer Fallback: Mobil und prefers-reduced-motion ───────────
+   JS setzt data-static auf .story, sobald Scroll-Jacking entweder
+   nicht gewünscht (reduzierte Bewegung) oder auf schmalen Bildschirmen
+   keine gute Idee ist (horizontales Scroll-Hijacking ist auf einem
+   Touch-Screen kein Vergnügen). Der Zeitstrahl fließt dann normal
+   untereinander, ganz ohne position:sticky/transform – und da hier gar
+   kein Scroll-Handler läuft, der is-in-* setzen könnte, werden Jahr/
+   Titel/Punkt/Foto direkt auf ihren Endzustand gezwungen statt auf ein
+   nie kommendes Trigger-Signal zu warten. */
+.story[data-static] .storyhz__spacer{height:auto}
+.story[data-static] .storyhz__sticky{display:block;position:static;height:auto;padding-block:clamp(2.5rem,6vw,4rem)}
+.story[data-static] .storyhz__track{
+  flex-direction:column;align-items:stretch;
+  padding-inline:var(--pad);gap:clamp(2.5rem,6vw,3.5rem);
+}
+.story[data-static] .storyhz__line{display:none}
+
+.story[data-static] .storyhz__intro{min-width:0}
+.story[data-static] .storyhz__intro-image{width:100%;max-width:24rem;margin-inline:auto}
+
+.story[data-static] .storyhz__item{
+  width:100%;flex-direction:row;text-align:left;align-items:center;
+  gap:clamp(1.25rem,3vw,2rem);
+}
+.story[data-static] .storyhz__item > *{margin:0}
+.story[data-static] .storyhz__year{order:1;flex:none;width:8rem;opacity:1;transform:none;transition:none}
+.story[data-static] .storyhz__dot{display:none}
+.story[data-static] .storyhz__caption{order:2;flex:1;max-width:none;opacity:1;transform:none;transition:none}
+.story[data-static] .storyhz__image{order:3;flex:none;width:9rem;aspect-ratio:1;margin:0;opacity:1;transform:none;transition:none}
+.story[data-static] .storyhz__item--img-center .storyhz__image{order:3}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width:900px){
+  .nav__center{display:none}
+  .nav__cta{margin-left:auto}
+  .burger{display:flex}
+}
+
+@media (max-width:1100px){
+  .hero__inner{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"eyebrow" "title" "lede";
+    row-gap:clamp(1rem,3vw,2rem);
+  }
+  .hero__lede{justify-self:start;max-width:40ch;padding-bottom:0}
+  .hero__eyebrow{margin-bottom:0}
+}
+
+/* Tablet: Name über die Karte, alles mittig – wie im Vorbild.
+   Anders als dort behalten wir die Beschreibung, sie ist hier der Inhalt. */
+@media (max-width:991px){
+  .spez{
+    --card-w:48.4vw;
+    padding-top:calc(var(--pad) + var(--word-h) + clamp(1rem,3vw,2.5rem));
+    padding-bottom:clamp(3rem,8vw,6rem);
+  }
+  .spez__stage{
+    height:auto;flex-direction:column;
+    gap:clamp(1.25rem,3vw,2.25rem);
+    padding-inline:var(--pad);
+  }
+  .spez__deckwrap{height:auto;margin-bottom:calc(var(--btn-h) * .45)}
+  .spez__name{
+    position:static;translate:none;width:min(38rem,100%);
+    text-align:center;font-size:clamp(1.5rem,4.44vw,2.75rem);
+  }
+  .deck{height:auto;aspect-ratio:.714}
+  .spez__copy{
+    position:static;translate:none;width:min(48ch,100%);
+    text-align:center;align-items:center;
+  }
+  .spez__nav{
+    position:static;translate:none;width:100%;
+  }
+}
+
+/* Mobil: größere Karte, Bedienung mittig, Pfeile über dem Zähler */
+@media (max-width:767px){
+  .spez{--card-w:60vw}
+  .spez__name{font-size:clamp(1.5rem,7.5vw,2.25rem)}
+  .spez__nav{flex-direction:column;gap:.9rem}
+  .spez__arrows{order:-1;gap:.75rem}
+  .arrow{width:2rem}          /* Vorbild: 31 px – Tippfläche kommt vom ::after */
+}
+
+/* Öffnungszeiten-Button bleibt bis zur kleinsten Breite neben dem Burger
+   sichtbar (Kundenwunsch: "oben links neben dem Burger") – zuvor wurde er
+   hier komplett ausgeblendet. Auf sehr schmalen Geräten (≤400px, z.B. ein
+   320px-iPhone SE) reichen Logo + Volltext-Button + Burger nicht mehr
+   nebeneinander (gemessen: Burger ragt sonst über den Viewport-Rand
+   hinaus) – dort wird der Button auf reine Textgröße gestutzt: Pfeil weg,
+   engere Innenabstände, engerer Abstand zu Logo/Burger. */
+@media (max-width:400px){
+  .nav__inner{gap:.75rem}
+  .nav__cta{padding-inline:.75rem}
+  .nav__cta .btn__arrow{display:none}
+}
+
+/* Geising-Karte: unter ~640px verlassen die Popups die Pin-Verankerung
+   und fließen als gestapelte Karte unter der (jetzt kürzeren) Karte –
+   ein am Pin zentriertes Overlay würde auf schmalen Screens seitlich
+   über den Rand hinausragen. Anders als auf dem Desktop bleiben sie
+   hier standardmäßig zu (display:none, nimmt keinen Platz weg) und
+   werden erst per Pin-Tap eingeblendet – der erste Blick soll noch die
+   Karte selbst zeigen, nicht schon beide vollen Info-Karten. */
+@media (max-width:640px){
+  .geismap{display:flex;flex-direction:column;gap:1rem;padding:1rem}
+  .geismap__frame{position:relative;inset:auto;aspect-ratio:16/10;margin:-1rem -1rem 0}
+  .oeff__card{aspect-ratio:auto;height:auto;max-height:none}
+  .geismap__marker{position:static;margin:0}
+  .geismap__popup{position:static;width:100%;display:none;translate:none}
+  /* .is-open zählt als zwei Klassen auf einem Element + .geismap__popup
+     macht drei insgesamt – spezifischer als die :hover/:focus-within/
+     .is-open-Regel weiter oben (die dort translate:-50% 0 setzt und
+     sonst gewinnen würde), daher hier translate erneut auf none. */
+  .geismap__marker.is-open .geismap__popup{display:block;translate:none}
+}
+
+
+/* ── Kontakt ───────────────────────────────────────────────────────────
+   Nach dem Vorbild der modernbakery.com/contact-Seite: Telefon/E-Mail
+   groß und zuerst (.kontakt__quick), daneben ein Formular auf leicht
+   abgesetzter Kartenfläche. Zweispaltig wie schon .oeff__grid/.kontakt
+   an anderer Stelle im Dokument – dieselbe Grundfigur der Seite. */
+.kontakt{padding-block:clamp(3rem, 6vw, 6rem)}
+.kontakt__inner{
+  max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+  gap:clamp(2.5rem,5vw,5rem);
+  align-items:start;
+}
+.kontakt__heading{
+  margin-top:.6em;max-width:14ch;
+  font-size:var(--fs-h2);font-weight:500;line-height:1.05;letter-spacing:-.02em;
+}
+.kontakt__lede{margin-top:1em;max-width:38ch;color:var(--ink-70)}
+.kontakt__quick{margin-top:2rem;display:flex;flex-direction:column;gap:1.4rem}
+.kontakt__quick-label{
+  display:block;margin-bottom:.2em;
+  font-size:.8125rem;font-weight:600;letter-spacing:.02em;color:var(--ink-45);
+}
+.kontakt__quick-value{
+  display:block;
+  font-size:clamp(1.375rem,2.2vw,1.875rem);font-weight:500;letter-spacing:-.01em;
+  transition:color .2s var(--ease);
+}
+.kontakt__quick-link:hover .kontakt__quick-value{color:var(--accent)}
+
+.kontakt__form{
+  background:var(--card);
+  border-radius:var(--r-lg);
+  padding:clamp(1.5rem,3vw,2.5rem);
+  display:flex;flex-direction:column;gap:1.1rem;
+}
+.kontakt__form-title{font-size:1.125rem;font-weight:500}
+.kontakt__field{display:flex;flex-direction:column;gap:.4rem}
+.kontakt__field label{font-size:.875rem;font-weight:600}
+.kontakt__optional{font-weight:400;color:var(--ink-45);font-size:.8em}
+.kontakt__field input,.kontakt__field textarea{
+  font:inherit;padding:.75em 1em;border-radius:var(--r);
+  border:1px solid var(--ink-25);background:var(--cream);color:var(--ink);
+  resize:vertical;
+}
+.kontakt__field input:focus-visible,.kontakt__field textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.kontakt__consent{display:flex;gap:.6em;align-items:flex-start;font-size:.8125rem;color:var(--ink-70);line-height:1.4}
+.kontakt__consent input{margin-top:.2em;flex:none}
+.kontakt__submit{justify-content:center}
+.kontakt__form-note{font-size:.75rem;color:var(--ink-45);line-height:1.4}
+
+@media (max-width:900px){
+  .kontakt__inner{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ── Impressum ─────────────────────────────────────────────────────── */
+/* Zuerst als versteckter #impressum-Anker auf der Startseite gelöst
+   (display:none + :target), auf genaue Analyse des Vorbilds hin aber
+   durch eine echte eigene Seite ersetzt: modernbakery.com verlinkt seine
+   „Privacy Policy" ebenfalls als eigenständige Unterseite mit eigener
+   URL, nicht als Anker/Popup auf der Startseite. Lebt jetzt komplett in
+   impressum.html (eigene Kopf-/Fußzeile dort dupliziert, siehe
+   Kommentar dort).
+
+   Kundenkorrektur: erst als „eingebettete Karte" gebaut (wie
+   .oeff-wrap/.sw, brauner Kartenton --card mit Schatten) – auf
+   Kundenwunsch wieder entfernt, keine Box/kein Kasten mehr. Der Text
+   liegt jetzt einfach auf der normalen Cremefläche der .section, wie
+   auch beim Vorbild (dort ist die Rechtsseite ebenfalls nur schlichter
+   Fließtext ohne Kartenrahmen). */
+.impressum{padding-block:clamp(2.5rem, 5vw, 4rem)}
+
+/* Eigenständige Rechtsseite (impressum.html): erster Versuch gab main
+   Abstand nach oben und ließ dort den dunklen body-Grund (--deep)
+   durchscheinen – wirkte als leerer brauner Balken über der Cremefläche,
+   Kundenfeedback „hier ist die braune Box noch da". Jetzt stattdessen
+   wie beim .hero-Muster: die Cremefläche selbst beginnt ganz oben bei
+   0 (kein dunkler Grund sichtbar), nur der INHALT darin bekommt genug
+   Abstand nach oben, um unter der fest positionierten Nav-Leiste
+   hervorzuschauen. Dafür die von .section geerbte Hochzieh-Kante
+   (negativer margin-top, sonst gedacht, um die Kante der vorherigen
+   Sektion zu kaschieren) hier auf 0 zurückgesetzt – es gibt ja keine
+   vorherige Sektion, die kaschiert werden müsste. */
+/* Verallgemeinert (urspruenglich nur fuer .impressum): jede eigenstaendige
+   Unterseite ohne Hero (body.subpage - impressum.html/historie.html/
+   kontakt.html) beginnt direkt mit einer .section als erstem main-Kind.
+   Erster Versuch gab main Abstand nach oben und liess dort den dunklen
+   body-Grund (--deep) durchscheinen - wirkte als leerer brauner Balken.
+   Jetzt wie beim .hero-Muster: die Cremeflaeche selbst beginnt ganz oben
+   bei 0 (kein dunkler Grund sichtbar), nur der INHALT bekommt genug
+   Abstand, um unter der fest positionierten Nav-Leiste hervorzuschauen.
+   Die von .section geerbte Hochzieh-Kante (negativer margin-top, sonst
+   gedacht, um die Kante der VORHERIGEN Sektion zu kaschieren) wird hier
+   auf 0 zurueckgesetzt - es gibt ja keine vorherige Sektion. */
+.subpage main>.section:first-of-type{margin-top:0;padding-top:clamp(7rem, 10vw, 9rem)}
+.impressum__inner{max-width:min(var(--wrap), 56rem);margin-inline:auto;padding-inline:var(--pad)}
+.impressum__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
+.impressum__updated{margin-top:.6rem;margin-bottom:2.5rem;color:var(--ink-45);font-size:.875rem}
+
+/* Fünf knappe Faktenkarten (Anbieter/Kontakt/Berufsangaben/USt-ID/
+   Verantwortlicher) statt vorher zwei textlastiger Blöcke – auto-fit
+   statt fester Spaltenzahl, damit es bei 5 Karten nicht zwangsläufig
+   eine unschön überhängende letzte Zeile gibt, sondern sich frei auf
+   2–3 Spalten verteilt, je nach verfügbarer Breite. */
+.impressum__grid{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(14rem,1fr));
+  gap:clamp(1.75rem,3vw,2.75rem);
+}
+.impressum__block h3{font-size:1rem;font-weight:600;margin-bottom:.75em}
+.impressum__block p{color:var(--ink-70);line-height:1.6}
+.impressum__block p + p{margin-top:1em}
+.impressum__block a{text-decoration:underline;text-underline-offset:.15em}
+
+/* Rechtstexte (Streitschlichtung/Haftung Inhalte/Haftung Links/
+   Urheberrecht) – bewusst durchgehend sichtbar statt wie zuvor in einem
+   einzelnen <details> versteckt, damit Pflichtangaben nicht erst per
+   Klick aufklappen müssen. */
+.impressum__legal{
+  margin-top:clamp(2.5rem,5vw,4rem);
+  padding-top:clamp(2rem,4vw,3rem);
+  border-top:1px solid var(--ink-25);
+  display:grid;gap:clamp(1.75rem,3vw,2.5rem);
+}
+.impressum__legal-item h3{font-size:1rem;font-weight:600;margin-bottom:.6em}
+.impressum__legal-item p{color:var(--ink-70);font-size:.9375rem;line-height:1.65}
+.impressum__legal-item a{text-decoration:underline;text-underline-offset:.15em}
+
+@media (max-width:700px){
+  .impressum__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
+}
+
+/* ── Team / Ausbildung / Schautorten / Anfahrt ────────────────────────
+   Vier neue eigenständige Unterseiten (Stand 20.08.2026, Inhalte von der
+   Altsite übernommen: Teamliste, Ausbildungsberufe, Tortenfotos, Anfahrts-
+   beschreibung). Nutzen dieselbe schlichte Text-Seiten-Mechanik wie
+   Impressum (.subpage main>.section:first-of-type gibt den Abstand unter
+   der Nav, keine eigene Kartenfläche) – neue, seiteneigene Klassen statt
+   Wiederverwendung von .impressum__*, damit jede Seite unabhängig
+   angepasst werden kann, aber optisch identisches Grundmuster (schmale
+   Lesebreite, Pill+Headline, auto-fit-Kartenraster). */
+.team__inner,.ausbildung__inner{max-width:min(var(--wrap), 56rem);margin-inline:auto;padding-inline:var(--pad)}
+.team__heading,.ausbildung__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
+.team__lede{margin-top:1.25rem;max-width:46ch;color:var(--ink-70);font-style:italic;line-height:1.6}
+.team__lede cite{display:block;margin-top:.6em;font-style:normal;font-size:.875rem;color:var(--ink-45)}
+.ausbildung__lede{margin-top:1.1rem;max-width:52ch;color:var(--ink-70);line-height:1.6}
+
+.team__grid,.ausbildung__grid{
+  margin-top:clamp(2.5rem,5vw,3.5rem);
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(14rem,1fr));
+  gap:clamp(1.75rem,3vw,2.75rem);
+}
+.team__block h3,.ausbildung__block h3{font-size:1rem;font-weight:600;margin-bottom:.75em}
+.team__block p,.ausbildung__block p{color:var(--ink-70);line-height:1.6}
+.team__block ul{color:var(--ink-70);line-height:1.9}
+.ausbildung__block p+p{margin-top:1em}
+.ausbildung__block a{text-decoration:underline;text-underline-offset:.15em}
+
+/* Bewerbungs-/Rekrutierungs-Hinweis: dieselbe eingebettete Karte wie
+   Öffnungszeiten/Sonderwünsche, hier aber ruhig in Kartenfarbe (--card)
+   statt in Akzentrot – ein Hinweis, kein weiterer Vollflächen-CTA. */
+.cta-box,.ausbildung__apply{
+  margin-top:clamp(2.5rem,5vw,4rem);
+  padding:clamp(1.5rem,3vw,2.25rem);
+  background:var(--card);
+  border-radius:var(--r-lg);
+  display:flex;flex-wrap:wrap;gap:1.5rem 2rem;align-items:center;justify-content:space-between;
+}
+.cta-box p,.ausbildung__apply p{color:var(--ink-70);line-height:1.5}
+.cta-box h3,.ausbildung__apply h3{font-size:1.0625rem;font-weight:600;margin-bottom:.35em}
+.ausbildung__apply ul{margin-top:.85em;color:var(--ink-70);line-height:1.7}
+.ausbildung__apply p a{text-decoration:underline;text-underline-offset:.15em}
+.ausbildung__apply-actions{display:flex;flex-wrap:wrap;gap:.75rem;flex:none}
+
+@media (max-width:700px){
+  .team__grid,.ausbildung__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
+  .cta-box,.ausbildung__apply{flex-direction:column;align-items:flex-start}
+}
+
+/* ── Schautorten ───────────────────────────────────────────────────────
+   1:1-Nachbau der Kategorie-Sektion von modernbakery.com/products
+   (dortige `.section_products`). Der Kunde hat sie per Screenshot als
+   Sollzustand vorgegeben; die vorherige Fassung (Produkt-Kachelzeilen der
+   Katalogseite /products-catalog) war die falsche Referenz.
+
+   Die Maße unten sind KEINE Schätzungen, sondern die per DOM-Inspektion
+   ausgelesenen Original-Regeln des Vorbilds, 1:1 übernommen. Das Vorbild
+   rechnet dort durchgehend in `em` auf einer Basis von 12px – deshalb
+   setzt `.stcat` genau diese Basis und alle Innenmaße bleiben in `em`,
+   damit die Proportionen exakt stimmen. Original → hier:
+     .categories-pagination_list   gap 2em            → .stcat__pag-list
+     .categories-pagination_item   gap 2em            → .stcat__pag-item
+     .categories-pagination_title  1.125em / .5 opa   → .stcat__pag-title
+     …            .is-active       4em    / 1  opa    → …is-active
+     .categories-pagination_dot    .75em, 1px Rand    → .stcat__pag-dot
+     .categories-pagination_line   1px, 100% − 1.5em  → .stcat__pag-line
+     .categories-scroll_item       height 100vh       → .stcat__scroll-item
+     .categories-scroll_content    aspect 1/1, 100vh  → .stcat__scroll-content
+     .categories-scroll_img        aspect 1/1, 56em   → .stcat__scroll-img
+     .categories-sub               28em, 100vh, sticky→ .stcat__sub
+     .categories-sub_content       gap 2em, zentriert → .stcat__sub-content
+     .categories-sub_link          2.25em h, 1.5em fs → .stcat__tag
+     .button                       4em h, 1em radius  → .stcat__sub .btn
+     .categories-slide             gap 1em, bottom 2em→ .stcat__slide
+     .categories-slide-button      3em rund, 1px Rand → .stcat__slide-btn
+     .categories-toggle            3.5em h, 1em radius→ .stcat__toggle
+     .cms_list / .product-card     4 Spalten, 1/1.3   → .stgrid / .stgrid__card
+   Auch die Übergangskurven sind übernommen: cubic-bezier(.19,1,.22,1)
+   (expo.out) für Deckkraft/Schriftgröße, cubic-bezier(.175,.885,.32,1.275)
+   (back.out) für die Hover-Nudges, cubic-bezier(.16,1,.3,1) fürs Bild.
+
+   Farb-Zufall, der die Übernahme so genau macht: der Grund des Vorbilds
+   ist #5B3217 und dessen helle Schrift #F3E9D7 – exakt unsere --ink und
+   --cream. Nur der gelbe Button wird zu unserem hellen Button (--light):
+   Nestler-Rot auf diesem Braun hätte ein Kontrastverhältnis von 1.87
+   (nachgerechnet) und wäre damit unlesbar – dieselbe Falle wie schon bei
+   .btn--accent auf der roten Sonderwünsche-Fläche.
+
+   Bilder sind vorerst Platzhalter (assets/img/schautorten/platzhalter.svg,
+   Kundenwunsch "Nutze zunächst dummy Bilder, ich reiche die richtigen
+   Tortenbilder nach") – ein <img> je Torte, beim Ersetzen nur die src
+   tauschen. JS-Logik: main.js, IIFE "Schautorten: Kategorie-Browser". */
+
+/* Ausnahmsweise dunkel und randlos statt creme mit eingebetteter Karte:
+   das Vorbild ist hier eine Vollbild-Bühne, und die angepinnte
+   100svh-Mechanik verträgt keinen Cremerand (der stünde beim Anpinnen als
+   Streifen quer im Bild). Bleibt trotzdem Teil des Kachelstapels (oben
+   gerundet, negativer margin-top von .section).
+   WICHTIG: .section setzt overflow:hidden – das macht die Sektion selbst
+   zum Bezugsrahmen für position:sticky und bricht das Anpinnen komplett.
+   Dieselbe Falle wie bei .story und .oeff-wrap, siehe Kommentare dort. */
+/* Hintergrund exakt wie im Vorbild: dort liegt eine eigene Ebene
+   (.background-gradient) als position:fixed über dem ganzen Fenster, also
+   ein Verlauf, der beim Scrollen stehen bleibt. Genau denselben Verlauf
+   und dieselbe Wirkung liefert hier background-attachment:fixed – dadurch
+   wird er sauber von der Eckenrundung der Kachel beschnitten, was eine
+   eigene Ebene darüber nicht täte. Die Farbwerte sind unverändert die des
+   Vorbilds (ein entsättigtes Warmbraun, nicht unser --ink); --ink bleibt
+   als Rückfalloption darunter. Auf iOS-Safari wird background-attachment
+   wie "scroll" behandelt – dort fällt es nicht auf, weil die Sektion im
+   statischen Zustand ohnehin nur rund einen Bildschirm hoch ist. */
+.schautorten{
+  background-color:var(--ink);
+  background-image:linear-gradient(70deg,#7F746D,#695146 52%,#5C4236 76%,#5A4034);
+  background-attachment:fixed;
+  color:var(--light);
+  overflow:visible;
+  padding-bottom:clamp(2rem,4vw,4rem);
+}
+.schautorten__intro{
+  max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
+  padding-bottom:clamp(1.5rem,3vw,2.5rem);
+}
+.schautorten__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
+.schautorten__lede{margin-top:1.1rem;max-width:56ch;color:rgba(246,239,226,.72);line-height:1.6}
+
+/* ── Der Browser ────────────────────────────────────────────────────── */
+/* 12px = die aus dem Vorbild ausgelesene em-Basis dieser Sektion.
+   Die Kurven darunter sind die GSAP-Eases aus dem Original-Skript des
+   Vorbilds, hier ohne GSAP nachgebildet: back.out(1.7) und die beiden
+   Sinus-Kurven als abgetastete linear()-Kurven (41 bzw. 21 Punkte, das
+   im Projekt schon etablierte Verfahren), die beiden power2-Kurven als
+   cubic-bezier – quadratische Kurven lassen sich mit den Kontrollpunkten
+   1/3 und 2/3 EXAKT als Bezier ausdrücken, das ist keine Näherung.
+   back.out(1.7) überschwingt nachgerechnet bis 1.0998. */
+.stcat{
+  font-size:12px;position:relative;
+  --e-back-out:linear(0,0.11354,0.21934,0.31764,0.4087,0.49277,0.57011,0.64097,0.7056,0.76425,0.81719,0.86465,0.9069,0.94419,0.97676,1.00488,1.0288,1.04877,1.06504,1.07786,1.0875,1.0942,1.09821,1.0998,1.0992,1.09668,1.09249,1.08688,1.0801,1.07241,1.06406,1.05531,1.0464,1.03759,1.02914,1.02129,1.0143,1.00842,1.00391,1.00102,1);
+  --e-quad-out:cubic-bezier(.33333,.66667,.66667,1);
+  --e-quad-in:cubic-bezier(.33333,0,.66667,.33333);
+  --e-sine-out:linear(0,0.07846,0.15643,0.23345,0.30902,0.38268,0.45399,0.5225,0.58779,0.64945,0.70711,0.76041,0.80902,0.85264,0.89101,0.92388,0.95106,0.97237,0.98769,0.99692,1);
+  --e-sine-inout:linear(0,0.00616,0.02447,0.0545,0.09549,0.14645,0.20611,0.273,0.34549,0.42178,0.5,0.57822,0.65451,0.727,0.79389,0.85355,0.90451,0.9455,0.97553,0.99384,1);
+}
+@media (max-width:1280px){.stcat{font-size:11px}}
+
+/* Die Bühne wird angepinnt, während die Bilderspalte darunter durchläuft –
+   exakt das Vorbild-Prinzip (.categories-sticky absolut über der
+   scrollenden .categories-scroll, mit sticky Kindern darin). */
+.stcat__view{position:relative}
+.stcat__overlay{position:absolute;inset:0;z-index:1;pointer-events:none}
+.stcat__stage{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  padding-inline:var(--pad);
+}
+
+/* ── links: Kategorienliste ─────────────────────────────────────────── */
+.stcat__pag{position:absolute;left:var(--pad);top:50%;translate:0 -50%;z-index:0}
+.stcat__pag-wrap{position:relative;display:flex;align-items:center;justify-content:flex-start}
+.stcat__pag-line{
+  position:absolute;left:.375em;top:.75em;z-index:0;
+  width:1px;height:calc(100% - 1.5em);
+  background:var(--light);opacity:.5;
+}
+.stcat__pag-list{position:relative;z-index:1;display:flex;flex-flow:column;gap:2em}
+.stcat__pag-item{
+  display:flex;align-items:center;justify-content:flex-start;gap:2em;
+  padding:0;border:0;background:none;color:inherit;text-align:left;
+  cursor:pointer;pointer-events:auto;
+}
+.stcat__pag-dot{
+  flex:none;width:.75em;height:.75em;border-radius:50%;
+  border:1px solid var(--light);background:#998C87;
+  transition:background-color .3s cubic-bezier(.19,1,.22,1);
+}
+.stcat__pag-title{
+  display:flex;white-space:nowrap;
+  font-size:1.125em;font-weight:600;line-height:1;opacity:.5;
+  transition:opacity .3s cubic-bezier(.19,1,.22,1),font-size .4s cubic-bezier(.19,1,.22,1);
+}
+.stcat__pag-item:hover .stcat__pag-title{opacity:.8}
+.stcat__pag-item.is-active .stcat__pag-title{opacity:1;font-size:4em}
+.stcat__pag-item.is-active .stcat__pag-dot{background:var(--light)}
+
+/* ── Mitte: freigestelltes Foto, läuft durch ────────────────────────── */
+.stcat__scroll{position:relative;z-index:0;display:flex;flex-flow:column;align-items:center;width:100%}
+.stcat__scroll-item{height:100vh;height:100svh}
+.stcat__scroll-content{
+  position:relative;aspect-ratio:1/1;height:100vh;height:100svh;
+  display:flex;align-items:center;justify-content:center;
+}
+/* 56em = 672px bei 12px-Basis (Vorbild-Wert). min() nur als Notbremse für
+   sehr flache Fenster – bei der Referenzhöhe 900px greift sie nicht.
+
+   Die Bewegung ist 1:1 aus dem Original-Skript des Vorbilds übernommen
+   (dort GSAP, hier reines CSS – die Zustände wechseln ohnehin nur
+   sprunghaft, also reichen Keyframes und Übergänge):
+     ruhend    → scale(.8) rotate(10deg)
+     aktiv     → von scale(.7) rotate(-20deg) auf scale(1) rotate(0),
+                 0.85s back.out(1.7)  ← das kräftige Überschwingen
+     danach    → Schweben y +=10px, 2s sine.inOut, hin und zurück
+                 (= 4s Vollzyklus), endlos
+     verlassen → zurück auf scale(.8) rotate(10deg), 0.4s power2.in,
+                 Schweben löst sich mit 0.45s sine.out auf
+   Das Schweben läuft über die eigenständige translate-Eigenschaft, damit
+   es sich nicht mit der transform-Animation ins Gehege kommt. */
+.stcat__scroll-img{
+  position:relative;aspect-ratio:1/1;height:min(56em,76svh);
+  transform:scale(.8) rotate(10deg);
+  transition:transform .4s var(--e-quad-in),translate .45s var(--e-sine-out);
+  will-change:transform;
+}
+.stcat__scroll-item.is-active .stcat__scroll-img{
+  animation:
+    stcat-bild-rein .85s var(--e-back-out) forwards,
+    stcat-schweben 4s var(--e-sine-inout) .85s infinite;
+}
+/* object-fit:cover statt contain: echte Fotos (Rechteck mit Hintergrund)
+   statt der freigestellten Platzhalter-Grafik – wirken jetzt als Foto-
+   karte mit eigenem Schatten/Radius statt als schwebendes Freisteller-
+   Objekt, das Vorbild nutzt dafür echte Cutout-PNGs seiner Produkte,
+   die wir nicht haben. */
+.stcat__scroll-img img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  border-radius:var(--r-lg);
+  box-shadow:0 1.5rem 3rem -1rem rgba(0,0,0,.5);
+}
+@keyframes stcat-bild-rein{
+  from{transform:scale(.7) rotate(-20deg)}
+  to{transform:scale(1) rotate(0deg)}
+}
+@keyframes stcat-schweben{0%,100%{translate:0 0}50%{translate:0 10px}}
+
+/* ── rechts: Merkmale + Button ──────────────────────────────────────── */
+.stcat__sub{position:absolute;right:var(--pad);top:50%;translate:0 -50%;width:28em;z-index:0}
+.stcat__sub-list{position:relative;display:flex;flex-flow:column}
+/* Ebenfalls 1:1 aus dem Original-Skript: der eintretende Textblock
+   kommt von unten (opacity 0, y +20) in 0.4s power2.out herein, der
+   verlassende zieht nach oben weg (opacity 0, y −20) in 0.3s power2.in. */
+.stcat__sub-item{
+  position:absolute;top:0;left:0;width:100%;z-index:1;
+  opacity:0;pointer-events:none;transform:translateY(-20px);
+  transition:opacity .3s var(--e-quad-in),transform .3s var(--e-quad-in);
+}
+.stcat__sub-item.is-active{
+  position:relative;z-index:2;pointer-events:auto;
+  animation:stcat-text-rein .4s var(--e-quad-out) forwards;
+}
+@keyframes stcat-text-rein{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
+}
+.stcat__sub-content{display:flex;flex-flow:column;align-items:flex-start;gap:2em}
+.stcat__sub-title{display:none}
+
+.stcat__tags{display:flex;flex-flow:wrap;gap:.5em}
+.stcat__tag{
+  display:flex;align-items:center;justify-content:center;
+  height:2.25em;padding-inline:.75em;
+  font-size:1.5em;font-weight:600;line-height:1.5;
+  color:var(--light);border:1px solid var(--light);border-radius:100vw;
+  opacity:.75;
+}
+/* Button-Maße des Vorbilds, umgerechnet auf unsere .btn-Basis: dort
+   height 4em / padding 1.5em / radius 1em / gap .75em bei 12px, hier
+   dieselben Pixel über die eigene 1.25em-Schriftgröße (15px). */
+.stcat__sub .btn{
+  font-size:1.25em;font-weight:700;letter-spacing:0;
+  height:3.2em;padding-inline:1.2em;border-radius:.8em;gap:.6em;
+  transition:transform .4s cubic-bezier(.19,1,.22,1),
+             border-radius .3s cubic-bezier(.19,1,.22,1),
+             background-color .25s var(--ease);
+}
+.stcat__sub .btn:hover{border-radius:.6em;transform:scale3d(.96,.96,.96)}
+.stcat__sub .btn:active{transform:scale3d(.94,.94,.94)}
+.stcat__sub .btn__arrow{width:1em;height:1em;margin-right:-.2em}
+
+/* ── unten mittig: Zähler + Pfeile ──────────────────────────────────── */
+.stcat__slide{
+  position:absolute;left:50%;bottom:2em;translate:-50% 0;z-index:10;
+  display:flex;align-items:center;justify-content:center;gap:1em;
+}
+.stcat__slide-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:3em;height:3em;border-radius:50%;
+  border:1px solid var(--light);color:var(--light);
+  opacity:.75;cursor:pointer;pointer-events:auto;
+  transition:padding-bottom .525s cubic-bezier(.175,.885,.32,1.275),
+             opacity .3s cubic-bezier(.19,1,.22,1);
+}
+.stcat__slide-btn:hover{opacity:1;padding-bottom:.5em}
+.stcat__slide-btn.is-down{transform:rotate(180deg)}
+.stcat__slide-btn svg{width:1.25em;height:1.25em}
+.stcat__slide-count{
+  display:flex;align-items:center;justify-content:center;gap:.25em;
+  font-size:1.25em;font-weight:600;opacity:.75;font-variant-numeric:tabular-nums;
+}
+
+/* ── unten rechts: Listen-/Raster-Umschalter ─────────────────────────
+   Sitzt bewusst NICHT in der angepinnten Bühne, sondern als letztes Kind
+   direkt in .stcat – sonst wäre er im Rastermodus mit ausgeblendet und
+   man käme nicht mehr zurück. Das Vorbild löst das mit position:fixed;
+   das geht hier nicht, weil der Umschalter sonst auf der ganzen Seite
+   kleben bliebe statt nur über dieser Sektion. position:sticky mit
+   bottom:2em gibt dieselbe Optik, endet aber sauber mit der Sektion.
+   Der negative margin-top hebt die Eigenhöhe wieder auf, damit der
+   Umschalter keinen Platz im Fluss belegt, sondern überlagert. */
+.stcat__toggle-wrap{
+  position:sticky;bottom:2em;z-index:20;
+  margin-top:-3.5em;
+  display:flex;justify-content:flex-end;
+  padding-inline:var(--pad);
+  pointer-events:none;
+}
+/* Die ausgeblendete Ansicht muss ausgeblendet bleiben – ohne diese Regel
+   gewinnt weiter unten .stcat__view{display:flex} aus der Statisch-Query
+   gegen das display:none des hidden-Attributs. */
+.stcat [hidden]{display:none}
+.stcat__toggle{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  height:3.5em;padding:.5em;border-radius:1em;overflow:hidden;
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  pointer-events:auto;
+}
+.stcat__toggle-bg{position:absolute;inset:0;z-index:0;background:var(--light);opacity:.1}
+.stcat__toggle-border{position:absolute;inset:0;z-index:0;border:1px solid var(--light);opacity:.15;border-radius:1em}
+.stcat__toggle-knob{
+  position:absolute;z-index:0;top:.5em;bottom:.5em;left:.5em;width:calc(50% - .5em);
+  background:var(--light);opacity:.15;border-radius:.5em;
+  transition:transform .45s cubic-bezier(.19,1,.22,1);
+}
+.stcat__toggle-btn{
+  position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:.25em;
+  height:100%;padding:.5em .5em .5em .75em;border-radius:.5em;
+  font-size:1.25em;font-weight:600;color:var(--light);cursor:pointer;
+  opacity:.7;transition:opacity .3s cubic-bezier(.19,1,.22,1);
+}
+.stcat__toggle-btn[aria-pressed="true"]{opacity:1}
+.stcat__toggle-btn svg{width:1.125em;height:1.125em}
+.stcat[data-view="grid"] .stcat__toggle-knob{transform:translateX(100%)}
+
+/* ── Rasteransicht (Vorbild: .cms_list + .product-card) ─────────────── */
+.stcat__grid{padding-inline:var(--pad);padding-bottom:clamp(5rem,8vw,7rem)}
+.stgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25em}
+.stgrid__card{
+  position:relative;overflow:hidden;
+  display:flex;flex-flow:column;
+  aspect-ratio:1/1.3;padding:1.25em;border-radius:1em;
+  background:var(--card);color:var(--ink);
+  border:1px solid rgba(91,50,23,0);transition:border-color .2s;
+}
+.stgrid__card:hover{border-color:rgba(91,50,23,.15)}
+.stgrid__bg{position:absolute;inset:0;pointer-events:none}
+.stgrid__bg img{
+  width:100%;height:100%;object-fit:cover;
+  transform:scale(1) rotate(0deg);transform-origin:center center;
+  transition:transform .45s cubic-bezier(.16,1,.3,1);
+}
+.stgrid__card:hover .stgrid__bg img{transform:scale(1.03) rotate(.8deg)}
+/* Verlaufsschleier hinter Label/Titel – ohne den wäre die dunkle Schrift
+   auf einem echten Foto (statt der cremefarbenen Kartenfläche mit
+   freigestelltem Symbol) nicht zuverlässig lesbar. Dasselbe Muster wie
+   .deck__veil bei den Spezialitäten-Karten, hier als fester Verlauf statt
+   Hover-gesteuerter Deckkraft, weil hier immer ein Foto darunter liegt. */
+.stgrid__bg::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(58,32,17,.78) 0%, rgba(58,32,17,.32) 38%, transparent 62%);
+}
+.stgrid__labels,.stgrid__title{color:var(--light)}
+.stgrid__label{border-color:rgba(246,239,226,.6)}
+.stgrid__label.is-primary{background:var(--light);border-color:transparent;color:var(--ink)}
+.stgrid__labels{position:relative;z-index:1;display:flex;flex-flow:wrap;gap:.5em}
+.stgrid__label{
+  border:1px solid var(--ink);border-radius:50vw;padding:.4em .6em;
+  font-size:1.25em;font-weight:600;line-height:1;
+}
+.stgrid__label.is-primary{background:var(--cream);border-color:transparent}
+.stgrid__title{position:relative;z-index:1;margin-top:auto;font-size:2em;font-weight:500;line-height:1.15}
+
+/* Gestaffeltes Einblenden beim Umschalten – Vorbild: .cms_list-item,
+   opacity/transform .35s mit .04s Versatz je Karte. */
+.stgrid__item{opacity:1;transform:translateY(0);transition:opacity .35s,transform .35s}
+.stcat[data-view="list"] .stgrid__item{opacity:0;transform:translateY(8px)}
+.stgrid__item:nth-child(1){transition-delay:.04s}
+.stgrid__item:nth-child(2){transition-delay:.08s}
+.stgrid__item:nth-child(3){transition-delay:.12s}
+.stgrid__item:nth-child(4){transition-delay:.16s}
+.stgrid__item:nth-child(5){transition-delay:.20s}
+.stgrid__item:nth-child(6){transition-delay:.24s}
+.stgrid__item:nth-child(7){transition-delay:.28s}
+.stgrid__item:nth-child(8){transition-delay:.32s}
+
+@media (max-width:991px){.stgrid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:767px){
+  .stgrid{grid-template-columns:repeat(2,1fr)}
+  .stgrid__card{padding:1em}
+  .stgrid__title{font-size:1.5em}
+  .stgrid__label{padding:.25em .5em;font-size:1em}
+}
+@media (max-width:479px){.stgrid{gap:.5em}.stgrid__card{padding:.65em}}
+
+/* ── Statischer Zustand ─────────────────────────────────────────────────
+   Kein Anpinnen, kein Scroll-Bezug: die Bilder wechseln an Ort und Stelle
+   per Überblendung, weitergeschaltet wird nur über Pfeile/Liste. Greift
+   auf schmalen Bildschirmen UND bei reduzierter Bewegung – das Vorbild
+   macht ab 991px genau dasselbe (dort .categories-scroll_item absolut +
+   opacity-Übergang, Kategorienliste ausgeblendet, Titel wandert nach
+   rechts unten zum Inhalt). Beide Bedingungen in EINER Query, damit die
+   Regeln nicht doppelt gepflegt werden müssen. */
+@media (max-width:991px), (prefers-reduced-motion:reduce){
+  .stcat__view{display:flex;flex-flow:column;gap:1.5em}
+  .stcat__overlay{position:relative;inset:auto;order:2;pointer-events:auto}
+  .stcat__stage{position:relative;height:auto;padding-inline:0}
+
+  .stcat__scroll{order:1;position:relative;min-height:44svh;overflow:hidden}
+  .stcat__scroll-item{
+    position:absolute;inset:0;height:auto;
+    opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.19,1,.22,1);
+  }
+  .stcat__scroll-item.is-active{opacity:1;pointer-events:auto}
+  .stcat__scroll-content{width:100%;height:100%;aspect-ratio:auto}
+  /* Nur die Größe ändert sich – die Bewegung bleibt, das Vorbild animiert
+     auf Mobil mit derselben setActive-Funktion wie auf dem Desktop. */
+  .stcat__scroll-img{height:min(40svh,20em)}
+
+  /* Kategorienliste weicht dem großen Titel im Inhaltsblock (Vorbild:
+     .categories-pagination hat dort die Klasse hide-tablet-mobile). */
+  .stcat__pag{display:none}
+
+  .stcat__sub{position:relative;right:auto;top:auto;translate:none;width:100%}
+  .stcat__sub-content{align-items:center;text-align:center;gap:1.25em}
+  .stcat__sub-title{
+    display:block;font-size:clamp(1.75rem,7vw,2.5rem);font-weight:600;line-height:1.05;
+  }
+  .stcat__tags{justify-content:center}
+  .stcat__tag{font-size:1.125em}
+
+  .stcat__slide{position:relative;left:auto;bottom:auto;translate:none;justify-content:center}
+  .stcat__slide-btn{opacity:1;padding-bottom:0}
+  .stcat__slide-btn:hover{padding-bottom:0}
+  /* Nicht mehr schwebend, sondern im Fluss unter den Pfeilen – sonst
+     überlagert der Umschalter auf kleinen Bildschirmen den Inhalt. */
+  .stcat__toggle-wrap{position:static;justify-content:center;margin-top:1.5em}
+}
+
+/* Wer keine Bewegung möchte, bekommt auch keine: Einflug, Schweben und
+   Überblendung entfallen, der Wechsel passiert hart. Bewusst getrennt von
+   der Query oben – dort geht es nur um die Anordnung auf schmalen
+   Bildschirmen, und dort SOLL die Bewegung erhalten bleiben. */
+@media (prefers-reduced-motion:reduce){
+  .stcat__scroll-item.is-active .stcat__scroll-img{animation:none}
+  .stcat__scroll-img{transform:none;transition:none}
+  .stcat__scroll-item{transition:none}
+  .stcat__sub-item{transition:none}
+  .stcat__sub-item.is-active{animation:none;opacity:1;transform:none}
+  .stcat__pag-title,.stcat__pag-dot{transition:none}
+  .stgrid__item{transition:none}
+}
+
+/* Anfahrt: zweispaltig wie Kontakt – links die Wegbeschreibung (Bahn/
+   Auto als eigene Karten), rechts die stilisierte Geising-Karte + die
+   beiden Standort-Adressen mit Navigieren-Buttons (dieselben Google-
+   Maps-Deeplinks wie bei den Popups auf der Startseite). */
+.anfahrt__inner{
+  max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(2.5rem,5vw,4rem);align-items:start;
+}
+.anfahrt__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
+.anfahrt__lede{margin-top:1.1rem;max-width:44ch;color:var(--ink-70);line-height:1.6}
+.anfahrt__routes{margin-top:2rem;display:grid;gap:1.25rem}
+.anfahrt__route{padding:1.5rem;background:var(--card);border-radius:var(--r-lg)}
+.anfahrt__route h3{font-size:1rem;font-weight:600;margin-bottom:.6em}
+.anfahrt__route p{color:var(--ink-70);line-height:1.6}
+.anfahrt__map{border-radius:var(--r-lg);overflow:hidden;box-shadow:0 1.5rem 3rem -1.5rem rgba(58,32,17,.45)}
+.anfahrt__map img{display:block;width:100%;height:auto}
+.anfahrt__addr{margin-top:1.5rem;display:grid;gap:1rem}
+.anfahrt__addr-item{
+  padding:1.25rem 1.5rem;background:var(--card);border-radius:var(--r-lg);
+  display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;
+}
+.anfahrt__addr-item h3{font-size:.9375rem;font-weight:600}
+.anfahrt__addr-item p{color:var(--ink-70);font-size:.875rem;margin-top:.2em}
+
+@media (max-width:900px){
+  .anfahrt__inner{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ── Sonderwünsche ─────────────────────────────────────────────────────
+   Nestler-Variante der modernbakery.com-Startseite: dort satte Gelbfläche
+   mit feinem Blattadern-Muster, Pill/Headline/Absatz/Buttons links, rechts
+   eine gestapelte Wortliste, bei der ein Wort mittig fett/voll deckend
+   hervorsticht und die Nachbarn nach außen zunehmend blasser werden. Hier
+   in Nestler-Rot statt Gelb, das Muster ist ein Weizenähren-Diagonalraster
+   statt Blattadern (zum Bäckerei-Kontext passender), die Wortliste rotiert
+   per main.js statt einer festen Aufzählung wie im Vorbild. Gleiches
+   „farbige Vollfläche"-Prinzip wie bei .story: die .section-Basisklasse
+   liefert die gerundeten Ecken, hier wird nur Hintergrund/Textfarbe
+   überschrieben – daher auch data-nav-theme="dark" wie bei .story. */
+/* Eingebettet wie .oeff-wrap/.oeff__card: die äußere .section bleibt
+   creme und Teil des Kachelstapels (daher hier nur noch Innenabstand,
+   keine eigene Hintergrundfarbe mehr), das Rot liegt als eigene Karte
+   (.sw__card) mit sichtbarem Cremerand darin und ist selbst auf allen
+   vier Seiten gerundet – randlos volle Breite wirkte zwischen den
+   cremefarbenen Nachbarsektionen wie ein loser Farbklotz. */
+.sonderwuensche{
+  padding:clamp(1.25rem, 3vw, 2.5rem);
+}
+.sw__card{
+  position:relative;
+  border-radius:var(--r-lg);
+  padding-block:clamp(3rem,7vw,6rem);
+  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
+  /* Blattmuster statt der ersten Diagonalstrich-Fassung – ein einzelnes
+     Blatt (Umriss + Mittelader) pro Kachel, tonintern kaum sichtbar,
+     dieselbe Idee wie das Adernmuster im Vorbild, nur in Nestler-Rot. */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.11)' stroke-width='1.5'%3E%3Cpath d='M36 12 C48 24 48 48 36 62 C24 48 24 24 36 12 Z'/%3E%3Cpath d='M36 15 L36 59'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color:var(--light);
+}
+.sw__inner{
+  max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  align-items:center;gap:clamp(2rem,5vw,4rem);
+}
+.sw__intro{max-width:34rem}
+.pill--light{border-color:rgba(246,239,226,.55);color:var(--light)}
+.sw__title{
+  margin-top:1.1rem;
+  font-size:var(--fs-h2);font-weight:700;line-height:1;letter-spacing:-.025em;
+  text-shadow:0 .05em .9em rgba(20,8,4,.35);
+}
+.sw__lede{
+  margin-top:1.1rem;max-width:42ch;
+  color:rgba(246,239,226,.82);line-height:1.6;
+}
+.sw__actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.75rem}
+/* Kundenwunsch: Buttons im Stil vom Rest der Seite – die anfängliche
+   Pillenform (wie im Vorbild-Hero: weiße Pille "Become a partner" +
+   dunkle Pille "Explore our Solutions") wieder entfernt, .btn liefert
+   jetzt auch hier ganz normal die sonst überall genutzte, leichter
+   gerundete Form (var(--r)). Wichtig bleibt: .btn--accent (Rot) würde
+   auf dem selbst roten Sektionsgrund kaum noch zu erkennen sein – daher
+   weiterhin hell/dunkel statt Rot. */
+.btn--light{background:var(--light);color:var(--ink)}
+.btn--light:hover{background:#fff}
+.btn--dark{background:var(--deep);color:var(--light)}
+.btn--dark:hover{background:#2A160B}
+
+/* ── Wortliste: durchlaufendes Band, REIN IN CSS ─────────────────────────
+   Kompletter Neuaufbau. Alle vorherigen JS-Varianten (Scroll-gekoppelte
+   Maske, getakteter Rotator per setInterval, Sichtbarkeits-Gating) sind
+   ersatzlos gelöscht – sie waren die Quelle sämtlicher Fehler: startete
+   nicht, stockte, lief ungleichmäßig. Ursache jeweils dieselbe Klasse von
+   Problem: JS-Timer + erzwungene Layout-Reads konkurrieren mit dem
+   seiteneigenen Smooth-Scroll auf dem Hauptthread.
+
+   Jetzt: EINE CSS-Keyframe-Animation, sonst nichts.
+   - Läuft auf dem Compositor, unabhängig vom Hauptthread → kann durch
+     Scrollen/Layout nicht ins Stocken geraten.
+   - Startet automatisch mit dem Laden, ohne Trigger, ohne Scroll-Bedingung
+     → „startet nicht" ist bauartbedingt ausgeschlossen.
+   - `linear` + konstante Strecke → mathematisch gleichmäßig, es gibt keinen
+     Takt, der verrutschen könnte.
+
+   Aufbau wie beim Vorbild (modernbakery.com, .titles_wrap): festes Fenster
+   mit overflow:hidden und statischer, symmetrischer Ober-/Unterkanten-Maske;
+   darin gleitet die Wortspalte gleichmäßig nach oben. Das mittige Wort steht
+   im voll deckenden Teil der Maske (= im Fokus), die Nachbarn darüber/darunter
+   verblassen zu den Rändern hin.
+
+   Nahtloser Loop: die sieben Begriffe stehen im HTML zweimal (14 <li>). Bei
+   translateY(-50%) liegt die zweite Hälfte pixelgenau dort, wo die erste
+   startete → kein Sprung. WICHTIG dafür: Abstand als `margin-bottom` an jedem
+   <li>, NICHT als `gap` an der Liste – bei `gap` fehlt zwischen den beiden
+   Hälften genau ein halber Abstand und der Loop springt sichtbar. */
+.sw__words{
+  height:clamp(11rem, 22vw, 16rem);   /* zeigt rund vier Begriffe gleichzeitig */
+  overflow:hidden;
+  /* Kundenwunsch "etwas weiter rechts": Block per margin-left im Grid-Feld
+     nach rechts schieben (width:auto einer Block-Box schrumpft dabei von
+     selbst um denselben Betrag, kein Überlauf über die Spalte hinaus). */
+  margin-left:clamp(1rem, 3vw, 2.25rem);
+  /* Kein Textmarkieren beim Ziehen mit der Maus (main.js) – ohne das würde
+     jede Ziehgeste die Wörter wie einen Absatz markieren. cursor:grab/
+     grabbing (Klasse von main.js gesetzt) zeigt zusätzlich an, dass sich
+     hier etwas mit der Maus verschieben lässt. */
+  user-select:none;-webkit-user-select:none;
+  cursor:grab;
+  /* Betonung allein ueber die Deckkraft, KEIN Blur (Vorbild-Screenshot: alle
+     Begriffe sind gestochen scharf, gleiche Farbe/Schriftstaerke – nur die
+     Deckkraft unterscheidet sie). Spitze bei 38% der Fensterhöhe (leicht
+     oberhalb der Mitte, wie im Screenshot), symmetrisch nach oben wie unten
+     ausblendend. Die Maske gehoert auf das feststehende Fenster, nicht auf
+     die wandernde Liste - sonst wanderte der Fokusbereich mit den Woertern
+     mit.
+     Kundenfeedback "Filter ist zu groß, man soll mehr sehen": die Ausblend-
+     zonen waren zu breit/zu dunkel – von den vier gleichzeitig sichtbaren
+     Begriffen war praktisch nur der mittlere wirklich lesbar. Jetzt deutlich
+     angehobene Zwischenwerte (.35/.65 statt .15/.4) und die Transparent-
+     Punkte an den Rand geschoben (0%/96% statt 0%/84%) – mehr vom Fenster
+     zeigt jetzt lesbaren Text, die Betonung des mittleren Worts bleibt über
+     den nach wie vor vollen Kontrast an der Spitze (38%) erhalten. */
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 0%, rgba(0,0,0,.35) 10%, rgba(0,0,0,.65) 22%,
+    #000 38%,
+    rgba(0,0,0,.65) 55%, rgba(0,0,0,.35) 75%, transparent 96%);
+  mask-image:linear-gradient(to bottom,
+    transparent 0%, rgba(0,0,0,.35) 10%, rgba(0,0,0,.65) 22%,
+    #000 38%,
+    rgba(0,0,0,.65) 55%, rgba(0,0,0,.35) 75%, transparent 96%);
+}
+.sw__words.is-dragging{cursor:grabbing}
+.sw__words-list{
+  --sw-dur:10s;                       /* Kundenwunsch "insgesamt langsamer" (vorher 7s) */
+  display:flex;flex-direction:column;
+  text-align:left;
+  /* Explizit statt nur auf Vererbung von .sw__words zu vertrauen. */
+  user-select:none;-webkit-user-select:none;
+  /* Auf eigene Compositor-Ebene heben und dort halten: translate3d statt
+     translateY in den Keyframes, plus will-change/backface-visibility. So
+     laeuft die Bewegung auf der GPU und kann vom Hauptthread (eigener
+     Smooth-Scroll!) nicht mehr ausgebremst werden. */
+  will-change:transform;
+  backface-visibility:hidden;
+  animation:sw-roll var(--sw-dur) linear infinite;
+}
+@keyframes sw-roll{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(0,-50%,0)}
+}
+/* KEINE Hover-Pause und keine sonstige Unterbrechung: das Band soll unter allen
+   Umstaenden durchlaufen (Kundenwunsch "darf gar nicht anhalten, egal was man
+   macht"). Die frueher hier stehende Regel .sw__card:hover -> animation-play-
+   state:paused galt fuer die gesamte rote Karte und hat das Band bei jeder
+   Mausbewegung darueber angehalten - ersatzlos entfernt, nie wieder einbauen. */
+/* Alle Begriffe exakt gleich hoch halten: `white-space:nowrap` plus eine
+   eigene, mit der Breite skalierende Schriftgröße (nicht var(--fs-h2)), damit
+   auch der längste Begriff in der schmalen Spalte einzeilig bleibt (Kunden-
+   wunsch: „Kommunion & Konfirmation" deshalb auf „Konfirmation" gekürzt –
+   der lange Begriff lief bei kleineren Breiten rechts aus der sichtbaren
+   Spalte heraus/wurde vom overflow:hidden auf .sw__words abgeschnitten).
+   Bricht ein Begriff dennoch um, sind die beiden Listenhälften ungleich hoch
+   und der -50%-Loop stimmt nicht mehr. Abstand als margin-bottom (s. oben). */
+.sw__words-list li{
+  margin-bottom:clamp(.55rem,1.5vw,1.1rem);
+  font-size:clamp(1.6rem, 2.9vw, 3rem);font-weight:700;line-height:1.15;
+  letter-spacing:-.02em;white-space:nowrap;
+  color:var(--light);
+}
+
+@media (max-width:900px){
+  .sw__inner{grid-template-columns:minmax(0,1fr);text-align:center}
+  .sw__intro{max-width:none;margin-inline:auto}
+  .sw__lede{margin-inline:auto}
+  .sw__actions{justify-content:center}
+  .sw__words-list{text-align:center}
+  /* Mobil: kein Laufband – die schmale Spalte und die langen deutschen
+     Begriffe wirken in Bewegung unruhig. Stattdessen alle sieben Begriffe
+     offen und statisch: unscharfe Ebene ganz weg, scharfe Ebene zurück in den
+     normalen Fluss, Loop-Kopie ausgeblendet. */
+  .sw__words{height:auto;overflow:visible;-webkit-mask-image:none;mask-image:none;margin-left:0;cursor:auto}
+  .sw__words-list{animation:none}
+  .sw__words-list li{white-space:normal}
+  .sw__dup{display:none}
+}
+/* Reduzierte Bewegung: ebenfalls statisch, alle sieben Begriffe offen. */
+@media (prefers-reduced-motion: reduce){
+  .sw__words{height:auto;overflow:visible;-webkit-mask-image:none;mask-image:none;margin-left:0;cursor:auto}
+  .sw__words-list{animation:none}
+  .sw__words-list li{white-space:normal}
+  .sw__dup{display:none}
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────
+   Kundenwunsch: „fliegender Kasten wie im Vorbild". Erster Versuch dazu
+   hatte den äußeren Rahmen auf dem dunklen Seitengrund (--deep) frei
+   schweben lassen – das wirkte laut Kundenfeedback zu braun/dunkel.
+   Jetzt dasselbe Prinzip wie bei .oeff-wrap/.sw__card (das schon
+   funktioniert hat): der äußere Rahmen (.footer) bleibt creme und Teil
+   des nahtlosen Kachelstapels (daher wieder Radius+negativer margin-top
+   wie bei jeder .section), nur die Karte selbst (.footer__card) sticht
+   jetzt als WEISS statt Creme heraus, auf allen vier Seiten gerundet,
+   mit sichtbarem Cremerand ringsum – näher am Vorbild (weiße Karte),
+   aber ohne den dunklen Seitengrund dahinter durchscheinen zu lassen. */
+.footer{
+  position:relative;z-index:1;
+  margin-top:calc(var(--r-lg) * -1.5);
+  background:var(--cream);
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  padding:clamp(1.25rem, 3vw, 2.5rem);
+}
+.footer__card{
+  position:relative;
+  background:#FFF;
+  border-radius:var(--r-lg);
+  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
+  padding-top:clamp(3rem,6vw,5rem);
+  overflow:hidden;
+}
+.footer__inner{
+  max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
+  display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;
+  gap:clamp(2rem,4vw,3rem);
+  padding-bottom:clamp(2.5rem,5vw,4rem);
+}
+.footer__logo{height:2.75rem;width:auto;margin-bottom:1.1rem}
+.footer__tagline{max-width:28ch;color:var(--ink-70);line-height:1.5;margin-bottom:1.25rem}
+.footer__contact{display:flex;flex-direction:column;gap:.4rem;font-weight:600}
+.footer__contact a{transition:color .2s var(--ease)}
+.footer__contact a:hover{color:var(--accent)}
+.footer__contact p{color:var(--ink-70);font-weight:400;margin-top:.3rem}
+
+.footer__col-title{font-weight:600;margin-bottom:1rem;font-size:.9375rem;letter-spacing:.01em}
+.footer__col ul{display:grid;gap:.65rem}
+.footer__col a{color:var(--ink-70);transition:color .2s var(--ease)}
+.footer__col a:hover{color:var(--accent)}
+
+.footer__hours{display:grid;gap:.55rem}
+.footer__hours div{display:flex;justify-content:space-between;gap:1rem}
+.footer__hours dt{margin:0;color:var(--ink-45);font-weight:500;font-size:.875rem}
+.footer__hours dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;font-size:.875rem;text-align:right}
+
+.footer__bottom{
+  border-top:1px solid var(--ink-25);
+  padding-block:1.5rem;
+  max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+  color:var(--ink-45);font-size:.875rem;
+}
+.footer__bottom a{color:var(--ink-45);transition:color .2s var(--ease)}
+.footer__bottom a:hover{color:var(--accent)}
+
+@media (max-width:900px){
+  .footer__inner{grid-template-columns:repeat(2, minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .footer__inner{grid-template-columns:minmax(0,1fr);gap:2.25rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+  .reveal{opacity:1;transform:none}
+}
