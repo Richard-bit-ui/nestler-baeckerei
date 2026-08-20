@@ -37,6 +37,16 @@
   --fs-word:  clamp(3.5rem, 16vw, 19rem);
 
   --ease: cubic-bezier(.22,.9,.24,1);
+  /* GSAP `power4.inOut` – eine reine Potenzfunktion, keine kubische
+     Bézier-Kurve, daher Punkt für Punkt aus GSAP ausgelesen
+     (`gsap.parseEase("power4.inOut")`, 41 Stützstellen) und als CSS
+     `linear()` nachgebaut statt geschätzt. Die Kurve trägt den
+     site-weiten Scroll-Reveal UND die Pin-Popups der Geising-Karte;
+     sie stand vorher dreimal ausgeschrieben in dieser Datei. */
+  --ease-power4-inout: linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
+    .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
+    .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
+    .9988,.9995,.9998,1,1,1,1);
 
   /* Aus dem Vorbild ausgelesene Zeitkonstanten fürs Mobilmenü */
   --duration-normal: .525s;
@@ -306,10 +316,7 @@ html.js .reveal{
   transform:translate(0,2em);
 }
 html.js .reveal.is-in{
-  animation:rise .8s linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
-    .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
-    .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
-    .9988,.9995,.9998,1,1,1,1) forwards;
+  animation:rise .8s var(--ease-power4-inout) forwards;
 }
 .kontakt__form.reveal{animation-delay:.1s}
 @keyframes rise{to{opacity:1;visibility:visible;transform:none}}
@@ -512,14 +519,21 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   opacity:var(--veil,0);
   transition:opacity .5s var(--ease);
 }
-.tag{
-  position:absolute;
-  top:clamp(.625rem, 1.25vw, 1.5rem);left:clamp(.625rem, 1.25vw, 1.5rem);
+/* Etikett-Pille. Zwei Ausprägungen mit identischem Aussehen: .tag klebt
+   in der Ecke der Deck-Karte, .pill steht normal im Textfluss (Seiten-
+   Überschriften, Footer-Spaltentitel, Live-Status). Die gemeinsamen
+   Werte standen früher in beiden Regeln wortgleich ausgeschrieben. */
+.tag,.pill{
   padding:clamp(.2rem,.417vw,.5rem) clamp(.45rem,.625vw,.75rem);
   border:1px solid var(--ink);border-radius:var(--r-pill);
   font-size:clamp(.8125rem, 1.042vw, 1.25rem);
   font-weight:600;line-height:1.5;letter-spacing:-.01em;
 }
+.tag{
+  position:absolute;
+  top:clamp(.625rem, 1.25vw, 1.5rem);left:clamp(.625rem, 1.25vw, 1.5rem);
+}
+.pill{display:inline-flex;align-items:center}
 
 /* Fächer – Verschiebung, Drehung und Skalierung 1:1 aus dem Vorbild.
    ±3 und 4 sind die unsichtbaren Warteplätze des Ringlaufs. */
@@ -584,16 +598,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .is-swapping .deck__cta{
   animation:cta-blende .4s cubic-bezier(.625,.05,0,1) both,
             cta-steigt 1s cubic-bezier(.16,1,.3,1) both;
-}
-
-/* Statisches Etikett im Stil von .tag (Pille mit Kontur), aber ohne die
-   absolute Positionierung, die dort auf die Deck-Karte zugeschnitten ist. */
-.pill{
-  display:inline-flex;align-items:center;
-  padding:clamp(.2rem,.417vw,.5rem) clamp(.45rem,.625vw,.75rem);
-  border:1px solid var(--ink);border-radius:var(--r-pill);
-  font-size:clamp(.8125rem, 1.042vw, 1.25rem);
-  font-weight:600;line-height:1.5;letter-spacing:-.01em;
 }
 
 /* ── Öffnungszeiten ────────────────────────────────────────────────────
@@ -811,14 +815,8 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
      Interaktions-Popup keinen Sinn) – dafür aber mit derselben sorgfältig
      aus GSAP entnommenen power4.inOut-Kurve wie der Rest der Seite, statt
      des schlichten var(--ease), für dieselbe hochwertige Anmutung. */
-  transition:opacity .4s linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
-      .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
-      .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
-      .9988,.9995,.9998,1,1,1,1),
-    translate .4s linear(0,0,0,0,.0002,.0005,.0012,.0026,.0051,.0092,
-      .0156,.0252,.0389,.058,.084,.1187,.1638,.2219,.2952,.3869,.5,.6131,
-      .7048,.7781,.8362,.8813,.916,.942,.9611,.9748,.9844,.9908,.9949,.9974,
-      .9988,.9995,.9998,1,1,1,1),
+  transition:opacity .4s var(--ease-power4-inout),
+    translate .4s var(--ease-power4-inout),
     visibility .4s,
     transform .25s var(--ease), box-shadow .25s var(--ease);
 }
@@ -1261,23 +1259,36 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    gedacht, um die Kante der VORHERIGEN Sektion zu kaschieren) wird hier
    auf 0 zurueckgesetzt - es gibt ja keine vorherige Sektion. */
 .subpage main>.section:first-of-type{margin-top:0;padding-top:clamp(7rem, 10vw, 9rem)}
-.impressum__inner{max-width:min(var(--wrap), 56rem);margin-inline:auto;padding-inline:var(--pad)}
-.impressum__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
+/* ── Gemeinsames Grundmuster der schlichten Textseiten ────────────────
+   Impressum, Team und Ausbildung benutzen dasselbe Muster: schmale
+   Lesebreite, Pill + Headline, auto-fit-Kartenraster, gedämpfter
+   Fließtext. Das stand früher zweimal wortgleich in dieser Datei
+   (einmal unter den impressum__-Klassen, einmal unter den team__- und
+   ausbildung__-Klassen) und konnte dadurch auseinanderlaufen – jetzt
+   steht es einmal als Selektorliste je Regel,
+   seitenspezifische Ausnahmen stehen weiter unten bei der jeweiligen
+   Seite. Die Klassennamen bleiben bewusst seiteneigen, damit sich eine
+   einzelne Seite jederzeit wieder herauslösen lässt. */
+.impressum__inner,.team__inner,.ausbildung__inner{max-width:min(var(--wrap), 56rem);margin-inline:auto;padding-inline:var(--pad)}
+.impressum__heading,.team__heading,.ausbildung__heading,.anfahrt__heading,.schautorten__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
 .impressum__updated{margin-top:.6rem;margin-bottom:2.5rem;color:var(--ink-45);font-size:.875rem}
 
-/* Fünf knappe Faktenkarten (Anbieter/Kontakt/Berufsangaben/USt-ID/
-   Verantwortlicher) statt vorher zwei textlastiger Blöcke – auto-fit
-   statt fester Spaltenzahl, damit es bei 5 Karten nicht zwangsläufig
-   eine unschön überhängende letzte Zeile gibt, sondern sich frei auf
-   2–3 Spalten verteilt, je nach verfügbarer Breite. */
-.impressum__grid{
+/* Knappe Faktenkarten (Impressum: Anbieter/Kontakt/Berufsangaben/USt-ID/
+   Verantwortlicher, Team: Backstube/Verkauf, Ausbildung: die zwei Berufe)
+   – auto-fit statt fester Spaltenzahl, damit es bei ungeraden Anzahlen
+   nicht zwangsläufig eine unschön überhängende letzte Zeile gibt,
+   sondern sich frei auf 2–3 Spalten verteilt, je nach Breite. */
+.impressum__grid,.team__grid,.ausbildung__grid{
   display:grid;grid-template-columns:repeat(auto-fit, minmax(14rem,1fr));
   gap:clamp(1.75rem,3vw,2.75rem);
 }
-.impressum__block h3{font-size:1rem;font-weight:600;margin-bottom:.75em}
-.impressum__block p{color:var(--ink-70);line-height:1.6}
-.impressum__block p + p{margin-top:1em}
-.impressum__block a{text-decoration:underline;text-underline-offset:.15em}
+.team__grid,.ausbildung__grid{margin-top:clamp(2.5rem,5vw,3.5rem)}
+.impressum__block h3,.team__block h3,.ausbildung__block h3{font-size:1rem;font-weight:600;margin-bottom:.75em}
+.impressum__block p,.team__block p,.ausbildung__block p{color:var(--ink-70);line-height:1.6}
+.impressum__block p + p,.ausbildung__block p + p{margin-top:1em}
+/* Alle Fließtext-Links dieser Seiten unterstrichen – eine Regel statt
+   vier gleichlautender. */
+.impressum__block a,.impressum__legal-item a,.ausbildung__block a,.cta-box p a{text-decoration:underline;text-underline-offset:.15em}
 
 /* Rechtstexte (Streitschlichtung/Haftung Inhalte/Haftung Links/
    Urheberrecht) – bewusst durchgehend sichtbar statt wie zuvor in einem
@@ -1291,57 +1302,51 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 }
 .impressum__legal-item h3{font-size:1rem;font-weight:600;margin-bottom:.6em}
 .impressum__legal-item p{color:var(--ink-70);font-size:.9375rem;line-height:1.65}
-.impressum__legal-item a{text-decoration:underline;text-underline-offset:.15em}
 
+/* Schmale Bildschirme: die Kartenraster aller drei Textseiten einspaltig
+   (vorher zwei getrennte, gleichlautende 700px-Blöcke an verschiedenen
+   Stellen der Datei). Die Hinweis-Karte hat ihre eigene 700px-Regel
+   direkt bei der Komponente – sie MUSS nach deren Basisregel stehen,
+   sonst gewinnt bei gleicher Spezifität die spätere Basisregel. */
 @media (max-width:700px){
-  .impressum__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
+  .impressum__grid,.team__grid,.ausbildung__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
 }
 
 /* ── Team / Ausbildung / Schautorten / Anfahrt ────────────────────────
    Vier neue eigenständige Unterseiten (Stand 20.08.2026, Inhalte von der
    Altsite übernommen: Teamliste, Ausbildungsberufe, Tortenfotos, Anfahrts-
    beschreibung). Nutzen dieselbe schlichte Text-Seiten-Mechanik wie
-   Impressum (.subpage main>.section:first-of-type gibt den Abstand unter
-   der Nav, keine eigene Kartenfläche) – neue, seiteneigene Klassen statt
-   Wiederverwendung von .impressum__*, damit jede Seite unabhängig
-   angepasst werden kann, aber optisch identisches Grundmuster (schmale
-   Lesebreite, Pill+Headline, auto-fit-Kartenraster). */
-.team__inner,.ausbildung__inner{max-width:min(var(--wrap), 56rem);margin-inline:auto;padding-inline:var(--pad)}
-.team__heading,.ausbildung__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
+   Impressum: .subpage main>.section:first-of-type gibt den Abstand unter
+   der Nav, keine eigene Kartenfläche. Das gemeinsame Grundmuster (Innen-
+   breite, Headline, Kartenraster, Fließtext) steht weiter oben im
+   Abschnitt „Textseiten"; hier nur noch, was diese Seiten wirklich
+   voneinander unterscheidet. */
 .team__lede{margin-top:1.25rem;max-width:46ch;color:var(--ink-70);font-style:italic;line-height:1.6}
 .team__lede cite{display:block;margin-top:.6em;font-style:normal;font-size:.875rem;color:var(--ink-45)}
+.team__block ul{color:var(--ink-70);line-height:1.9}
 .ausbildung__lede{margin-top:1.1rem;max-width:52ch;color:var(--ink-70);line-height:1.6}
 
-.team__grid,.ausbildung__grid{
-  margin-top:clamp(2.5rem,5vw,3.5rem);
-  display:grid;grid-template-columns:repeat(auto-fit, minmax(14rem,1fr));
-  gap:clamp(1.75rem,3vw,2.75rem);
-}
-.team__block h3,.ausbildung__block h3{font-size:1rem;font-weight:600;margin-bottom:.75em}
-.team__block p,.ausbildung__block p{color:var(--ink-70);line-height:1.6}
-.team__block ul{color:var(--ink-70);line-height:1.9}
-.ausbildung__block p+p{margin-top:1em}
-.ausbildung__block a{text-decoration:underline;text-underline-offset:.15em}
-
-/* Bewerbungs-/Rekrutierungs-Hinweis: dieselbe eingebettete Karte wie
-   Öffnungszeiten/Sonderwünsche, hier aber ruhig in Kartenfarbe (--card)
-   statt in Akzentrot – ein Hinweis, kein weiterer Vollflächen-CTA. */
-.cta-box,.ausbildung__apply{
+/* Hinweis-Karte am Seitenfuß (Team: „Wir suchen Verstärkung", Ausbildung:
+   „So bewirbst du dich"): dieselbe eingebettete Karte wie Öffnungszeiten/
+   Sonderwünsche, hier aber ruhig in Kartenfarbe (--card) statt in
+   Akzentrot – ein Hinweis, kein weiterer Vollflächen-CTA. Vorher zweimal
+   identisch gepflegt (.cta-box und .ausbildung__apply), jetzt eine
+   Komponente; beide Seiten benutzen .cta-box. */
+.cta-box{
   margin-top:clamp(2.5rem,5vw,4rem);
   padding:clamp(1.5rem,3vw,2.25rem);
   background:var(--card);
   border-radius:var(--r-lg);
   display:flex;flex-wrap:wrap;gap:1.5rem 2rem;align-items:center;justify-content:space-between;
 }
-.cta-box p,.ausbildung__apply p{color:var(--ink-70);line-height:1.5}
-.cta-box h3,.ausbildung__apply h3{font-size:1.0625rem;font-weight:600;margin-bottom:.35em}
-.ausbildung__apply ul{margin-top:.85em;color:var(--ink-70);line-height:1.7}
-.ausbildung__apply p a{text-decoration:underline;text-underline-offset:.15em}
-.ausbildung__apply-actions{display:flex;flex-wrap:wrap;gap:.75rem;flex:none}
+.cta-box h3{font-size:1.0625rem;font-weight:600;margin-bottom:.35em}
+.cta-box p{color:var(--ink-70);line-height:1.5}
+.cta-box ul{margin-top:.85em;color:var(--ink-70);line-height:1.7}
+.cta-box__actions{display:flex;flex-wrap:wrap;gap:.75rem;flex:none}
 
+/* Schmal: Text und Button untereinander, linksbündig. */
 @media (max-width:700px){
-  .team__grid,.ausbildung__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
-  .cta-box,.ausbildung__apply{flex-direction:column;align-items:flex-start}
+  .cta-box{flex-direction:column;align-items:flex-start}
 }
 
 /* ── Schautorten ───────────────────────────────────────────────────────
@@ -1418,7 +1423,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
   padding-bottom:clamp(1.5rem,3vw,2.5rem);
 }
-.schautorten__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
 .schautorten__lede{margin-top:1.1rem;max-width:56ch;color:rgba(246,239,226,.72);line-height:1.6}
 
 /* ── Der Browser ────────────────────────────────────────────────────── */
@@ -1663,15 +1667,17 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   content:"";position:absolute;inset:0;
   background:linear-gradient(to top, rgba(58,32,17,.78) 0%, rgba(58,32,17,.32) 38%, transparent 62%);
 }
+/* Etiketten der Rasterkarten. Standen vorher je zweimal in der Datei
+   (.stgrid__label und .stgrid__label.is-primary), wobei die zweite
+   Fassung die erste vollständig überschrieben hat – hier auf genau die
+   Werte zusammengezogen, die vorher auch wirklich gegriffen haben. */
 .stgrid__labels,.stgrid__title{color:var(--light)}
-.stgrid__label{border-color:rgba(246,239,226,.6)}
-.stgrid__label.is-primary{background:var(--light);border-color:transparent;color:var(--ink)}
 .stgrid__labels{position:relative;z-index:1;display:flex;flex-flow:wrap;gap:.5em}
 .stgrid__label{
   border:1px solid var(--ink);border-radius:50vw;padding:.4em .6em;
   font-size:1.25em;font-weight:600;line-height:1;
 }
-.stgrid__label.is-primary{background:var(--cream);border-color:transparent}
+.stgrid__label.is-primary{background:var(--cream);border-color:transparent;color:var(--ink)}
 .stgrid__title{position:relative;z-index:1;margin-top:auto;font-size:2em;font-weight:500;line-height:1.15}
 
 /* Gestaffeltes Einblenden beim Umschalten – Vorbild: .cms_list-item,
@@ -1763,7 +1769,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   gap:clamp(2.5rem,5vw,4rem);align-items:start;
 }
-.anfahrt__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
 .anfahrt__lede{margin-top:1.1rem;max-width:44ch;color:var(--ink-70);line-height:1.6}
 .anfahrt__routes{margin-top:2rem;display:grid;gap:1.25rem}
 .anfahrt__route{padding:1.5rem;background:var(--card);border-radius:var(--r-lg)}
@@ -1953,17 +1958,15 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   .sw__lede{margin-inline:auto}
   .sw__actions{justify-content:center}
   .sw__words-list{text-align:center}
-  /* Mobil: kein Laufband – die schmale Spalte und die langen deutschen
-     Begriffe wirken in Bewegung unruhig. Stattdessen alle sieben Begriffe
-     offen und statisch: unscharfe Ebene ganz weg, scharfe Ebene zurück in den
-     normalen Fluss, Loop-Kopie ausgeblendet. */
-  .sw__words{height:auto;overflow:visible;-webkit-mask-image:none;mask-image:none;margin-left:0;cursor:auto}
-  .sw__words-list{animation:none}
-  .sw__words-list li{white-space:normal}
-  .sw__dup{display:none}
 }
-/* Reduzierte Bewegung: ebenfalls statisch, alle sieben Begriffe offen. */
-@media (prefers-reduced-motion: reduce){
+/* Statischer Fallback für das Wortband – kein Laufband, alle sieben
+   Begriffe offen und ruhig: Maske weg, Liste zurück in den normalen
+   Fluss, Loop-Kopie ausgeblendet. Gilt auf schmalen Bildschirmen (die
+   schmale Spalte und die langen deutschen Begriffe wirken in Bewegung
+   unruhig) UND bei reduzierter Bewegung. Beide Bedingungen in EINER
+   Query, damit die Regeln nicht doppelt gepflegt werden müssen – wie
+   schon beim statischen Zustand der Schautorten-Sektion. */
+@media (max-width:900px), (prefers-reduced-motion: reduce){
   .sw__words{height:auto;overflow:visible;-webkit-mask-image:none;mask-image:none;margin-left:0;cursor:auto}
   .sw__words-list{animation:none}
   .sw__words-list li{white-space:normal}

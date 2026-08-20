@@ -11,6 +11,55 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ── Kleine Helfer ────────────────────────────────────────────────────
+     Drei Muster wiederholten sich vorher fast wörtlich über die ganze
+     Datei verteilt: eine NodeList in ein echtes Array wandeln, einen
+     Scroll-/Resize-Handler auf einen rAF-Takt drosseln, und prüfen, ob
+     ein Element weit genug im Bild ist. Jeweils einmal hier, statt fünf-
+     bis achtmal in den einzelnen Blöcken. Bewusst schlanke Funktionen
+     ohne eigene Abstraktionsebene – sie ersetzen genau den Code, der
+     vorher kopiert dastand, und nichts darüber hinaus.                  */
+
+  /* NodeList → Array (die Seite läuft ohne Build-Schritt, daher ES5). */
+  function alleEl(sel, wurzel) {
+    return Array.prototype.slice.call((wurzel || document).querySelectorAll(sel));
+  }
+
+  /* Gibt eine Fassung von fn zurück, die höchstens einmal pro Bild läuft,
+     egal wie oft das Ereignis feuert. */
+  function gedrosselt(fn) {
+    var wartet = false;
+    return function () {
+      if (wartet) return;
+      wartet = true;
+      window.requestAnimationFrame(function () { wartet = false; fn(); });
+    };
+  }
+
+  /* Meldet fn (gedrosselt) für Scrollen und Größenänderung an und gibt
+     eine Funktion zurück, die beides wieder abmeldet – die Blöcke, die
+     nur einmal auslösen sollen, hängen sich damit selbst wieder aus. */
+  function beiScrollUndResize(fn) {
+    var handler = gedrosselt(fn);
+    window.addEventListener('scroll', handler, { passive: true });
+    window.addEventListener('resize', handler, { passive: true });
+    return function () {
+      window.removeEventListener('scroll', handler);
+      window.removeEventListener('resize', handler);
+    };
+  }
+
+  /* Ein Element gilt als "sichtbar genug", sobald sein oberer Rand die
+     untere Viewport-Kante von unten erreicht (92 %) UND sein unterer Rand
+     nicht schon oberhalb des Viewports liegt (Rückwärts-Scrollen vor dem
+     ersten Einblenden). Bewusst keine Konstruktion, die vor dem
+     tatsächlichen Erreichen schon auslöst. */
+  function imBild(el) {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var r = el.getBoundingClientRect();
+    return r.top < vh * 0.92 && r.bottom > 0;
+  }
+
   /* ── Sanftes Scrollen ────────────────────────────────────────────────
      Das Mausrad setzt ein Ziel, die Seite zieht mit fester Rate nach.
      Touch, Tastatur und Scrollbalken bleiben unangetastet.              */
@@ -111,15 +160,15 @@
      Blendet beim Runterscrollen aus, beim Hochscrollen wieder ein.
      Schrift- und Pillenfarbe folgen der Sektion unter der Leiste.       */
   var nav = document.getElementById('nav');
-  var themed = Array.prototype.slice.call(document.querySelectorAll('[data-nav-theme]'));
+  var themed = alleEl('[data-nav-theme]');
+  var mobilmenue = document.getElementById('mobilmenue');
   var lastY = window.scrollY;
-  var ticking = false;
   var pinnedUntil = 0;
   var loadedAt = Date.now();
 
   function navPinned() {
     return Date.now() < pinnedUntil ||
-           document.getElementById('mobilmenue').hasAttribute('data-open') ||
+           mobilmenue.hasAttribute('data-open') ||
            document.querySelector('.nav__link--menu[aria-expanded="true"]') !== null;
   }
 
@@ -159,21 +208,14 @@
 
     lastY = y;
     updateTheme();
-    ticking = false;
   }
 
   updateNav();
-  window.addEventListener('scroll', function () {
-    if (ticking) return;
-    ticking = true;
-    window.requestAnimationFrame(updateNav);
-  }, { passive: true });
+  window.addEventListener('scroll', gedrosselt(updateNav), { passive: true });
   window.addEventListener('resize', updateTheme, { passive: true });
 
   /* ── Dropdowns ───────────────────────────────────────────────────── */
-  var menuButtons = Array.prototype.slice.call(
-    document.querySelectorAll('.nav__link--menu')
-  );
+  var menuButtons = alleEl('.nav__link--menu');
 
   function closeMenus(except) {
     menuButtons.forEach(function (btn) {
@@ -238,7 +280,6 @@
 
   /* ── Mobilmenü ───────────────────────────────────────────────────── */
   var burger = document.querySelector('.burger');
-  var mobile = document.getElementById('mobilmenue');
 
   function toggleMobile(open) {
     burger.setAttribute('aria-expanded', String(open));
@@ -250,9 +291,9 @@
        die eigentliche Animation übernimmt vollständig das CSS. */
     if (open) {
       nav.dataset.theme = 'light';
-      mobile.setAttribute('data-open', '');
+      mobilmenue.setAttribute('data-open', '');
     } else {
-      mobile.removeAttribute('data-open');
+      mobilmenue.removeAttribute('data-open');
       updateTheme();
     }
   }
@@ -260,7 +301,7 @@
   burger.addEventListener('click', function () {
     toggleMobile(burger.getAttribute('aria-expanded') !== 'true');
   });
-  mobile.addEventListener('click', function (e) {
+  mobilmenue.addEventListener('click', function (e) {
     if (e.target.closest('a')) toggleMobile(false);
   });
 
@@ -273,7 +314,7 @@
      (kein Feiertagskalender eingebunden) – der Hinweis dazu bleibt als
      reiner Text in der Stundenliste stehen, siehe Kommentar im HTML.    */
   (function () {
-    var orte = Array.prototype.slice.call(document.querySelectorAll('[data-hours]'));
+    var orte = alleEl('[data-hours]');
     if (!orte.length) return;
 
     var berlin = new Intl.DateTimeFormat('en-GB', {
@@ -341,52 +382,40 @@
      sie soll immer sofort sichtbar sein, nur die Popups verzögert und
      leicht nacheinander aufploppen ("extra revelt", eigenes Timing). */
   (function () {
-    var marker = Array.prototype.slice.call(document.querySelectorAll('.geismap__marker'));
+    var marker = alleEl('.geismap__marker');
     if (!marker.length) return;
+
+    function markerOeffnen() {
+      marker.forEach(function (m, i) {
+        window.setTimeout(function () {
+          m.classList.add('is-open');
+          var pin = m.querySelector('.geismap__pin');
+          if (pin) pin.setAttribute('aria-expanded', 'true');
+        }, reduceMotion ? 0 : i * 150);
+      });
+    }
 
     var istDesktop = window.matchMedia('(min-width: 641px)').matches;
 
     if (istDesktop) {
-      function markerOeffnen() {
-        marker.forEach(function (m, i) {
-          window.setTimeout(function () {
-            m.classList.add('is-open');
-            var pin = m.querySelector('.geismap__pin');
-            if (pin) pin.setAttribute('aria-expanded', 'true');
-          }, reduceMotion ? 0 : i * 150);
-        });
-      }
-
       if (reduceMotion) {
         markerOeffnen();
         return;
       }
 
       var karte = document.querySelector('.geismap') || marker[0].parentElement;
+      var abmelden = null;
       var geoeffnet = false;
 
       function pruefen() {
-        var vh = window.innerHeight || document.documentElement.clientHeight;
-        var schwelle = vh * 0.92;
-        var r = karte.getBoundingClientRect();
-        if (r.top >= schwelle || r.bottom <= 0) return; // noch nicht dran
+        if (!imBild(karte)) return; // noch nicht dran
         geoeffnet = true;
         markerOeffnen();
-        window.removeEventListener('scroll', angefragt);
-        window.removeEventListener('resize', angefragt);
-      }
-      var ticking = false;
-      function angefragt() {
-        if (ticking) return;
-        ticking = true;
-        window.requestAnimationFrame(function () { ticking = false; pruefen(); });
+        if (abmelden) abmelden();
       }
 
       pruefen(); // Anfangszustand – falls die Karte schon im Bild ist
-      if (!geoeffnet) {
-        window.addEventListener('scroll', angefragt, { passive: true });
-        window.addEventListener('resize', angefragt, { passive: true });
-      }
+      if (!geoeffnet) abmelden = beiScrollUndResize(pruefen);
       return; /* auf dem Desktop bleibt es danach dabei, kein Klick-Handler nötig */
     }
 
@@ -442,7 +471,7 @@
       spacer = hz.querySelector('.storyhz__spacer');
       track = hz.querySelector('[data-storyhz-track]');
       line = hz.querySelector('[data-storyhz-line]');
-      items = Array.prototype.slice.call(hz.querySelectorAll('[data-storyhz-item]'));
+      items = alleEl('[data-storyhz-item]', hz);
 
       var messen = function () {
         var breite = track.scrollWidth;
@@ -477,19 +506,8 @@
       });
     }
 
-    function tick() {
-      updateHz();
-      ticking = false;
-    }
-    var ticking = false;
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(tick);
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    tick();
+    beiScrollUndResize(updateHz);
+    updateHz();
   })();
 
   /* ── Footer: aktuelles Jahr ────────────────────────────────────────── */
@@ -697,10 +715,6 @@
   })();
 
   /* ── Ladeanimation / Scroll-Reveal ────────────────────────────────────
-     WICHTIG: dieser Block MUSS vor dem "if (!deck) return;" weiter unten
-     stehen – das ist ein Return aus der äußeren IIFE (nicht aus einer
-     eigenen Funktion), auf Seiten ohne Spezialitäten-Karussell (historie/
-     kontakt/impressum) würde sonst jeder nachfolgende Code nie erreicht.
      .reveal-Elemente (siehe styles.css) starten unsichtbar/leicht versetzt
      und blenden per .is-in-Klasse sanft ein, sobald sie tatsächlich im
      sichtbaren Bereich sind – dadurch "laden" Inhalte ein, während man zu
@@ -720,43 +734,27 @@
      Zeit korrekt; das Sicherheitsnetz wurde entfernt, damit .reveal-
      Elemente wirklich erst beim tatsächlichen Erreichen einblenden. */
   (function () {
-    var pending = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    var pending = alleEl('.reveal');
     if (!pending.length) return;
     if (reduceMotion) {
       pending.forEach(function (el) { el.classList.add('is-in'); });
       return;
     }
 
+    var abmelden = null;
+
     function pruefen() {
-      var vh = window.innerHeight || document.documentElement.clientHeight;
-      // Ein Element gilt als "sichtbar genug", sobald sein oberer Rand die
-      // untere Viewport-Kante von unten erreicht (92%) UND sein unterer
-      // Rand nicht schon oberhalb des Viewports liegt (Rückwärts-Scrollen
-      // vor dem ersten Einblenden). Bewusst keine Konstruktion, die vor dem
-      // tatsächlichen Erreichen schon auslöst.
-      var schwelle = vh * 0.92;
       pending = pending.filter(function (el) {
-        var r = el.getBoundingClientRect();
-        if (r.top >= schwelle || r.bottom <= 0) return true; // noch nicht dran
+        if (!imBild(el)) return true;      // noch nicht dran
         el.classList.add('is-in');
         return false;
       });
-      if (!pending.length) {
-        window.removeEventListener('scroll', angefragt);
-        window.removeEventListener('resize', angefragt);
-      }
-    }
-    var ticking = false;
-    function angefragt() {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(function () { ticking = false; pruefen(); });
+      if (!pending.length && abmelden) abmelden();
     }
 
     function start() {
       pruefen(); // Anfangszustand – zeigt sofort, was schon im Bild ist (Hero)
-      window.addEventListener('scroll', angefragt, { passive: true });
-      window.addEventListener('resize', angefragt, { passive: true });
+      if (pending.length) abmelden = beiScrollUndResize(pruefen);
     }
     // WICHTIG (Ursache des eigentlichen Bugs): erst starten, wenn die
     // Web-Font geladen ist. Vorher rendert der Browser mit einer Fallback-
@@ -822,13 +820,10 @@
     var stcat = document.querySelector('[data-stcat]');
     if (!stcat) return;
 
-    function alle(sel) {
-      return Array.prototype.slice.call(stcat.querySelectorAll(sel));
-    }
-
-    var navs   = alle('[data-stcat-nav]');
-    var subs   = alle('.stcat__sub-item');
-    var slides = alle('.stcat__scroll-item');
+    var navs   = alleEl('[data-stcat-nav]', stcat);
+    var subs   = alleEl('.stcat__sub-item', stcat);
+    var slides = alleEl('.stcat__scroll-item', stcat);
+    var ansichtBtns = alleEl('[data-stcat-view]', stcat);
     var scrollSpalte = stcat.querySelector('.stcat__scroll');
     var aktuellEl = stcat.querySelector('[data-stcat-current]');
     var gesamtEl  = stcat.querySelector('[data-stcat-total]');
@@ -854,11 +849,11 @@
     }
 
     /* ── Listen-/Rasteransicht ── */
-    Array.prototype.forEach.call(stcat.querySelectorAll('[data-stcat-view]'), function (btn) {
+    ansichtBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
         var ziel = btn.getAttribute('data-stcat-view');
         stcat.setAttribute('data-view', ziel);
-        Array.prototype.forEach.call(stcat.querySelectorAll('[data-stcat-view]'), function (b) {
+        ansichtBtns.forEach(function (b) {
           b.setAttribute('aria-pressed', b.getAttribute('data-stcat-view') === ziel ? 'true' : 'false');
         });
         if (ziel === 'grid') {
@@ -901,7 +896,7 @@
     navs.forEach(function (btn, n) {
       btn.addEventListener('click', function () { springen(n); });
     });
-    Array.prototype.forEach.call(stcat.querySelectorAll('[data-stcat-dir]'), function (btn) {
+    alleEl('[data-stcat-dir]', stcat).forEach(function (btn) {
       btn.addEventListener('click', function () {
         springen(index + parseInt(btn.getAttribute('data-stcat-dir'), 10));
       });
@@ -946,15 +941,7 @@
       einrastTimer = window.setTimeout(einrasten, 90);
     }
 
-    var wartet = false;
-    function angefragt() {
-      if (wartet) return;
-      wartet = true;
-      window.requestAnimationFrame(function () { wartet = false; pruefen(); });
-    }
-
-    window.addEventListener('scroll', angefragt, { passive: true });
-    window.addEventListener('resize', angefragt, { passive: true });
+    beiScrollUndResize(pruefen);
 
     /* ── Wischen (nur im statischen Zustand) ──────────────────────────
        Übernommen aus dem Original-Skript samt dessen Schwelle (25px) und
@@ -1000,12 +987,19 @@
     if (!istStatisch()) pruefen();
   })();
 
-  /* ── Spezialitäten-Karussell ─────────────────────────────────────── */
+  /* ── Spezialitäten-Karussell ───────────────────────────────────────
+     Wie jeder andere Abschnitt in eine eigene IIFE gefasst. Vorher lief
+     dieser Block auf oberster Ebene und stieg mit „if (!deck) return;"
+     aus der ÄUSSEREN Funktion aus – auf jeder Seite ohne Karussell war
+     damit alles, was danach kam, unerreichbar. Der Block musste deshalb
+     zwingend als letzter stehen; diese stille Reihenfolge-Abhängigkeit
+     ist mit der eigenen Kapselung weg.                                  */
+  (function () {
   var deck = document.querySelector('[data-deck]');
   if (!deck) return;
 
   var section = document.getElementById('spezialitaeten');
-  var originals = Array.prototype.slice.call(deck.querySelectorAll('[data-card]'));
+  var originals = alleEl('[data-card]', deck);
   var unique = originals.length;
 
   /* Für den Ringlauf brauchen wir genug Karten, um alle Plätze von -3 bis +4
@@ -1015,14 +1009,12 @@
     var copies = Math.ceil(SLOTS / unique);
     for (var c = 1; c < copies; c++) {
       originals.forEach(function (card) {
-        var clone = card.cloneNode(true);
-        clone.setAttribute('data-clone', '');
-        deck.appendChild(clone);
+        deck.appendChild(card.cloneNode(true));
       });
     }
   }
 
-  var cards = Array.prototype.slice.call(deck.querySelectorAll('[data-card]'));
+  var cards = alleEl('[data-card]', deck);
   var total = cards.length;
   var half = Math.floor(total / 2);
 
@@ -1033,7 +1025,7 @@
     index: section.querySelector('[data-slot="index"]'),
     total: section.querySelector('[data-slot="total"]')
   };
-  var arrows = Array.prototype.slice.call(section.querySelectorAll('.arrow'));
+  var arrows = alleEl('.arrow', section);
   var active = 0;
 
   /* Bilder erst einblenden, wenn sie geladen sind */
@@ -1219,4 +1211,5 @@
 
   slots.total.textContent = pad(unique);
   render(false);
+  })();
 })();
