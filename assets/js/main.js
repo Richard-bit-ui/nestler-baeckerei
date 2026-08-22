@@ -1102,6 +1102,7 @@
     if (!delta) return;
     active = ((active + delta) % total + total) % total;
     render(true);
+    restartAuto();
   }
 
   /* Auf eine bestimmte Karte – immer über den kürzeren Weg */
@@ -1161,6 +1162,7 @@
   deck.addEventListener('pointerdown', function (e) {
     if (e.button !== undefined && e.button !== 0) return;
     drag = { x: e.clientX, y: e.clientY, id: e.pointerId, dx: 0, achse: null };
+    stopAuto();
     if (deck.setPointerCapture) {
       try { deck.setPointerCapture(e.pointerId); } catch (err) { /* egal */ }
     }
@@ -1199,7 +1201,9 @@
 
     if (Math.abs(dx) / buehne() > SCHWELLE) {
       draggedAt = Date.now();
-      step(dx < 0 ? 1 : -1);
+      step(dx < 0 ? 1 : -1);       /* ruft restartAuto() bereits mit auf */
+    } else {
+      restartAuto();
     }
   }
   deck.addEventListener('pointerup', dragEnde);
@@ -1209,7 +1213,39 @@
   /* Bild-Ziehen des Browsers unterbinden */
   deck.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
+  /* ── Automatischer Weiterlauf ──────────────────────────────────────
+     Der Fächer dreht sich von allein weiter, solange niemand damit
+     interagiert. Pausiert bei Hover/Tastaturfokus/Ziehen und respektiert
+     „reduzierte Bewegung". setInterval genügt hier (anders als beim
+     Sonderwünsche-Textband) – es wird nur alle paar Sekunden EINMAL
+     `step()` aufgerufen, keine Dauerbewegung pro Frame, die mit dem
+     eigenen Smooth-Scroll um den Hauptthread konkurrieren könnte.       */
+  var AUTO_MS = 4200;
+  var autoTimer = null;
+  var hoverPause = false;
+  var focusPause = false;
+
+  function autoErlaubt() {
+    return !reduceMotion && !hoverPause && !focusPause && !drag;
+  }
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  }
+  function startAuto() {
+    stopAuto();
+    if (autoErlaubt()) autoTimer = window.setInterval(function () { step(1); }, AUTO_MS);
+  }
+  /* Nach jeder Drehung (ob automatisch oder manuell) den Takt neu starten,
+     damit auf eine manuelle Aktion nicht sofort der nächste Auto-Schritt folgt. */
+  function restartAuto() { startAuto(); }
+
+  deck.addEventListener('pointerenter', function () { hoverPause = true; startAuto(); });
+  deck.addEventListener('pointerleave', function () { hoverPause = false; startAuto(); });
+  deck.addEventListener('focusin', function () { focusPause = true; startAuto(); });
+  deck.addEventListener('focusout', function () { focusPause = false; startAuto(); });
+
   slots.total.textContent = pad(unique);
   render(false);
+  startAuto();
   })();
 })();

@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=58">
+<link rel="stylesheet" href="assets/css/styles.css?v=60">
 <link rel="icon" href="assets/img/logo.png">
 </head>
 <body class="subpage">
@@ -75,15 +75,24 @@
 </header>
 
 <div class="mobilmenu" id="mobilmenue" data-scroll-native>
-  <ul class="mobilmenu__list">
-    <li><a href="index.html#spezialitaeten">Spezialitäten</a></li>
-    <li><a href="historie.html" aria-current="page">Historie</a></li>
-    <li><a href="team.html">Team</a></li>
-    <li><a href="schautorten.html">Schautorten</a></li>
-    <li><a href="index.html#oeffnungszeiten">Öffnungszeiten</a></li>
-    <li><a href="anfahrt.html">So finden Sie uns</a></li>
-    <li><a href="kontakt.html">Kontakt</a></li>
-  </ul>
+  <nav class="mobilmenu__nav" aria-label="Hauptnavigation (mobil)">
+    <ul class="mobilmenu__list">
+      <li><a href="index.html#spezialitaeten">Spezialitäten</a></li>
+      <li><a href="schautorten.html">Schautorten</a></li>
+      <li><a href="kontakt.html">Kontakt</a></li>
+    </ul>
+    <p class="mobilmenu__label">Bäckerei</p>
+    <ul class="mobilmenu__list mobilmenu__list--sub">
+      <li><a href="historie.html" aria-current="page">Historie</a></li>
+      <li><a href="team.html">Team</a></li>
+      <li><a href="ausbildung.html">Ausbildung</a></li>
+    </ul>
+    <p class="mobilmenu__label">Besuch</p>
+    <ul class="mobilmenu__list mobilmenu__list--sub">
+      <li><a href="index.html#oeffnungszeiten">Öffnungszeiten</a></li>
+      <li><a href="anfahrt.html">So finden Sie uns</a></li>
+    </ul>
+  </nav>
   <a class="btn btn--accent mobilmenu__cta" href="tel:+493505622810">
     035056 / 22810
     <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -379,6 +388,6 @@
 
 
 
-<script src="assets/js/main.js?v=58" defer></script>
+<script src="assets/js/main.js?v=60" defer></script>
 </body>
 </html>
