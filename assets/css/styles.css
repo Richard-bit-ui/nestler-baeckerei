@@ -514,6 +514,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .spez__name{
   position:absolute;left:var(--gutter);top:50%;translate:0 -50%;
   width:var(--col-w);
+  z-index:2;
   font-size:clamp(1.625rem, 2.917vw, 3.5rem);
   font-weight:500;line-height:1;letter-spacing:-.01em;
 }
@@ -522,6 +523,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .spez__copy{
   position:absolute;right:var(--gutter);top:50%;translate:0 -50%;
   width:var(--col-w);
+  z-index:2;
   display:flex;flex-direction:column;gap:.8em;
 }
 .spez__sub{
@@ -537,6 +539,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .spez__nav{
   position:absolute;left:50%;translate:-50% 0;bottom:5.2%;
   width:min(49.583vw, 60rem);
+  z-index:2;
   display:flex;align-items:center;justify-content:space-between;gap:1rem;
 }
 .spez__counter-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem}
@@ -580,7 +583,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .arrow:disabled{opacity:.3;cursor:not-allowed}
 
 /* ── Kartenstapel ──────────────────────────────────────────────────── */
-.spez__deckwrap{position:relative;display:flex;justify-content:center;height:100%}
+.spez__deckwrap{position:relative;z-index:1;display:flex;justify-content:center;height:100%}
 .deck{
   position:relative;width:var(--card-w);height:100%;
   touch-action:pan-y;          /* senkrecht scrollen, waagerecht wischen */
@@ -1279,7 +1282,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 
 /* Tablet: Name über die Karte, alles mittig – wie im Vorbild.
    Anders als dort behalten wir die Beschreibung, sie ist hier der Inhalt. */
-@media (max-width:991px){
+@media (max-width:1100px){
   .spez{
     --card-w:48.4vw;
     padding-top:calc(var(--pad) + var(--word-h) + clamp(1rem,3vw,2.5rem));
