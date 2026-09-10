@@ -1313,7 +1313,12 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
        stimmten dagegen schon überein. */
     font-size:clamp(1.5rem,7.5vw,2.75rem);
   }
-  .deck{height:auto;aspect-ratio:.714}
+  /* Auf schmalen Screens bleibt nur die aktive Karte sichtbar. Die seitlich
+     gefächerten Nebenkaarten würden sonst aus der Bühne herausragen und als
+     schräge Flächen über Überschrift und Beschreibung liegen. Die Auswahl
+     bleibt über Pfeile und Wischen vollständig bedienbar. */
+  .deck{height:auto;aspect-ratio:.714;overflow:hidden;border-radius:clamp(.625rem, 1.042vw, 1.25rem)}
+  .deck__card:not([data-offset="0"]){opacity:0;pointer-events:none}
   .spez__copy{
     position:static;translate:none;width:min(48ch,100%);
     text-align:center;align-items:center;
