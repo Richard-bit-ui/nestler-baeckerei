@@ -478,9 +478,6 @@ html.js .hero .reveal.is-in{
                                                overflow:hidden der Sektion unsichtbar aufgefangen */
   --word-h:calc(var(--word-fs) * .9);
   --flick:cubic-bezier(.16,1,.3,1);
-  /* Die Bühne darf auf kurzen Viewports nicht höher als der verfügbare
-     Bildschirm werden – sonst rutschen Überschrift und CTA aus dem Bild. */
-  --card-w:min(clamp(11rem, 25vw, 30rem), 32vh);
   padding-block:clamp(4.5rem, 16vw, 20rem);
 }
 
@@ -595,7 +592,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 /* Button wie im Vorbild: steigt aus der Karte auf und blendet ein.
    Getrennte Zeiten – Deckkraft 0,4 s, Bewegung 1 s (aus dem Slider-CSS). */
 .deck__cta{
-  position:absolute;left:50%;bottom:1.25rem;z-index:6;
+  position:absolute;left:50%;bottom:calc(var(--btn-h) * -.25);z-index:6;
   transform:translateX(-50%);
   transition:opacity .4s cubic-bezier(.625,.05,0,1),
              transform 1s cubic-bezier(.16,1,.3,1),
