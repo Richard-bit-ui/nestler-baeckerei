@@ -8,8 +8,18 @@
      abgeschnitten wird (Google kappt ab ca. 580px / 55–60 Zeichen). -->
 <title>Nestler Spezialitäten-Bäckerei Geising</title>
 <meta name="description" content="Spezialitäten-Bäckerei im Geisinger Bahnhof: Erzgebirgischer Stollen, Kranzkuchen nach Familientradition und der Geisinger Rungsen. Seit 1973 in Familienhand.">
-<link rel="canonical" href="https://mnestler.uber.space/">
+<link rel="canonical" href="https://richard-bit-ui.github.io/nestler-baeckerei/">
 <meta name="theme-color" content="#F3E9D7">
+
+<!-- Sprachfassungen: bislang nur die Startseite auf Englisch/Tschechisch
+     (/en/, /cs/), die übrigen sieben Seiten gibt es nur auf Deutsch –
+     daher stehen diese drei Alternate-Links nur hier, nicht in den
+     Unterseiten. hreflang="x-default" zeigt wie "de" auf die deutsche
+     Fassung, da sie die vollständigste/ursprüngliche ist. -->
+<link rel="alternate" hreflang="de" href="https://richard-bit-ui.github.io/nestler-baeckerei/">
+<link rel="alternate" hreflang="en" href="https://richard-bit-ui.github.io/nestler-baeckerei/en/">
+<link rel="alternate" hreflang="cs" href="https://richard-bit-ui.github.io/nestler-baeckerei/cs/">
+<link rel="alternate" hreflang="x-default" href="https://richard-bit-ui.github.io/nestler-baeckerei/">
 
 <!-- Vorschaubild für Facebook, LinkedIn, WhatsApp & Co. Eigens auf das
      Standardformat 1200×630 zugeschnitten (nicht gestreckt) – ohne diese
@@ -18,10 +28,12 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nestler Spezialitäten-Bäckerei">
 <meta property="og:locale" content="de_DE">
-<meta property="og:url" content="https://mnestler.uber.space/">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="cs_CZ">
+<meta property="og:url" content="https://richard-bit-ui.github.io/nestler-baeckerei/">
 <meta property="og:title" content="Nestler Spezialitäten-Bäckerei Geising">
 <meta property="og:description" content="Spezialitäten-Bäckerei im Geisinger Bahnhof: Erzgebirgischer Stollen, Kranzkuchen nach Familientradition und der Geisinger Rungsen. Seit 1973 in Familienhand.">
-<meta property="og:image" content="https://mnestler.uber.space/assets/img/og-image.jpg">
+<meta property="og:image" content="https://richard-bit-ui.github.io/nestler-baeckerei/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Frisch gebackene Brötchen, Croissants und Fladenbrot der Nestler Spezialitäten-Bäckerei">
@@ -29,7 +41,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Nestler Spezialitäten-Bäckerei Geising">
 <meta name="twitter:description" content="Spezialitäten-Bäckerei im Geisinger Bahnhof: Erzgebirgischer Stollen, Kranzkuchen nach Familientradition und der Geisinger Rungsen. Seit 1973 in Familienhand.">
-<meta name="twitter:image" content="https://mnestler.uber.space/assets/img/og-image.jpg">
+<meta name="twitter:image" content="https://richard-bit-ui.github.io/nestler-baeckerei/assets/img/og-image.jpg">
 
 <!-- Schrift des Vorbilds (modernbakery.com) ist „Season Sans" – eine
      proprietäre Trial-Schrift von Webflow, nicht frei lizenzierbar.
@@ -40,17 +52,78 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=60">
-<link rel="icon" href="assets/img/logo.png">
+<link rel="stylesheet" href="assets/css/styles.css?v=116">
+<link rel="icon" href="assets/img/favicon.png">
+
+<!-- Strukturierte Daten: zwei Standorte, daher zwei Bakery-Einträge statt
+     eines einzelnen LocalBusiness – Adresse und Öffnungszeiten stehen pro
+     Standort schon in der Öffnungszeiten-Sektion und hier nur noch einmal
+     maschinenlesbar für Google (Rich-Ergebnisse, Karten-Eintrag, Kachel
+     mit Öffnungszeiten in der Suche). Keine Geo-Koordinaten angegeben,
+     da keine verifizierten Werte vorliegen – lieber weglassen als raten. -->
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "@id": "https://richard-bit-ui.github.io/nestler-baeckerei/#bahnhof",
+    "name": "Nestler Spezialitäten-Bäckerei – Geisinger Bahnhof",
+    "image": "https://richard-bit-ui.github.io/nestler-baeckerei/assets/img/bahnhof-aussenansicht.jpg",
+    "url": "https://richard-bit-ui.github.io/nestler-baeckerei/",
+    "telephone": "+493505622810",
+    "email": "nestler-baecker@web.de",
+    "priceRange": "€€",
+    "foundingDate": "1973",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Bahnhofplatz 3",
+      "postalCode": "01778",
+      "addressLocality": "Altenberg",
+      "addressRegion": "Sachsen",
+      "addressCountry": "DE"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], "opens": "06:00", "closes": "18:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "07:00", "closes": "10:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "14:00", "closes": "18:00" }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "@id": "https://richard-bit-ui.github.io/nestler-baeckerei/#filiale",
+    "name": "Nestler Spezialitäten-Bäckerei – Filiale Hauptstraße",
+    "image": "https://richard-bit-ui.github.io/nestler-baeckerei/assets/img/filiale-aussenansicht.jpg",
+    "url": "https://richard-bit-ui.github.io/nestler-baeckerei/",
+    "telephone": "+493505622810",
+    "email": "nestler-baecker@web.de",
+    "priceRange": "€€",
+    "foundingDate": "1973",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Hauptstraße 41",
+      "postalCode": "01778",
+      "addressLocality": "Altenberg",
+      "addressRegion": "Sachsen",
+      "addressCountry": "DE"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:00", "closes": "13:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "07:00", "closes": "11:00" }
+    ]
+  }
+]
+</script>
 </head>
 <body>
+  <div class="page-loader" aria-hidden="true"><span class="page-loader__mark">Nestler</span><span class="page-loader__dots"><i></i><i></i><i></i></span></div>
 
 <!-- baustein:kopf -->
 <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
 
 <header class="nav" id="nav" data-theme="dark">
   <div class="nav__inner">
-    <a class="nav__logo" href="#" aria-label="Nestler Spezialitäten-Bäckerei – Startseite">
+    <a class="nav__logo" href="index.html" aria-label="Nestler Spezialitäten-Bäckerei – Startseite">
       <img class="nav__logo-img nav__logo-img--light" src="assets/img/logo-light.png" alt="" width="800" height="451">
       <img class="nav__logo-img nav__logo-img--dark" src="assets/img/logo.png" alt="" width="800" height="451">
     </a>
@@ -77,12 +150,18 @@
           </button>
           <div class="dropdown" id="menu-besuch" hidden>
             <a class="dropdown__link" href="#oeffnungszeiten"><span>Öffnungszeiten</span><small>Bahnhof und Filiale Hauptstraße</small></a>
-            <a class="dropdown__link" href="anfahrt.html"><span>So finden Sie uns</span><small>Mit der Bahn oder dem Auto</small></a>
+            <a class="dropdown__link" href="#oeffnungszeiten"><span>So finden Sie uns</span><small>Mit der Bahn oder dem Auto</small></a>
           </div>
         </li>
         <li class="nav__item"><a class="nav__link" href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
+
+    <div class="nav__lang" aria-label="Sprache wählen">
+      <span class="nav__lang-current" aria-current="true">DE</span>
+      <a class="nav__lang-link" href="en/index.html" hreflang="en" lang="en">EN</a>
+      <a class="nav__lang-link" href="cs/index.html" hreflang="cs" lang="cs">CZ</a>
+    </div>
 
     <a class="btn btn--accent nav__cta" href="#oeffnungszeiten">
       Öffnungszeiten
@@ -111,13 +190,15 @@
     <p class="mobilmenu__label">Besuch</p>
     <ul class="mobilmenu__list mobilmenu__list--sub">
       <li><a href="#oeffnungszeiten">Öffnungszeiten</a></li>
-      <li><a href="anfahrt.html">So finden Sie uns</a></li>
+      <li><a href="#oeffnungszeiten">So finden Sie uns</a></li>
     </ul>
+    <p class="mobilmenu__label">Sprache</p>
+    <div class="mobilmenu__lang">
+      <span class="mobilmenu__lang-current" aria-current="true">Deutsch</span>
+      <a class="mobilmenu__lang-link" href="en/index.html" hreflang="en" lang="en">English</a>
+      <a class="mobilmenu__lang-link" href="cs/index.html" hreflang="cs" lang="cs">Čeština</a>
+    </div>
   </nav>
-  <a class="btn btn--accent mobilmenu__cta" href="tel:+493505622810">
-    035056 / 22810
-    <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </a>
 </div>
 <!-- /baustein:kopf -->
 
@@ -125,7 +206,9 @@
 
   <!-- ── Hero ─────────────────────────────────────────────── -->
   <section class="hero" data-nav-theme="dark">
-    <img class="hero__img" src="assets/img/hero.jpg" alt="Brötchen, Croissants, Fladenbrot und Gebäck von oben auf einer warm beleuchteten Fläche" fetchpriority="high" width="1500" height="704">
+    <video class="hero__img" poster="assets/img/hero.jpg" autoplay muted loop playsinline width="1500" height="704" aria-hidden="true">
+      <source src="assets/video/hero.mp4" type="video/mp4" media="(min-width: 768px) and (prefers-reduced-motion: no-preference)">
+    </video>
     <div class="hero__scrim" aria-hidden="true"></div>
     <div class="hero__inner">
       <p class="hero__eyebrow reveal">Seit 1973 in Familienhand</p>
@@ -179,7 +262,7 @@
           </li>
         </ul>
 
-        <a class="btn btn--accent deck__cta" href="tel:+493505622810">
+        <a class="btn btn--accent deck__cta" href="kontakt.html#kontakt-form">
           Anfragen
           <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
@@ -191,7 +274,10 @@
       </div>
 
       <div class="spez__nav">
-        <p class="spez__counter"><span data-slot="index">01</span> / <span data-slot="total">04</span></p>
+        <div class="spez__counter-wrap">
+          <p class="spez__counter"><span data-slot="index">01</span> / <span data-slot="total">04</span></p>
+          <span class="spez__autobar" aria-hidden="true"><span class="spez__autobar-fill" data-autobar></span></span>
+        </div>
         <div class="spez__arrows">
           <button class="arrow" type="button" data-dir="-1" aria-label="Vorherige Spezialität">
             <svg viewBox="0 0 30 30" aria-hidden="true">
@@ -229,6 +315,50 @@
     <div class="oeff__card">
       <h2 class="visually-hidden" id="oeff-heading">Öffnungszeiten</h2>
 
+      <div class="mobile-location-overview" aria-label="Öffnungszeiten und Standorte">
+        <article class="location-tile reveal" data-hours='{"0":[[420,600],[840,1080]],"1":[[360,1080]],"2":[[360,1080]],"3":[[360,1080]],"4":[[360,1080]],"5":[[360,1080]],"6":[[360,1080]]}'>
+          <header class="location-tile__header">
+            <h3>Geisinger Bahnhof</h3>
+            <p>Bahnhofplatz 3 · 01778 Altenberg</p>
+            <a class="btn location-tile__route" href="https://www.google.com/maps/dir/?api=1&destination=Bahnhofplatz+3%2C+01778+Altenberg" target="_blank" rel="noopener" aria-label="Route zum Geisinger Bahnhof öffnen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 4-7 16-3.5-7L4 9l16-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </header>
+          <p class="location-tile__status oeff__status" data-status><span class="oeff__status-dot" aria-hidden="true"></span><span data-status-text>&nbsp;</span></p>
+          <p class="location-tile__today" data-status-today>Heute 06:00–18:00</p>
+          <dl class="location-tile__hours"><div><dt>Mo–Sa</dt><dd>06:00–18:00</dd></div><div><dt>So</dt><dd>07–10 &amp; 14–18</dd></div><div><dt>Feiertag</dt><dd>14:00–18:00</dd></div></dl>
+        </article>
+        <article class="location-tile reveal" data-hours='{"0":[],"1":[[420,780]],"2":[[420,780]],"3":[[420,780]],"4":[[420,780]],"5":[[420,780]],"6":[[420,660]]}'>
+          <header class="location-tile__header">
+            <h3>Filiale Hauptstraße</h3>
+            <p>Hauptstraße 41 · 01778 Altenberg</p>
+            <a class="btn location-tile__route" href="https://www.google.com/maps/dir/?api=1&destination=Hauptstra%C3%9Fe+41%2C+01778+Altenberg+Geising" target="_blank" rel="noopener" aria-label="Route zur Filiale Hauptstraße öffnen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 4-7 16-3.5-7L4 9l16-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </header>
+          <p class="location-tile__status oeff__status" data-status><span class="oeff__status-dot" aria-hidden="true"></span><span data-status-text>&nbsp;</span></p>
+          <p class="location-tile__today" data-status-today>Heute 07:00–13:00</p>
+          <dl class="location-tile__hours"><div><dt>Mo–Fr</dt><dd>07:00–13:00</dd></div><div><dt>Sa</dt><dd>07:00–11:00</dd></div></dl>
+        </article>
+        <article class="mobile-location-card" data-hours='{"0":[[420,600],[840,1080]],"1":[[360,1080]],"2":[[360,1080]],"3":[[360,1080]],"4":[[360,1080]],"5":[[360,1080]],"6":[[360,1080]]}'>
+          <button class="mobile-location-card__summary" type="button" aria-expanded="false" aria-controls="mobile-bahnhof-details" data-location-details-toggle>
+            <img class="mobile-location-card__photo" src="assets/img/bahnhof-aussenansicht.jpg" alt="Außenansicht der Nestler Spezialitäten-Bäckerei im Geisinger Bahnhof" loading="lazy">
+            <span class="mobile-location-card__body"><span class="mobile-location-card__title-row"><span class="mobile-location-card__name">Geisinger Bahnhof</span><span class="oeff__status" data-status><span class="oeff__status-dot" aria-hidden="true"></span><span data-status-text>&nbsp;</span></span></span><span class="mobile-location-card__today" data-status-today>Heute 06:00–18:00</span></span>
+          </button>
+          <div class="mobile-location-card__details" id="mobile-bahnhof-details" hidden>
+            <p class="mobile-location-card__address">Bahnhofplatz 3 · 01778 Altenberg</p><dl class="mobile-location-card__hours"><div><dt>Mo–Sa</dt><dd>06:00–18:00</dd></div><div><dt>So</dt><dd>07–10 &amp; 14–18</dd></div><div><dt>Feiertag</dt><dd>14:00–18:00</dd></div></dl>
+            <a class="btn btn--accent" href="https://www.google.com/maps/dir/?api=1&destination=Bahnhofplatz+3%2C+01778+Altenberg" target="_blank" rel="noopener">Route <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </article>
+
+        <article class="mobile-location-card" data-hours='{"0":[],"1":[[420,780]],"2":[[420,780]],"3":[[420,780]],"4":[[420,780]],"5":[[420,780]],"6":[[420,660]]}'>
+          <button class="mobile-location-card__summary" type="button" aria-expanded="false" aria-controls="mobile-filiale-details" data-location-details-toggle>
+            <img class="mobile-location-card__photo" src="assets/img/filiale-aussenansicht.jpg" alt="Eingang der Filiale Hauptstraße 41 in Geising" loading="lazy">
+            <span class="mobile-location-card__body"><span class="mobile-location-card__title-row"><span class="mobile-location-card__name">Filiale Hauptstraße</span><span class="oeff__status" data-status><span class="oeff__status-dot" aria-hidden="true"></span><span data-status-text>&nbsp;</span></span></span><span class="mobile-location-card__today" data-status-today>Heute 07:00–13:00</span></span>
+          </button>
+          <div class="mobile-location-card__details" id="mobile-filiale-details" hidden>
+            <p class="mobile-location-card__address">Hauptstraße 41 · 01778 Altenberg</p><dl class="mobile-location-card__hours"><div><dt>Mo–Fr</dt><dd>07:00–13:00</dd></div><div><dt>Sa</dt><dd>07:00–11:00</dd></div></dl>
+            <a class="btn btn--accent" href="https://www.google.com/maps/dir/?api=1&destination=Hauptstra%C3%9Fe+41%2C+01778+Altenberg+Geising" target="_blank" rel="noopener">Route <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </article>
+      </div>
+
       <div class="geismap">
         <div class="geismap__frame">
           <img class="geismap__art" src="assets/img/geising-map.svg" alt="" loading="lazy" width="1000" height="885">
@@ -250,7 +380,7 @@
              Live-Anzeige wie zuvor bei den Textkarten. Der Feiertags-
              Sonderfall bleibt ohne Feiertagskalender unberücksichtigt,
              siehe Kurz-Öffnungszeiten unten. -->
-        <div class="geismap__marker" style="--x:29.3%;--y:35.2%">
+        <div class="geismap__marker" data-location="bahnhof" style="--x:29.3%;--y:35.2%">
           <button class="geismap__pin" type="button" aria-expanded="false" aria-controls="pin-bahnhof">
             <span class="geismap__dot" aria-hidden="true"></span>
             <span class="visually-hidden">Geisinger Bahnhof – Öffnungszeiten anzeigen</span>
@@ -276,7 +406,7 @@
           </div>
         </div>
 
-        <div class="geismap__marker geismap__marker--up" style="--x:71.3%;--y:72.8%">
+        <div class="geismap__marker geismap__marker--up" data-location="filiale" style="--x:71.3%;--y:72.8%">
           <button class="geismap__pin" type="button" aria-expanded="false" aria-controls="pin-filiale">
             <span class="geismap__dot" aria-hidden="true"></span>
             <span class="visually-hidden">Filiale Hauptstraße – Öffnungszeiten anzeigen</span>
@@ -408,7 +538,7 @@
       <ul>
         <li><a href="team.html">Team</a></li>
         <li><a href="ausbildung.html">Ausbildung</a></li>
-        <li><a href="anfahrt.html">So finden Sie uns</a></li>
+        <li><a href="#oeffnungszeiten">So finden Sie uns</a></li>
         <li><a href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
@@ -416,10 +546,10 @@
     <div class="footer__col">
       <p class="footer__col-title pill">Öffnungszeiten</p>
       <dl class="footer__hours">
-        <div><dt>Bahnhof Mo–Sa</dt><dd>06:00–18:00</dd></div>
+        <div><dt>Bahnhof Mo–Sa</dt><dd>06–18</dd></div>
         <div><dt>Bahnhof So</dt><dd>07–10 &amp; 14–18</dd></div>
-        <div><dt>Filiale Mo–Fr</dt><dd>07:00–13:00</dd></div>
-        <div><dt>Filiale Sa</dt><dd>07:00–11:00</dd></div>
+        <div><dt>Filiale Mo–Fr</dt><dd>07–13</dd></div>
+        <div><dt>Filiale Sa</dt><dd>07–11</dd></div>
       </dl>
     </div>
 
@@ -435,6 +565,6 @@
 
 
 
-<script src="assets/js/main.js?v=60" defer></script>
+<script src="assets/js/main.js?v=116" defer></script>
 </body>
 </html>

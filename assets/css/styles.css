@@ -24,8 +24,8 @@
   --r-pill: 100rem;
 
   /* Maße */
-  --pad: clamp(1.25rem, 1.67vw, 2rem);
-  --wrap: 120rem;
+  --pad: clamp(1.25rem, 2.5vw, 3.25rem);
+  --wrap: 112rem;
   --btn-h: clamp(2.75rem, 3.33vw, 4rem);
 
   /* Typo */
@@ -81,6 +81,20 @@ body{
   position:absolute;width:1px;height:1px;margin:-1px;padding:0;
   overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
 }
+
+/* ── Kurze Ladeebene ──────────────────────────────────────────────── */
+.page-loader{display:none}
+html.js .page-loader{
+  position:fixed;inset:0;z-index:200;display:grid;place-content:center;gap:.9rem;
+  background:var(--cream);color:var(--ink);opacity:1;visibility:visible;
+  transition:opacity .42s var(--ease),visibility .42s var(--ease);
+}
+html.js.is-loaded .page-loader{opacity:0;visibility:hidden;pointer-events:none}
+.page-loader__mark{font-size:1.25rem;font-weight:600;letter-spacing:-.04em;text-align:center}
+.page-loader__dots{display:flex;justify-content:center;gap:.38rem}
+.page-loader__dots i{width:.38rem;height:.38rem;border-radius:50%;background:var(--accent);animation:loader-dot .8s var(--ease) infinite alternate}
+.page-loader__dots i:nth-child(2){animation-delay:.12s}.page-loader__dots i:nth-child(3){animation-delay:.24s}
+@keyframes loader-dot{to{transform:translateY(-.35rem);opacity:.45}}
 
 .skip-link{
   position:fixed;top:.75rem;left:.75rem;z-index:100;
@@ -174,7 +188,6 @@ body{
   min-width:19rem;padding:.5rem;
   border-radius:var(--r-lg);
   background:var(--cream);
-  box-shadow:0 1.5rem 3rem -1rem rgba(58,32,17,.35);
   display:grid;gap:.125rem;
   transform:translate(-50%,-.5rem);opacity:0;pointer-events:none;
   transition:opacity .25s var(--ease), transform .25s var(--ease);
@@ -190,19 +203,43 @@ body{
 
 .nav__cta{flex:none}
 
+/* ── Sprachumschalter ──────────────────────────────────────────────────
+   Kleine Pille wie .nav__list, nur mit zwei/drei kurzen Kürzeln statt
+   der Hauptlinks. Die aktuelle Sprache ist bewusst KEIN Link (man ist ja
+   schon dort) – nur gedämpft dargestellt, damit sie sich trotzdem als
+   "hier bist du" lesen lässt, ohne wie ein totes Tastaturfeld zu wirken. */
+.nav__lang{
+  flex:none;display:flex;align-items:center;gap:.1rem;
+  padding:clamp(.2rem,.3vw,.35rem);border-radius:var(--r);
+  background:var(--nav-pill);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:background-color .3s var(--ease);
+}
+.nav__lang-current,.nav__lang-link{
+  display:inline-flex;align-items:center;
+  padding:.45em .7em;border-radius:clamp(2px,.21vw,4px);
+  color:var(--nav-fg);
+  font-size:clamp(.75rem,.85vw,.9375rem);font-weight:600;letter-spacing:.02em;
+}
+.nav__lang-current{opacity:.5}
+.nav__lang-link{transition:background-color .2s var(--ease), color .3s var(--ease)}
+.nav__lang-link:hover{background:var(--nav-hover)}
+
 /* Burger */
 .burger{
-  display:none;flex:none;width:2.75rem;height:2.75rem;
+  position:relative;display:none;flex:none;width:2.75rem;height:2.75rem;
   border-radius:var(--r);align-items:center;justify-content:center;
-  flex-direction:column;gap:.35rem;background:var(--nav-pill);
+  background:var(--nav-pill);
 }
 .burger span{
-  display:block;width:1.25rem;height:2px;border-radius:2px;
+  position:absolute;display:block;width:1.25rem;height:2px;border-radius:2px;
   background:var(--nav-fg);
-  transition:transform var(--duration-normal) var(--cubic-menu);
+  transition:transform .38s var(--ease),background-color .2s var(--ease);
 }
-.burger[aria-expanded="true"] span:first-child{transform:translateY(4.5px) rotate(45deg)}
-.burger[aria-expanded="true"] span:last-child{transform:translateY(-4.5px) rotate(-45deg)}
+.burger span:first-child{transform:translateY(-.25rem)}
+.burger span:last-child{transform:translateY(.25rem)}
+.burger[aria-expanded="true"] span:first-child{transform:rotate(45deg)}
+.burger[aria-expanded="true"] span:last-child{transform:rotate(-45deg)}
 
 /* ── Mobilmenü ─────────────────────────────────────────────────────────
    Öffnen/Schließen 1:1 aus dem Vorbild übernommen (dessen `.nav-center`):
@@ -219,25 +256,18 @@ body{
   padding-top:7rem;
   background:var(--cream);
   display:flex;flex-direction:column;
-  /* War vorher selbst der Scroll-Container (overflow-y:auto aufs ganze
-     Panel inkl. Telefon-Button) – bei acht Einträgen + zwei Gruppen-
-     labels reichte die Höhe auf kurzen Geräten (375×667, iPhone SE/8)
-     nicht mehr: der Telefon-CTA landete unten abgeschnitten (nur ~5px
-     ragten ins Sichtfeld, Rest erst nach Scrollen erreichbar) – bei
-     einem primären Handlungsaufruf ein echter Bug, kein Stilthema.
-     Jetzt scrollt NUR .mobilmenu__nav (siehe dort), der CTA sitzt als
-     eigenes, nie überlaufendes Fußelement darunter und bleibt so auf
-     jeder Gerätehöhe erreichbar. */
+  /* Nur der Inhaltsbereich scrollt – Kopfbereich und Navigation bleiben
+     dadurch auch auf kurzen Geräten ruhig und vollständig erreichbar. */
   overflow:hidden;
   opacity:0;visibility:hidden;
-  transform:translateY(1em);
-  transition:transform var(--duration-normal) var(--cubic-menu),
+  transform:translateY(100%);transform-origin:bottom center;
+  transition:transform .58s var(--ease-power4-inout),
              visibility var(--duration-normal) var(--cubic-menu),
-             opacity var(--duration-fast) var(--cubic-menu);
+             opacity .25s var(--ease);
 }
 .mobilmenu[data-open]{
-  opacity:1;visibility:visible;transform:translateY(0);
-  transition-delay:.1s;
+  opacity:1;visibility:visible;transform:translateY(0) scale(1);
+  transition-delay:0s;
 }
 /* Mobilmenü seit der Mobile-Überarbeitung in Gruppen gegliedert – deckt sich
    mit der Struktur der Desktop-Dropdowns „Bäckerei"/„Besuch" (siehe Kopf-
@@ -250,6 +280,16 @@ body{
   flex:1 1 auto;min-height:0;overflow-y:auto;
   padding:0 var(--pad) 1.5rem;
 }
+.mobilmenu__nav>*{opacity:0;transform:translateY(.8rem)}
+.mobilmenu[data-open] .mobilmenu__nav>*{animation:mobilmenu-item-in .52s var(--ease) forwards}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(1){animation-delay:.08s}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(2){animation-delay:.13s}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(3){animation-delay:.18s}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(4){animation-delay:.23s}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(5){animation-delay:.28s}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(6){animation-delay:.33s}
+.mobilmenu[data-open] .mobilmenu__nav>*:nth-child(7){animation-delay:.38s}
+@keyframes mobilmenu-item-in{to{opacity:1;transform:none}}
 .mobilmenu__list{display:grid;gap:.25rem}
 .mobilmenu__list a{
   display:block;padding:.6rem 0;
@@ -265,10 +305,37 @@ body{
   padding:.5rem 0;
   font-size:clamp(1.125rem,5.2vw,1.5rem);font-weight:500;
 }
-.mobilmenu__cta{
-  flex:none;align-self:flex-start;
-  margin:0 var(--pad) 1.75rem;
+/* Sprachumschalter im Mobilmenü: gleiche Gruppierung wie „Bäckerei"/
+   „Besuch" (Label + eigene Reihe), aber als Pillen statt Liste – der
+   Wechsel ist keine Navigation innerhalb der Seite, sondern ein
+   Sprung auf eine ganz andere Sprachfassung, das darf sich auch optisch
+   unterscheiden. Aktuelle Sprache wie im Desktop-Pendant kein Link. */
+.mobilmenu__lang{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem}
+.mobilmenu__lang-current,.mobilmenu__lang-link{
+  padding:.5rem 1.1rem;border-radius:var(--r-pill);
+  font-size:1rem;font-weight:600;letter-spacing:.02em;
+  border:1px solid var(--ink-25);
 }
+.mobilmenu__lang-current{opacity:.5}
+.mobilmenu__lang-link{transition:background-color .2s var(--ease)}
+.mobilmenu__lang-link:hover{background:rgba(91,50,23,.07)}
+.is-language-source{display:none!important}
+.mobilmenu__language-trigger{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.65rem;width:100%;margin:0 0 1.5rem;padding:.8rem 0;border-bottom:1px solid var(--ink-25);text-align:left}
+.mobilmenu__language-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-45)}
+.mobilmenu__language-current{justify-self:end;font-size:1rem;font-weight:600}
+.mobilmenu__language-arrow{font-size:1.6rem;line-height:.7;color:var(--ink-45);transition:transform .25s var(--ease)}
+.mobilmenu__language-trigger[aria-expanded="true"] .mobilmenu__language-arrow{transform:rotate(90deg)}
+.language-sheet{position:absolute;z-index:3;right:0;bottom:0;left:0;padding:1.5rem var(--pad) calc(1.5rem + env(safe-area-inset-bottom));background:#FFF;border-radius:var(--r-lg) var(--r-lg) 0 0;box-shadow:0 -1rem 3rem rgba(64,35,14,.18);transform:translateY(105%);visibility:hidden;transition:transform .5s var(--ease-power4-inout),visibility .5s var(--ease)}
+.language-sheet.is-open{transform:translateY(0);visibility:visible}
+.language-sheet__heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;font-size:1.25rem;font-weight:600;letter-spacing:-.02em}
+.language-sheet__heading button{display:grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--ink-25);border-radius:50%;font-size:1.65rem;font-weight:300;line-height:1;transition:background-color .2s var(--ease),color .2s var(--ease)}
+.language-sheet__heading button:hover{background:var(--ink);color:var(--cream)}
+.language-sheet__options{display:grid;gap:.5rem}
+.language-sheet__options>*{display:flex;align-items:center;justify-content:space-between;min-height:3.35rem;padding:.8rem 1rem;border:1px solid var(--ink-25);border-radius:var(--r);font-size:1.0625rem;font-weight:600}
+.language-sheet__options [aria-current="true"]{background:rgba(91,50,23,.06)}
+.language-sheet__options [aria-current="true"]::after{content:"✓";color:var(--accent);font-size:1.1rem}
+.language-sheet__options a{transition:background-color .2s var(--ease),transform .2s var(--ease)}
+.language-sheet__options a:hover{background:var(--cream);transform:translateX(.15rem)}
 
 /* ── Hero ──────────────────────────────────────────────────────────── */
 .hero{
@@ -295,7 +362,7 @@ body{
   position:relative;height:100%;
   text-shadow:0 .05em .9em rgba(58,32,17,.35);
   max-width:var(--wrap);margin-inline:auto;
-  padding:0 var(--pad) calc(clamp(2.5rem,5vw,6rem) + var(--r-lg) * 1.5);
+  padding:0 var(--pad) calc(clamp(3.5rem,6vw,8rem) + var(--r-lg) * 1.5);
   display:grid;align-items:end;align-content:end;
   grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
   grid-template-areas:"eyebrow ." "title lede";
@@ -405,16 +472,19 @@ html.js .hero .reveal.is-in{
   --card-h:calc(var(--card-w) / .714);
   --gutter:clamp(1.25rem, 3.333vw, 4rem);  /*  48 @1440 */
   --col-w:clamp(11rem, 20.833vw, 25rem);   /* 300 @1440 */
-  --word-fs:16.3vw;                        /* auf „Spezialitäten" abgestimmt */
+  --word-fs:16.6vw;                        /* auf „Spezialitäten" abgestimmt, Kundenwunsch
+                                               "etwas größer" leicht nach oben angepasst –
+                                               das knapp abgeschnittene Zeilenende bleibt vom
+                                               overflow:hidden der Sektion unsichtbar aufgefangen */
   --word-h:calc(var(--word-fs) * .9);
   --flick:cubic-bezier(.16,1,.3,1);
-  padding-block:clamp(3.5rem, 14.93vw, 17.9rem);
+  padding-block:clamp(4.5rem, 16vw, 20rem);
 }
 
 .spez__word{
   position:absolute;top:var(--pad);left:var(--pad);
   z-index:0;pointer-events:none;user-select:none;
-  font-size:var(--word-fs);font-weight:500;line-height:.9;letter-spacing:-.01em;
+  font-size:var(--word-fs);font-weight:700;line-height:.9;letter-spacing:-.01em;
   color:var(--ink);opacity:.05;white-space:nowrap;
 }
 
@@ -469,11 +539,34 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   width:min(49.583vw, 60rem);
   display:flex;align-items:center;justify-content:space-between;gap:1rem;
 }
+.spez__counter-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem}
 .spez__counter{
   font-size:clamp(.75rem, .833vw, 1rem);
   font-weight:600;line-height:1.5;letter-spacing:.02em;
   font-variant-numeric:tabular-nums;
 }
+/* Automatik-Indikator: zeigt, wann der Fächer von allein weiterspringt.
+   Leere Pille als Schiene, gefüllte Pille läuft per CSS-Keyframe (kein
+   rAF, siehe Sonderwünsche-Lehre oben) synchron mit main.js' AUTO_MS von
+   0 auf voll – main.js setzt dafür `animation-duration` inline und
+   schaltet `.is-filling` per entfernen/reflow/hinzufügen neu an, exakt
+   wie schon beim `.is-swapping`-Textwechsel. Pausiert (Hover/Fokus/
+   Ziehen/reduzierte Bewegung) wird die Klasse einfach entfernt – die
+   Schiene fällt dann leer zurück, statt mitten im Lauf einzufrieren,
+   damit kein Zeit-Offset zwischen Balken und tatsächlichem nächsten
+   Schritt entstehen kann. */
+.spez__autobar{
+  display:block;width:2.75rem;height:2px;
+  border-radius:var(--r-pill);overflow:hidden;
+  background:var(--ink-25);
+}
+.spez__autobar-fill{
+  display:block;width:100%;height:100%;
+  background:var(--accent);
+  transform:scaleX(0);transform-origin:left center;
+}
+.spez__autobar-fill.is-filling{animation-name:spez-fill;animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes spez-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .spez__arrows{display:flex;gap:clamp(.25rem,.417vw,.5rem)}
 .arrow{
   position:relative;
@@ -653,7 +746,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    demselben Grund wie schon bei .story (siehe dortiger Kommentar):
    die Popups der Pins müssen über die Kachel hinausragen dürfen. */
 .oeff-wrap{
-  padding:clamp(1.25rem, 3vw, 2.5rem);
+  padding:clamp(1.5rem, 3.5vw, 4rem);
   overflow:visible;
 }
 .oeff__card{
@@ -676,7 +769,9 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
      Media Query weiter unten ohne festes Seitenverhältnis. */
   max-height:100svh;
   border-radius:var(--r-lg);
-  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
+  /* Kundenwunsch 22.08.2026: Schlagschatten unter Karten/Boxen jetzt
+     website-weit entfernt (nicht nur bei .sw__card), siehe alle übrigen
+     entfernten box-shadow-Regeln in dieser Datei. */
   background:var(--deep);
 }
 
@@ -689,6 +784,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    damit dessen eigenes overflow:visible (s.o.) für die Pin-Popups gilt,
    ohne dass die Karte selbst eckig über den Rand hinausragt. */
 .geismap{position:relative;width:100%;height:100%}
+.mobile-location-overview{display:none}
 .geismap__frame{position:absolute;inset:0;border-radius:var(--r-lg);overflow:hidden}
 .geismap__art{display:block;width:100%;height:100%;object-fit:cover}
 /* Weicher Verlauf hinter der Ecke mit dem Text – dieselbe Technik wie
@@ -782,7 +878,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   width:1.15rem;height:1.15rem;border-radius:50%;
   background:var(--accent);
   border:2.5px solid var(--light);
-  box-shadow:0 .2rem .5rem rgba(0,0,0,.45);
   transition:scale .25s var(--ease);
 }
 /* Pulsierender Ring, jetzt auffälliger: zwei versetzte Ringe statt
@@ -827,12 +922,11 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 
 .geismap__popup{
   position:absolute;
-  top:calc(100% + .75rem);left:50%;
+  top:calc(100% + 1.75rem);left:50%;
   translate:-50% .5rem;
   width:min(18rem, calc(100vw - 3rem));
   background:var(--cream);
   border-radius:var(--r-lg);
-  box-shadow:0 1.5rem 3rem -1rem rgba(20,8,4,.5);
   overflow:hidden;
   opacity:0;visibility:hidden;pointer-events:none;
   /* transform zusätzlich zur schon vorhandenen translate-Eigenschaft: beide
@@ -850,11 +944,11 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   transition:opacity .4s var(--ease-power4-inout),
     translate .4s var(--ease-power4-inout),
     visibility .4s,
-    transform .25s var(--ease), box-shadow .25s var(--ease);
+    transform .25s var(--ease);
 }
 /* Standorte in der unteren Kartenhälfte öffnen ihr Fenster nach oben,
    sonst ragt es unten über die Karte (bzw. die ganze Sektion) hinaus. */
-.geismap__marker--up .geismap__popup{top:auto;bottom:calc(100% + .75rem);translate:-50% -.5rem}
+.geismap__marker--up .geismap__popup{top:auto;bottom:calc(100% + 1.75rem);translate:-50% -.5rem}
 
 .geismap__marker:hover .geismap__popup,
 .geismap__marker:focus-within .geismap__popup,
@@ -864,12 +958,10 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 }
 
 /* Hover auf der Popup-Karte selbst (sobald sie offen ist): hebt sich noch
-   ein Stück weiter an und der Schatten vertieft sich – dasselbe dezente
-   "Kartenmuster" wie schon bei den Spezialitäten-Karten und den Pins,
-   nur eben auf dem Info-Fenster selbst. */
+   ein Stück weiter an – Schatten-Vertiefung (Kundenwunsch 22.08.2026:
+   Schlagschatten website-weit entfernt) entfällt, das Anheben bleibt. */
 .geismap__popup:hover{
   transform:translateY(-.3rem);
-  box-shadow:0 2.25rem 4rem -1rem rgba(20,8,4,.6);
 }
 
 .geismap__photo{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
@@ -891,6 +983,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    mehr, nur ein kleiner Punkt mit leiser Beschriftung neben dem Titel,
    damit der Name der Filiale die Aufmerksamkeit behält. */
 .oeff__status{
+  display:inline-flex;align-items:center;
   border:none;padding:0;
   gap:.35em;
   font-size:.75rem;font-weight:600;
@@ -987,10 +1080,15 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   padding-inline:8vw;
   will-change:transform;
 }
+/* 1:1 vom Vorbild übernommen (Live-Analyse per getComputedStyle, siehe
+   Projektnotizen): die Linie ist dort tatsächlich ein `outline:1px dashed`
+   in der normalen Fließtext-Tinte (kein Akzent-Rot!) auf einem 0px hohen
+   Element – hier als äquivalentes `border-top` nachgebaut (gleiche Optik,
+   ohne die Sonderrolle von outline zu brauchen). */
 .storyhz__line{
-  position:absolute;left:0;top:50%;height:3px;
+  position:absolute;left:0;top:50%;height:0;
+  border-top:1px dashed var(--ink);
   transform:translateY(-50%);
-  background-image:repeating-linear-gradient(to right, var(--accent) 0 10px, transparent 10px 22px);
 }
 
 /* ── Intro-Karte (entspricht .timeline__info im Vorbild) ──────────────
@@ -1019,7 +1117,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   width:clamp(18rem,35vw,32rem);aspect-ratio:3/2;
   border-radius:var(--r-lg);overflow:hidden;
   background:var(--card);
-  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
 }
 .storyhz__intro-image img{display:block;width:100%;height:100%;object-fit:cover}
 
@@ -1030,52 +1127,67 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   text-align:center;
 }
 
-/* Jahr/Titel/Punkt/Foto animieren einzeln, ausgelöst durch is-in-* auf
+/* Jahr/Titel/Punkt animieren einzeln, ausgelöst durch is-in-* auf
    .storyhz__item (siehe main.js) – nicht mehr der ganze Punkt auf
-   einmal. Timing/Delay/Easing 1:1 vom Original-Script übernommen. */
+   einmal. Timing/Easing/Zielwerte 1:1 aus den echten GSAP-Tween-Vars des
+   Vorbilds ausgelesen (per ScrollTrigger.getAll()/anim.vars, nicht mehr
+   nur geschätzt, siehe Projektnotizen): Jahr autoAlpha 0→1 + y 8px→0,
+   0,5s power1.out; Titel/Beschriftung dieselbe Eigenschaften, aber 0,6s;
+   Punkt scale 0→1 + autoAlpha 0→1, 0,5s back.out(2). Farblich ist dort
+   NICHTS akzentfarben – Jahr, Punkt und Linie stehen in derselben
+   Fließtext-Tinte wie die Beschriftung (`rgb(91,50,23)`, deckt sich exakt
+   mit unserem `--ink`). Vorher hatten Jahr/Punkt/Linie hier fälschlich
+   `var(--accent)` – keine bewusste Akzent-Übertragung, sondern eine
+   Abweichung vom Original, jetzt auf `--ink` korrigiert. */
 .storyhz__year{
-  color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;
+  color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums;
   font-size:clamp(1.375rem,1.8vw,1.75rem);
   margin-bottom:.7em;
   opacity:0;transform:translateY(.5em);
-  transition:opacity .5s var(--ease-power1-out) .12s, transform .5s var(--ease-power1-out) .12s;
+  transition:opacity .5s var(--ease-power1-out), transform .5s var(--ease-power1-out);
 }
 .storyhz__item.is-in-year .storyhz__year{opacity:1;transform:translateY(0)}
 
+/* Punkt: im Vorbild ein winziger (8px), voll deckend gefüllter Kreis in
+   Tinte-Farbe, ohne Ring/Rahmen – kein optischer Unterschied zwischen dem
+   ersten und den übrigen Punkten (per getComputedStyle verglichen, exakt
+   identisch). Vorher ein großer (1,1rem) hohler Ring mit Akzent-Rahmen
+   und akzentfarbenem ersten Punkt – beides Abweichungen, jetzt entfernt. */
 .storyhz__dot{
-  width:1.1rem;height:1.1rem;border-radius:50%;
-  background:var(--cream);border:3px solid var(--accent);
+  width:.5rem;height:.5rem;border-radius:50%;
+  background:var(--ink);
   margin-bottom:1em;
   opacity:0;transform:scale(0);
   transition:opacity .5s var(--ease-back-out2), transform .5s var(--ease-back-out2);
 }
-.storyhz__dot--first{background:var(--accent)}
 .storyhz__item.is-in-dot .storyhz__dot{opacity:1;transform:scale(1)}
 
 .storyhz__caption{
   max-width:28ch;color:var(--ink-70);
   font-size:clamp(1.0625rem,1.3vw,1.3125rem);line-height:1.5;
   opacity:0;transform:translateY(.6em);
-  transition:opacity .6s var(--ease-power1-out) .2s, transform .6s var(--ease-power1-out) .2s;
+  transition:opacity .6s var(--ease-power1-out), transform .6s var(--ease-power1-out);
 }
 .storyhz__item.is-in-title .storyhz__caption{opacity:1;transform:translateY(0)}
 
-/* Foto: alternierender Dreheinstieg (-3°→3° bzw. umgekehrt, je nachdem
-   ob das Foto oben oder mittig sitzt – deckt sich im Markup exakt mit
-   dem bestehenden img-top/img-center-Wechsel), löst schon beim
-   Kanteneintritt aus (kein Warten auf 80/85/90%). */
+/* Foto: im Vorbild KEIN Fade-in mit CSS-Transition, sondern eine per
+   Scroll-Fortschritt "geschrubbte" GSAP-Rotation (ease:none, scrub:true)
+   zwischen zwei Schwellen – dreht sich also gleichmäßig MIT dem Scrollen
+   statt einmalig anzuspringen. main.js schreibt den Rotationswinkel
+   deshalb direkt als Inline-Style bei jedem Scroll-Tick (kein
+   CSS-transition mehr nötig/gewünscht). Ziel-Rotation ist im Vorbild bei
+   JEDEM Foto +3° (nicht alternierend) – die frühere Umkehrung auf
+   img-center (3°→-3°) war eine Fehlannahme, jetzt für alle Fotos
+   einheitlich -3°→3°. img-top/img-center bleiben nur noch für die
+   Bildposition (Reihenfolge/Abstand) im Einsatz. */
 .storyhz__image{
   width:100%;aspect-ratio:4/3;
   border-radius:var(--r-lg);overflow:hidden;
   background:var(--card);
-  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
   margin-bottom:1.4em;
-  transform:rotate(var(--rot-start));
-  transition:transform .8s var(--ease-power2-out);
+  transform:rotate(-3deg);
 }
-.storyhz__item--img-top .storyhz__image{--rot-start:-3deg;--rot-end:3deg}
-.storyhz__item--img-center .storyhz__image{--rot-start:3deg;--rot-end:-3deg;margin-bottom:0;margin-top:1.4em;order:3}
-.storyhz__item.is-in-img .storyhz__image{transform:rotate(var(--rot-end))}
+.storyhz__item--img-center .storyhz__image{margin-bottom:0;margin-top:1.4em;order:3}
 .storyhz__image img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* ── Statischer Fallback: Mobil und prefers-reduced-motion ───────────
@@ -1083,10 +1195,18 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    nicht gewünscht (reduzierte Bewegung) oder auf schmalen Bildschirmen
    keine gute Idee ist (horizontales Scroll-Hijacking ist auf einem
    Touch-Screen kein Vergnügen). Der Zeitstrahl fließt dann normal
-   untereinander, ganz ohne position:sticky/transform – und da hier gar
-   kein Scroll-Handler läuft, der is-in-* setzen könnte, werden Jahr/
-   Titel/Punkt/Foto direkt auf ihren Endzustand gezwungen statt auf ein
-   nie kommendes Trigger-Signal zu warten. */
+   untereinander, ganz ohne position:sticky/transform.
+   Kundenwunsch „auch mobil 1:1 nachbauen": das Vorbild deaktiviert
+   unterhalb 992px zwar den horizontalen Pin, NICHT aber die einzelnen
+   Jahr/Titel/Punkt/Foto-Trigger – die animieren dort weiter per
+   normalem Vertikal-Scroll ein (per Introspektion bestätigt, siehe
+   Projektnotizen). Jahr/Titel/Punkt/Foto bleiben deshalb hier auf ihren
+   normalen (nicht-statischen) Animations-Regeln – main.js hängt für
+   [data-static] OHNE [data-nomotion] einen eigenen Vertikal-Scroll-
+   Handler ein, der dieselben is-in-*-Klassen setzt wie das Desktop-
+   Pinning. NUR bei [data-nomotion] (reduzierte Bewegung) werden Jahr/
+   Titel/Punkt/Foto weiter hart auf ihren Endzustand gezwungen, weil dort
+   kein Scroll-Handler läuft. */
 .story[data-static] .storyhz__spacer{height:auto}
 .story[data-static] .storyhz__sticky{display:block;position:static;height:auto;padding-block:clamp(2.5rem,6vw,4rem)}
 .story[data-static] .storyhz__track{
@@ -1095,42 +1215,54 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 }
 .story[data-static] .storyhz__line{display:none}
 
+.story[data-nomotion] .storyhz__year,
+.story[data-nomotion] .storyhz__caption{opacity:1;transform:none;transition:none}
+.story[data-nomotion] .storyhz__dot{opacity:1;transform:none;transition:none}
+.story[data-nomotion] .storyhz__image{transform:none}
+
 .story[data-static] .storyhz__intro{min-width:0}
 .story[data-static] .storyhz__intro-image{width:100%;max-width:24rem;margin-inline:auto}
 
+/* 1:1 vom Vorbild übernommen (Live-Analyse bei 375px UND 768px, siehe
+   Projektnotizen): unterhalb des 992px-Breakpoints ist der Fließ-Fallback
+   dort bei JEDER Breite dieselbe volle Spalte – Foto zuerst in voller
+   Breite, dann Jahr, dann Beschriftung – keine Zwischenstufe mit Jahr/
+   Foto nebeneinander. Vorher gab es hier bis 560px eine Reihen-Anordnung
+   (Jahr 8rem + Bild 9rem nebeneinander); das war eine eigene Zwischenlösung
+   und wich vom Vorbild ab, deshalb jetzt für den ganzen Fallback-Bereich
+   vereinheitlicht. */
+/* Vorbild zeigt den Punkt mobil weiterhin an, als Anker auf einer
+   senkrechten Linie neben der gestapelten Liste (bestätigt per
+   getComputedStyle: dotDisplay:"block" bei 768px, Linie dreht dort auf
+   eine 2px breite, item-hohe Vertikale). Hier pro Punkt als eigener
+   `border-left` auf dem Item nachgebaut statt eines einzelnen,
+   durchgehenden Elements – robuster gegenüber unterschiedlich hohen
+   Punkten, mit einer kleinen (optisch kaum wahrnehmbaren) Lücke pro
+   Abstand zwischen den Punkten statt einer pixelgenau durchgehenden
+   Linie. */
 .story[data-static] .storyhz__item{
-  width:100%;flex-direction:row;text-align:left;align-items:center;
-  gap:clamp(1.25rem,3vw,2rem);
+  position:relative;
+  width:100%;flex-direction:column;align-items:flex-start;text-align:left;
+  gap:.75rem;
+  padding-left:1.5rem;
+  border-left:1px dashed var(--ink);
 }
 .story[data-static] .storyhz__item > *{margin:0}
-.story[data-static] .storyhz__year{order:1;flex:none;width:8rem;opacity:1;transform:none;transition:none}
-.story[data-static] .storyhz__dot{display:none}
-.story[data-static] .storyhz__caption{order:2;flex:1;max-width:none;opacity:1;transform:none;transition:none}
-.story[data-static] .storyhz__image{order:3;flex:none;width:9rem;aspect-ratio:1;margin:0;opacity:1;transform:none;transition:none}
-.story[data-static] .storyhz__item--img-center .storyhz__image{order:3}
-
-/* Handy: die Reihen-Anordnung (Jahr 8rem + Bild 9rem nebeneinander) ließ
-   der Beschriftung auf schmalen Geräten kaum noch Platz – bei 375px blieben
-   nach den beiden festen Spalten nur rund 60px für den Fließtext, der
-   dadurch stark umbrach. Unter 560px daher eigene, gestapelte Anordnung:
-   Foto oben in voller Breite (führt jetzt visuell wie bei der Intro-Karte),
-   Jahr darunter, Beschriftung darunter – jedes Element bekommt die volle
-   Zeilenbreite und bleibt lesbar. */
-@media (max-width:560px){
-  .story[data-static] .storyhz__item{
-    flex-direction:column;align-items:flex-start;gap:.75rem;
-  }
-  .story[data-static] .storyhz__image{
-    order:1;width:100%;aspect-ratio:16/10;margin-bottom:.25rem;
-  }
-  .story[data-static] .storyhz__item--img-center .storyhz__image{order:1;margin-top:0}
-  .story[data-static] .storyhz__year{order:2;width:auto}
-  .story[data-static] .storyhz__caption{order:3}
+.story[data-static] .storyhz__dot{
+  display:block;position:absolute;left:calc(-.25rem - .5px);top:0;
 }
+.story[data-static] .storyhz__image{order:1;width:100%;aspect-ratio:16/10;margin-bottom:.25rem}
+.story[data-static] .storyhz__item--img-center .storyhz__image{order:1;margin-top:0}
+.story[data-static] .storyhz__year{order:2;width:auto}
+.story[data-static] .storyhz__caption{order:3;max-width:none}
 
 /* ── Responsive ────────────────────────────────────────────────────── */
 @media (max-width:900px){
   .nav__center{display:none}
+  /* Wandert unter dieser Breite ins Mobilmenü (.mobilmenu__lang) – in der
+     schmalen Kopfzeile neben Logo, CTA und Burger wäre für eine dritte
+     Pille kein Platz mehr, ohne dass es gedrängt wirkt. */
+  .nav__lang{display:none}
   .nav__cta{margin-left:auto}
   .burger{display:flex}
 }
@@ -1153,6 +1285,16 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
     padding-top:calc(var(--pad) + var(--word-h) + clamp(1rem,3vw,2.5rem));
     padding-bottom:clamp(3rem,8vw,6rem);
   }
+  /* Der blasse Wasserzeichen-Schriftzug hing per festem left:var(--pad)
+     immer links – auf dem Desktop passend zur dort ebenfalls linksbündigen
+     Namensspalte, hier ab Tablet-Breite aber ein Bruch, weil Name/Text
+     darunter (s. .spez__name/.spez__copy unten) auf zentriert umschalten.
+     Jetzt mittig über die ganze Sektionsbreite. Gewicht hier zurück auf
+     500 (Desktop bleibt 700, Kundenwunsch von vorhin): Live-Analyse des
+     Vorbilds bei 375px (.featured-bg h2, dortiges Pendant zu diesem
+     Schriftzug) zeigt dort ebenfalls Gewicht 500, nicht fett – bei 700
+     wirkte unserer im Vergleich klobiger als das Vorbild-Mobilbild. */
+  .spez__word{left:50%;translate:-50% 0;font-weight:500}
   .spez__stage{
     height:auto;flex-direction:column;
     gap:clamp(1.25rem,3vw,2.25rem);
@@ -1161,7 +1303,12 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   .spez__deckwrap{height:auto;margin-bottom:calc(var(--btn-h) * .45)}
   .spez__name{
     position:static;translate:none;width:min(38rem,100%);
-    text-align:center;font-size:clamp(1.5rem,4.44vw,2.75rem);
+    text-align:center;
+    /* Live-Analyse des Vorbilds bei 375px (.flick-card__title, dortiges
+       Pendant): 28.2px, nicht die vorher hier stehenden 24px (4.44vw) –
+       um gut 17% größer als bei uns, Gewicht/Zeilenhöhe/Letter-Spacing
+       stimmten dagegen schon überein. */
+    font-size:clamp(1.5rem,7.5vw,2.75rem);
   }
   .deck{height:auto;aspect-ratio:.714}
   .spez__copy{
@@ -1180,6 +1327,13 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   .spez__nav{flex-direction:column;gap:.9rem}
   .spez__arrows{order:-1;gap:.75rem}
   .arrow{width:2rem}          /* Vorbild: 31 px – Tippfläche kommt vom ::after */
+  /* Kundenwunsch: auf dem Handy nur noch die Kurzunterschrift zeigen, der
+     Fließtext fällt weg – und der Anfragen-Button rückt dafür tiefer in
+     die Karte hinein statt größtenteils darunter zu hängen, wie im
+     Vorbild. */
+  .spez__text{display:none}
+  .deck__cta{bottom:calc(var(--btn-h) * .2)}
+  .spez__deckwrap{margin-bottom:0}
 }
 
 /* Handy: die Karte war mit 60vw auf schmalen Screens (z. B. 375px = 225px)
@@ -1195,18 +1349,27 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   .spez__text{font-size:.9375rem}
 }
 
-/* Mobile-Überarbeitung: der „Öffnungszeiten"-Button neben dem Burger wurde
-   vorher auf sehr schmalen Geräten nur noch auf Textgröße gestutzt (Pfeil
-   weg, enge Polster) – eine Notlösung, kein bewusstes mobiles Design. Unter
-   der schon anderswo im Projekt etablierten Handy-Schwelle (640px, siehe
-   z. B. .geismap/.spez) verschwindet der Button jetzt ganz: der Kopf bleibt
-   nur noch Logo + Burger, aufgeräumt wie im Vorbild. „Öffnungszeiten" bleibt
-   trotzdem zwei Taps entfernt (Burger → Eintrag „Öffnungszeiten" in der
-   Besuch-Gruppe des Mobilmenüs), zusätzlich ruft der Telefon-CTA im
-   geöffneten Menü direkt an. */
+/* Kundenwunsch: der „Öffnungszeiten"-Button soll auf dem Handy oben in der
+   Kopfzeile sichtbar BLEIBEN statt hinter dem Burger zu verschwinden – ein
+   vorheriger Anlauf hatte ihn unter 640px ganz ausgeblendet (Begründung:
+   „bleibt ja zwei Taps entfernt"), das machte ihn in der Praxis aber gerade
+   NICHT mehr erreichbar. Der schmalere Innenabstand (.nav__inner) bleibt
+   wie vorher – ohne die zentrierte Hauptnavigation/Sprachpille (beide ab
+   900px per .nav__center/.nav__lang ausgeblendet) ist links vom Burger nur
+   noch Logo + dieser Button, das reicht auf jeder gängigen Handybreite
+   (durchgemessen ab 360px) knapp aber sauber ohne Umbruch. */
 @media (max-width:640px){
-  .nav__cta{display:none}
   .nav__inner{gap:.75rem}
+}
+/* Sicherheitsnetz für sehr schmale/alte Geräte (≤340px, z. B. iPhone SE
+   1. Generation/iPhone 5 mit 320px): Logo + voller Button + Burger passen
+   ab ~360px nachweislich nebeneinander (durchgemessen), darunter würde der
+   Button ohne diese Verschlankung über den Rand hinaus laufen. Pfeil weg
+   und engere Polster statt den Button (wie vor dem letzten Anlauf) wieder
+   ganz zu verstecken. */
+@media (max-width:340px){
+  .nav__cta{padding-inline:.625rem}
+  .nav__cta .btn__arrow{display:none}
 }
 
 /* Geising-Karte: unter ~640px verlassen die Popups die Pin-Verankerung
@@ -1217,16 +1380,90 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    werden erst per Pin-Tap eingeblendet – der erste Blick soll noch die
    Karte selbst zeigen, nicht schon beide vollen Info-Karten. */
 @media (max-width:640px){
-  .geismap{display:flex;flex-direction:column;gap:1rem;padding:1rem}
-  .geismap__frame{position:relative;inset:auto;aspect-ratio:16/10;margin:-1rem -1rem 0}
-  .oeff__card{aspect-ratio:auto;height:auto;max-height:none}
-  .geismap__marker{position:static;margin:0}
-  .geismap__popup{position:static;width:100%;display:none;translate:none}
-  /* .is-open zählt als zwei Klassen auf einem Element + .geismap__popup
-     macht drei insgesamt – spezifischer als die :hover/:focus-within/
-     .is-open-Regel weiter oben (die dort translate:-50% 0 setzt und
-     sonst gewinnen würde), daher hier translate erneut auf none. */
-  .geismap__marker.is-open .geismap__popup{display:block;translate:none}
+  .oeff__card{container-type:normal;aspect-ratio:auto;height:auto;max-height:none;background:transparent}
+  .geismap{display:none}
+  /* Jede Filiale bleibt eine eigene Kachel. Der beige Detailblock sitzt
+     frei darunter, ohne dass eine gemeinsame weiße Fläche ihn einrahmt. */
+  .mobile-location-overview{display:grid;gap:1.65rem;margin-block:1.65rem;padding:0;border-radius:0;background:transparent}
+  .mobile-location-overview:has(.location-tile) .mobile-location-card{display:none}
+  .location-tile{
+    display:grid;gap:.95rem;padding:1.3rem 1.25rem;border:1px solid rgba(91,50,23,.2);border-radius:var(--r-lg);
+    background:linear-gradient(135deg,#F3E9D7 0%,var(--card) 100%);text-align:center;
+    transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease);
+  }
+  .location-tile:nth-child(2).reveal.is-in{animation-delay:.1s}
+  @media (hover:hover){.location-tile:hover{transform:translateY(-.3rem);border-color:rgba(91,50,23,.32);box-shadow:0 .85rem 1.75rem rgba(64,35,14,.12)}}
+  .location-tile:focus-within{transform:translateY(-.16rem);border-color:rgba(91,50,23,.32);box-shadow:0 .7rem 1.4rem rgba(64,35,14,.1)}
+  .location-tile:active{transform:scale(.992)}
+  .location-tile__header{position:relative}
+  .location-tile__header h3{padding-right:2.15rem;font-size:clamp(1.45rem,6.3vw,1.85rem);font-weight:500;line-height:1.1;letter-spacing:-.03em}
+  .location-tile__header p{margin-top:.45rem;font-size:.875rem;color:var(--ink-70)}
+  .location-tile__status{display:none}
+  .location-tile__today{display:inline-flex;justify-self:center;align-items:center;gap:.45rem;font-size:.95rem;font-weight:600}
+  .location-tile__today::before{content:"";width:.45rem;height:.45rem;border-radius:50%;background:var(--ink-25)}
+  .location-tile:has(.oeff__status[data-open="true"]) .location-tile__today::before{background:#3F9142;box-shadow:0 0 0 .2em rgba(63,145,66,.18);animation:location-status-breathe 2.4s ease-out infinite}
+  @keyframes location-status-breathe{50%{box-shadow:0 0 0 .38em rgba(63,145,66,.06)}}
+  .location-tile__hours{display:grid;gap:.55rem;margin:0;padding-top:.2rem;text-align:left}
+  .location-tile__hours div{display:flex;justify-content:space-between;gap:1rem}
+  .location-tile__hours dt{font-size:.875rem;color:var(--ink-70)}
+  .location-tile__hours dd{margin:0;font-size:.875rem;font-weight:600;text-align:right}
+  .location-tile__route{position:absolute;top:0;right:0;display:grid;place-items:center;width:1.8rem;height:1.8rem;margin:0;padding:0;background:transparent;border:1px solid var(--ink-45);border-radius:50%;color:var(--ink);box-shadow:none}
+  .location-tile__route:hover,.location-tile__route:focus-visible{background:var(--ink);color:var(--cream);transform:scale(1.08)}
+  .location-tile__route:active{transform:scale(.94)}
+  .location-tile__route svg{width:.9rem;height:.9rem;transition:transform .25s var(--ease)}
+  .location-tile__route:hover svg,.location-tile__route:focus-visible svg{transform:translate(.07rem,-.07rem) rotate(10deg)}
+  .mobile-location-overview__intro{display:none}
+  /* Das reine Weiß entspricht bewusst exakt der Footer-Karte. Das Foto
+     ist kein angeschnittener Flächenhintergrund mehr, sondern ein eigener
+     kleiner Orts-Anker mit Rundung und Luft rundherum. */
+  /* Weiß liegt nur als Untergrund unter den abgerundeten Beige-Ecken.
+     So entsteht keine sichtbare Umrandung, aber die Verbindung zur
+     weißen Kopfkachel bleibt in den Rundungen erhalten. */
+  .mobile-location-card{overflow:visible;border-radius:var(--r-lg);background:#FFF}
+  .mobile-location-card__summary{
+    position:relative;display:grid;grid-template-columns:6rem minmax(0,1fr);gap:.85rem;
+    width:100%;min-height:7.25rem;padding:.625rem;border-radius:var(--r-lg);background:#FFF;text-align:left;
+    transition:transform .25s var(--ease),background-color .25s var(--ease);
+  }
+  .mobile-location-card__photo{width:100%;height:6rem;align-self:center;border-radius:calc(var(--r) - .15rem);aspect-ratio:1;object-fit:cover;transition:transform .35s var(--ease)}
+  .mobile-location-card__body{padding:.2rem .15rem 1.25rem 0;display:grid;align-content:start;gap:.4rem}
+  .mobile-location-card__title-row{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.4rem}
+  .mobile-location-card__name,.mobile-location-card__title-row h3{font-size:1.25rem;font-weight:500;line-height:1.1;letter-spacing:-.02em}
+  .mobile-location-card__summary .mobile-location-card__today{display:none}
+  .mobile-location-card__summary::after{
+    content:"Details anzeigen  ›";position:absolute;left:7.5rem;bottom:.8rem;
+    color:var(--ink-45);font-size:.75rem;font-weight:600;letter-spacing:.01em;
+  }
+  .mobile-location-card__summary[aria-expanded="true"]::after{content:"Details schließen  ‹"}
+  .mobile-location-card__summary:active{transform:scale(.985)}
+  @media (hover:hover){
+    .mobile-location-card__summary:hover{transform:translateY(-.15rem)}
+    .mobile-location-card__summary:hover .mobile-location-card__photo{transform:scale(1.035)}
+  }
+  .mobile-location-card__details{
+    display:grid;gap:.9rem;max-height:0;margin-top:0;padding:0 1.1rem;overflow:hidden;
+    border-radius:var(--r-lg);background:linear-gradient(135deg,var(--card),var(--card-foot));opacity:0;transform:translateY(-.45rem);
+    transition:max-height .38s var(--ease),margin .38s var(--ease),padding .38s var(--ease),opacity .24s var(--ease),transform .38s var(--ease);
+  }
+  /* Geöffnet wird die weiße Kopfkachel direkt mit ihrem beigen Detailteil
+     verbunden: oben weiß gerundet, unten beige gerundet – ohne Lücke,
+     ohne weißen Rahmen um die Detailfläche. */
+  .mobile-location-card:has(.mobile-location-card__details.is-open) .mobile-location-card__summary{border-radius:var(--r-lg) var(--r-lg) 0 0}
+  .mobile-location-card__details.is-open{max-height:22rem;margin-top:0;padding:1rem 1.1rem 1.1rem;border-radius:var(--r-lg);opacity:1;transform:none}
+  .mobile-location-card__details[hidden]{display:none}
+  .mobile-location-card__address{margin:0;font-size:.875rem;color:var(--ink-70)}
+  .mobile-location-card__hours{display:grid;gap:.45rem;margin:0;padding:.1rem 0}
+  .mobile-location-card__hours div{display:flex;justify-content:space-between;gap:1rem}
+  .mobile-location-card__hours dt{font-size:.875rem;color:var(--ink-45)}
+  .mobile-location-card__hours dd{margin:0;font-size:.875rem;font-weight:600;text-align:right}
+  .mobile-location-card__details .btn{justify-content:center;height:2.9rem;margin-top:.1rem}
+  .mobile-location-card__details.is-open .btn{animation:mobile-route-in .38s var(--ease) both .08s}
+  @keyframes mobile-route-in{from{opacity:0;transform:translateY(.35rem)}to{opacity:1;transform:none}}
+  .mobile-location-card.is-collapsible{cursor:pointer}
+  .mobile-location-card.is-collapsible:not(.is-expanded) .mobile-location-card__address,
+  .mobile-location-card.is-collapsible:not(.is-expanded) .mobile-location-card__actions,
+  .mobile-location-card.is-collapsible:not(.is-expanded) .mobile-location-card__hours{display:none}
+  .mobile-location-card__call{display:none}
 }
 
 
@@ -1323,7 +1560,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    Die von .section geerbte Hochzieh-Kante (negativer margin-top, sonst
    gedacht, um die Kante der VORHERIGEN Sektion zu kaschieren) wird hier
    auf 0 zurueckgesetzt - es gibt ja keine vorherige Sektion. */
-.subpage main>.section:first-of-type{margin-top:0;padding-top:clamp(7rem, 10vw, 9rem)}
+.subpage main>.section:first-of-type{margin-top:0;padding-top:clamp(7rem, 10vw, 9rem);border-radius:0}
 /* ── Gemeinsames Grundmuster der schlichten Textseiten ────────────────
    Impressum, Team und Ausbildung benutzen dasselbe Muster: schmale
    Lesebreite, Pill + Headline, auto-fit-Kartenraster, gedämpfter
@@ -1334,7 +1571,8 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    seitenspezifische Ausnahmen stehen weiter unten bei der jeweiligen
    Seite. Die Klassennamen bleiben bewusst seiteneigen, damit sich eine
    einzelne Seite jederzeit wieder herauslösen lässt. */
-.impressum__inner,.team__inner,.ausbildung__inner{max-width:min(var(--wrap), 56rem);margin-inline:auto;padding-inline:var(--pad)}
+.impressum__inner{max-width:min(var(--wrap),56rem);margin-inline:auto;padding-inline:var(--pad)}
+.team__inner,.ausbildung__inner{max-width:min(var(--wrap),76rem);margin-inline:auto;padding-inline:var(--pad)}
 .impressum__heading,.team__heading,.ausbildung__heading,.anfahrt__heading,.schautorten__heading{margin-top:1.1rem;font-size:var(--fs-h2);font-weight:500;letter-spacing:-.02em}
 .impressum__updated{margin-top:.6rem;margin-bottom:2.5rem;color:var(--ink-45);font-size:.875rem}
 
@@ -1343,11 +1581,11 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    – auto-fit statt fester Spaltenzahl, damit es bei ungeraden Anzahlen
    nicht zwangsläufig eine unschön überhängende letzte Zeile gibt,
    sondern sich frei auf 2–3 Spalten verteilt, je nach Breite. */
-.impressum__grid,.team__grid,.ausbildung__grid{
+.impressum__grid{
   display:grid;grid-template-columns:repeat(auto-fit, minmax(14rem,1fr));
   gap:clamp(1.75rem,3vw,2.75rem);
 }
-.team__grid,.ausbildung__grid{margin-top:clamp(2.5rem,5vw,3.5rem)}
+.team__grid,.ausbildung__grid{margin-top:clamp(3.5rem,7vw,6rem)}
 .impressum__block h3,.team__block h3,.ausbildung__block h3{font-size:1rem;font-weight:600;margin-bottom:.75em}
 .impressum__block p,.team__block p,.ausbildung__block p{color:var(--ink-70);line-height:1.6}
 .impressum__block p + p,.ausbildung__block p + p{margin-top:1em}
@@ -1374,7 +1612,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    direkt bei der Komponente – sie MUSS nach deren Basisregel stehen,
    sonst gewinnt bei gleicher Spezifität die spätere Basisregel. */
 @media (max-width:700px){
-  .impressum__grid,.team__grid,.ausbildung__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
+  .impressum__grid{grid-template-columns:minmax(0,1fr);gap:2rem}
 }
 
 /* ── Team / Ausbildung / Schautorten / Anfahrt ────────────────────────
@@ -1386,10 +1624,206 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    breite, Headline, Kartenraster, Fließtext) steht weiter oben im
    Abschnitt „Textseiten"; hier nur noch, was diese Seiten wirklich
    voneinander unterscheidet. */
-.team__lede{margin-top:1.25rem;max-width:46ch;color:var(--ink-70);font-style:italic;line-height:1.6}
+.team__heading,.ausbildung__heading{max-width:14ch;font-size:clamp(2.6rem,5.4vw,5.8rem);line-height:.98;letter-spacing:-.045em}
+.team__lede{margin-top:clamp(1.5rem,3vw,2.4rem);max-width:54ch;color:var(--ink-70);font-style:italic;line-height:1.65}
 .team__lede cite{display:block;margin-top:.6em;font-style:normal;font-size:.875rem;color:var(--ink-45)}
-.team__block ul{color:var(--ink-70);line-height:1.9}
-.ausbildung__lede{margin-top:1.1rem;max-width:52ch;color:var(--ink-70);line-height:1.6}
+.ausbildung__lede{margin-top:clamp(1.5rem,3vw,2.25rem);max-width:58ch;color:var(--ink-70);line-height:1.65}
+
+/* Ruhigere, redaktionelle Reveal-Bewegung für die beiden Inhaltsseiten.
+   Blur und Skalierung sind bewusst minimal und verschwinden früh in der
+   Bewegung, sodass die Inhalte weich erscheinen statt einzufliegen. */
+html.js .editorial-reveal{transform:translateY(2.2rem) scale(.985);filter:blur(7px)}
+html.js .editorial-reveal.is-in{
+  animation:editorial-in 1.05s cubic-bezier(.16,1,.3,1) var(--reveal-delay,0s) forwards;
+}
+@keyframes editorial-in{
+  55%{filter:blur(0)}
+  to{opacity:1;visibility:visible;transform:none;filter:blur(0)}
+}
+
+/* Interaktive Redaktionskarten: der innere Layer übernimmt Neigung und
+   Lichtpunkt, während der äußere Wrapper unabhängig davon einblendet. */
+.interactive-card{
+  --card-rx:0deg;--card-ry:0deg;--card-x:50%;--card-y:50%;
+  position:relative;height:100%;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(91,50,23,.17);border-radius:var(--r-lg);
+  background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(240,218,183,.82));
+  transform:perspective(950px) rotateX(var(--card-rx)) rotateY(var(--card-ry)) translateY(0);
+  transform-style:preserve-3d;will-change:transform;
+  transition:transform .55s cubic-bezier(.16,1,.3,1),border-color .35s var(--ease),background-color .35s var(--ease);
+}
+.interactive-card::before{
+  content:"";position:absolute;inset:-1px;z-index:-1;pointer-events:none;
+  background:radial-gradient(24rem circle at var(--card-x) var(--card-y),rgba(255,255,255,.72),transparent 48%);
+  opacity:0;transition:opacity .4s var(--ease);
+}
+.interactive-card::after{
+  content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:linear-gradient(125deg,transparent 35%,rgba(200,16,46,.055) 100%);
+}
+@media (hover:hover) and (pointer:fine){
+  .interactive-card:hover{transform:perspective(950px) rotateX(var(--card-rx)) rotateY(var(--card-ry)) translateY(-.45rem);border-color:rgba(91,50,23,.32)}
+  .interactive-card:hover::before{opacity:1}
+}
+
+.team__grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(1rem,2vw,1.5rem)}
+.team__block:nth-child(1){grid-column:span 5}
+.team__block:nth-child(2){grid-column:span 7}
+.team__block:nth-child(3){grid-column:1/-1}
+.team-card{min-height:clamp(18rem,30vw,23rem);padding:clamp(1.5rem,3.5vw,3rem);display:flex;flex-direction:column}
+.team-card__top,.training-card__top{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:auto}
+.team-card__index,.training-card__index{font-size:clamp(2.2rem,4vw,4.5rem);font-weight:500;line-height:1;letter-spacing:-.06em;color:var(--ink-25)}
+.team-card__role,.training-card__duration{
+  padding:.45rem .75rem;border:1px solid var(--ink-25);border-radius:var(--r-pill);
+  color:var(--ink-70);font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+}
+.team-card h3{margin-top:clamp(2.5rem,5vw,5rem);font-size:clamp(1.65rem,3vw,3rem);line-height:1;letter-spacing:-.035em}
+.team-card__lead{margin-top:.85rem;color:var(--ink-70);font-size:clamp(1.1rem,1.6vw,1.4rem)}
+.team-card__people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem 1.5rem;margin-top:1.35rem;color:var(--ink-70)}
+.team-card__people--wide{grid-template-columns:repeat(3,minmax(0,1fr))}
+.team-card__people li{position:relative;padding:.35rem 0 .35rem 1rem;transition:transform .3s var(--ease),color .3s var(--ease)}
+.team-card__people li::before{content:"";position:absolute;left:0;top:50%;width:.34rem;height:.34rem;border-radius:50%;background:var(--ink-25);transform:translateY(-50%);transition:transform .3s var(--ease),background-color .3s var(--ease)}
+.team-card__line{width:3rem;height:2px;margin-top:clamp(2rem,4vw,3.5rem);border-radius:var(--r-pill);background:var(--ink);transition:width .55s cubic-bezier(.16,1,.3,1)}
+@media (hover:hover) and (pointer:fine){
+  .team-card:hover .team-card__line{width:100%}
+  .team-card__people li:hover{color:var(--ink);transform:translateX(.3rem)}
+  .team-card__people li:hover::before{background:var(--accent);transform:translateY(-50%) scale(1.35)}
+}
+
+.ausbildung__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2vw,1.5rem)}
+.training-card{min-height:100%;padding:clamp(1.5rem,3.5vw,3rem);display:flex;flex-direction:column}
+.training-card__eyebrow{margin-top:clamp(3rem,7vw,6rem);color:var(--ink-45);font-size:.8rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.training-card h3{margin-top:.55rem;font-size:clamp(1.7rem,3vw,3rem);line-height:1.04;letter-spacing:-.04em;overflow-wrap:anywhere}
+.training-card>p:not(.training-card__eyebrow){margin-top:1.5rem;color:var(--ink-70);line-height:1.65}
+.training-card__facts{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:auto;padding-top:clamp(2.5rem,5vw,4rem)}
+.training-card__facts span{padding:.48rem .72rem;border-radius:var(--r-pill);background:rgba(91,50,23,.075);font-size:.78rem;font-weight:600;color:var(--ink-70);transition:background-color .3s var(--ease),color .3s var(--ease),transform .3s var(--ease)}
+.training-card__choose{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;
+  margin-top:1.5rem;padding:1.25rem 0 0;border-top:1px solid var(--ink-25);
+  color:var(--ink);font-weight:650;text-align:left;
+  transition:color .3s var(--ease),padding-left .45s cubic-bezier(.16,1,.3,1);
+}
+.training-card__choose svg{width:1.1rem;height:1.1rem;flex:none;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+@media (hover:hover) and (pointer:fine){
+  .training-card:hover .training-card__facts span{background:var(--ink);color:var(--cream);transform:translateY(-.12rem)}
+  .training-card:hover .training-card__facts span:nth-child(2){transition-delay:.04s}
+  .training-card:hover .training-card__facts span:nth-child(3){transition-delay:.08s}
+  .training-card__choose:hover{color:var(--accent);padding-left:.25rem}
+  .training-card__choose:hover svg{transform:translateX(.35rem)}
+}
+
+/* ── Geführte Bewerbung ──────────────────────────────────────────────
+   Nach dem Step-Prinzip der Referenz, aber vollständig im Nestler-
+   Design: Beruf wählen, Kontakt, Motivation. Kein Schein-Upload und kein
+   vorgetäuschter Serverversand – am Ende wird eine E-Mail vorbereitet. */
+.application-flow{
+  margin-top:clamp(5rem,10vw,9rem);padding:clamp(1rem,2.2vw,2rem);
+  border:1px solid rgba(91,50,23,.14);border-radius:clamp(1.25rem,2vw,2rem);
+  background:#fff;overflow:hidden;
+}
+.application-flow__intro{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(18rem,.7fr);gap:2rem 4rem;padding:clamp(1rem,2.5vw,2.5rem)}
+.application-flow__intro .pill{grid-column:1/-1;justify-self:start}
+.application-flow__intro h2{font-size:clamp(2.25rem,4.7vw,5.2rem);font-weight:500;line-height:.95;letter-spacing:-.05em;max-width:12ch}
+.application-flow__intro>p:last-child{align-self:end;max-width:42ch;color:var(--ink-70);line-height:1.65}
+.application-flow__shell{margin-top:clamp(1.5rem,3vw,3rem);border-radius:var(--r-lg);background:linear-gradient(145deg,var(--card),rgba(243,233,215,.7));overflow:hidden}
+
+.application-progress{--app-progress:.333;position:relative;padding:clamp(1.5rem,3vw,2.5rem) clamp(1.25rem,4vw,4rem) 0}
+.application-progress__track{position:absolute;left:clamp(1.25rem,4vw,4rem);right:clamp(1.25rem,4vw,4rem);top:clamp(2.85rem,5vw,4rem);height:1px;background:var(--ink-25);overflow:hidden}
+.application-progress__track i{display:block;width:100%;height:100%;background:var(--ink);transform:scaleX(var(--app-progress));transform-origin:left center;transition:transform .7s cubic-bezier(.16,1,.3,1)}
+.application-progress ol{position:relative;display:grid;grid-template-columns:repeat(3,1fr)}
+.application-progress li{display:grid;gap:.45rem;color:var(--ink-45);transition:color .4s var(--ease)}
+.application-progress li:nth-child(2){justify-items:center;text-align:center}
+.application-progress li:nth-child(3){justify-items:end;text-align:right}
+.application-progress li span{display:grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--ink-25);border-radius:50%;background:var(--card);font-size:.76rem;font-weight:700;transition:background-color .4s var(--ease),color .4s var(--ease),border-color .4s var(--ease),transform .5s cubic-bezier(.16,1,.3,1)}
+.application-progress li strong{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+.application-progress li.is-active,.application-progress li.is-complete{color:var(--ink)}
+.application-progress li.is-active span{background:var(--ink);border-color:var(--ink);color:var(--cream);transform:scale(1.08)}
+.application-progress li.is-complete span{background:var(--cream);border-color:var(--ink)}
+
+.application-form{padding:clamp(2rem,5vw,5rem)}
+.application-form__stage{min-height:clamp(25rem,38vw,32rem)}
+.application-step{min-width:0;padding:0;border:0;animation:application-step-in .62s cubic-bezier(.16,1,.3,1) both}
+.application-step[hidden],.application-success[hidden],[data-application-submit][hidden]{display:none!important}
+@keyframes application-step-in{from{opacity:0;transform:translateY(1.1rem);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
+.application-step__kicker{color:var(--ink-45);font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.application-step h3,.application-success h3{margin-top:.65rem;max-width:18ch;font-size:clamp(1.8rem,3.5vw,3.5rem);font-weight:500;line-height:1;letter-spacing:-.04em}
+
+.application-role-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:clamp(2rem,4vw,3.5rem)}
+.application-role{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;min-height:8.5rem;padding:1.25rem;border:1px solid rgba(91,50,23,.2);border-radius:var(--r);background:rgba(255,255,255,.5);cursor:pointer;transition:border-color .3s var(--ease),background-color .3s var(--ease),transform .35s cubic-bezier(.16,1,.3,1)}
+.application-role input{position:absolute;opacity:0;pointer-events:none}
+.application-role__number{color:var(--ink-45);font-variant-numeric:tabular-nums;font-size:.78rem;font-weight:700}
+.application-role strong,.application-role small{display:block}
+.application-role strong{font-size:clamp(1rem,1.35vw,1.25rem);line-height:1.15;overflow-wrap:anywhere}
+.application-role small{margin-top:.35rem;color:var(--ink-45);font-size:.78rem}
+.application-role i{display:grid;place-items:center;width:1.8rem;height:1.8rem;border:1px solid var(--ink-25);border-radius:50%;color:transparent;font-style:normal;font-size:.8rem;transition:all .3s var(--ease)}
+.application-role:has(input:checked){border-color:var(--ink);background:#fff;transform:translateY(-.2rem)}
+.application-role:has(input:checked) i{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+.application-role:focus-within{outline:2px solid var(--accent);outline-offset:3px}
+
+.application-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;margin-top:clamp(2rem,4vw,3.5rem)}
+.application-field{display:grid;gap:.65rem;color:var(--ink);font-size:.83rem;font-weight:650}
+.application-field--wide{grid-column:1/-1}
+.application-field span{display:flex;justify-content:space-between;gap:1rem}
+.application-field small{color:var(--ink-45);font-weight:500}
+.application-field input,.application-field textarea{
+  width:100%;border:0;border-bottom:1px solid var(--ink-25);border-radius:0;
+  padding:.9rem .1rem 1rem;background:transparent;color:var(--ink);font:inherit;font-size:1rem;outline:0;
+  transition:border-color .3s var(--ease),background-color .3s var(--ease);
+}
+.application-field input::placeholder,.application-field textarea::placeholder{color:var(--ink-45)}
+.application-field input:focus,.application-field textarea:focus{border-bottom-color:var(--ink);background:rgba(255,255,255,.22)}
+.application-field textarea{resize:vertical;min-height:9rem;line-height:1.55}
+.application-field--message{margin-top:clamp(2rem,4vw,3rem)}
+.application-consent{display:flex;align-items:flex-start;gap:.85rem;max-width:46rem;margin-top:1.5rem;color:var(--ink-70);font-size:.86rem;line-height:1.5;cursor:pointer}
+.application-consent input{flex:none;width:1.1rem;height:1.1rem;margin-top:.15rem;accent-color:var(--accent)}
+
+.application-controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin-top:clamp(2rem,4vw,3rem);padding-top:1.5rem;border-top:1px solid var(--ink-25)}
+.application-controls__back{justify-self:start;background:rgba(255,255,255,.4);border:1px solid var(--ink-25)}
+.application-controls__back:hover:not(:disabled){background:#fff}
+.application-controls__back:disabled{opacity:0;pointer-events:none}
+.application-controls__count{color:var(--ink-45);font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
+.application-controls>[data-application-next],.application-controls>[data-application-submit]{justify-self:end}
+.application-flow__shell.is-invalid{animation:application-shake .38s ease both}
+@keyframes application-shake{25%{transform:translateX(-.35rem)}50%{transform:translateX(.25rem)}75%{transform:translateX(-.12rem)}}
+
+.application-success{min-height:clamp(25rem,38vw,32rem);display:grid;align-content:center;justify-items:start;animation:application-step-in .72s cubic-bezier(.16,1,.3,1) both}
+.application-success__mark{display:grid;place-items:center;width:3.25rem;height:3.25rem;margin-bottom:1.5rem;border-radius:50%;background:var(--ink);color:var(--cream);font-weight:700}
+.application-success>p:not(.application-step__kicker){max-width:46ch;margin-top:1.25rem;color:var(--ink-70);line-height:1.6}
+.application-success__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}
+.application-flow__footnote{margin:1.25rem clamp(1rem,2.5vw,2.5rem) .35rem;color:var(--ink-45);font-size:.8rem;line-height:1.55}
+.application-flow__footnote a{text-decoration:underline;text-underline-offset:.16em}
+
+@media (hover:hover) and (pointer:fine){
+  .application-role:hover{border-color:rgba(91,50,23,.48);background:rgba(255,255,255,.78);transform:translateY(-.2rem)}
+}
+
+@media (max-width:760px){
+  .application-flow{margin-inline:calc(var(--pad) * -.35);padding:.65rem}
+  .application-flow__intro{grid-template-columns:minmax(0,1fr);gap:1.25rem;padding:1.25rem}
+  .application-flow__intro .pill{grid-column:auto}
+  .application-flow__intro>p:last-child{align-self:auto}
+  .application-progress{padding:1.4rem 1rem 0}
+  .application-progress__track{left:1.1rem;right:1.1rem;top:2.7rem}
+  .application-progress li strong{font-size:.64rem}
+  .application-form{padding:2.5rem 1rem 1.25rem}
+  .application-form__stage{min-height:0}
+  .application-role-grid,.application-fields{grid-template-columns:minmax(0,1fr)}
+  .application-field--wide{grid-column:auto}
+  .application-role{min-height:7.5rem}
+  .application-controls{grid-template-columns:1fr auto;grid-template-areas:"count count" "back next"}
+  .application-controls__count{grid-area:count}
+  .application-controls__back{grid-area:back}
+  .application-controls>[data-application-next],.application-controls>[data-application-submit]{grid-area:next}
+  .application-controls .btn{padding-inline:.9rem}
+  .application-success{min-height:0;padding-block:1rem}
+}
+
+/* Die anschließende, gerundete Sektion überlappt jede Seite um ihre
+   Kantenhöhe. Ohne einen eigenen Abschlussabstand wirkt dadurch die
+   letzte Hinweis-Karte auf Team und Ausbildung optisch angeschnitten.
+   Der Freiraum hält die Karte auf allen Breiten sauber frei; sichtbarer
+   Überlauf bewahrt außerdem Fokus- und Hover-Zustände der Buttons. */
+.team,.ausbildung{padding-bottom:clamp(4.5rem,9vw,7rem);overflow:visible}
 
 /* Hinweis-Karte am Seitenfuß (Team: „Wir suchen Verstärkung", Ausbildung:
    „So bewirbst du dich"): dieselbe eingebettete Karte wie Öffnungszeiten/
@@ -1400,18 +1834,31 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .cta-box{
   margin-top:clamp(2.5rem,5vw,4rem);
   padding:clamp(1.5rem,3vw,2.25rem);
-  background:var(--card);
+  position:relative;overflow:hidden;background:linear-gradient(120deg,var(--card),rgba(255,255,255,.62));
   border-radius:var(--r-lg);
+  border:1px solid rgba(91,50,23,.12);
   display:flex;flex-wrap:wrap;gap:1.5rem 2rem;align-items:center;justify-content:space-between;
 }
+.cta-box::before{content:"";position:absolute;inset:auto -10% -70% auto;width:18rem;aspect-ratio:1;border:1px solid rgba(91,50,23,.12);border-radius:50%;pointer-events:none;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.cta-box:hover::before{transform:scale(1.18) translate(-.5rem,-.5rem)}
+.cta-box>*{position:relative;z-index:1}
 .cta-box h3{font-size:1.0625rem;font-weight:600;margin-bottom:.35em}
 .cta-box p{color:var(--ink-70);line-height:1.5}
-.cta-box ul{margin-top:.85em;color:var(--ink-70);line-height:1.7}
+.cta-box ul{margin-top:1.2rem;color:var(--ink-70);line-height:1.7}
+.cta-box--application ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem 1.5rem}
+.cta-box--application li{position:relative;padding-left:1.35rem}
+.cta-box--application li::before{content:"✓";position:absolute;left:0;top:0;color:var(--accent);font-weight:700}
 .cta-box__actions{display:flex;flex-wrap:wrap;gap:.75rem;flex:none}
 
 /* Schmal: Text und Button untereinander, linksbündig. */
 @media (max-width:700px){
   .cta-box{flex-direction:column;align-items:flex-start}
+  .team__grid,.ausbildung__grid{grid-template-columns:minmax(0,1fr);gap:1rem}
+  .team__block:nth-child(n){grid-column:auto}
+  .team-card{min-height:17rem}
+  .team-card__people--wide{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .training-card__eyebrow{margin-top:3rem}
+  .cta-box--application ul{grid-template-columns:minmax(0,1fr)}
 }
 
 /* ── Schautorten ───────────────────────────────────────────────────────
@@ -1436,27 +1883,20 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
      .categories-scroll_img        aspect 1/1, 56em   → .stcat__scroll-img
      .categories-sub               28em, 100vh, sticky→ .stcat__sub
      .categories-sub_content       gap 2em, zentriert → .stcat__sub-content
-     .categories-sub_link          2.25em h, 1.5em fs → .stcat__tag
      .button                       4em h, 1em radius  → .stcat__sub .btn
      .categories-slide             gap 1em, bottom 2em→ .stcat__slide
      .categories-slide-button      3em rund, 1px Rand → .stcat__slide-btn
-     .categories-toggle            3.5em h, 1em radius→ .stcat__toggle
-     .cms_list / .product-card     4 Spalten, 1/1.3   → .stgrid / .stgrid__card
    Auch die Übergangskurven sind übernommen: cubic-bezier(.19,1,.22,1)
    (expo.out) für Deckkraft/Schriftgröße, cubic-bezier(.175,.885,.32,1.275)
    (back.out) für die Hover-Nudges, cubic-bezier(.16,1,.3,1) fürs Bild.
 
-   Farb-Zufall, der die Übernahme so genau macht: der Grund des Vorbilds
-   ist #5B3217 und dessen helle Schrift #F3E9D7 – exakt unsere --ink und
-   --cream. Nur der gelbe Button wird zu unserem hellen Button (--light):
-   Nestler-Rot auf diesem Braun hätte ein Kontrastverhältnis von 1.87
-   (nachgerechnet) und wäre damit unlesbar – dieselbe Falle wie schon bei
-   .btn--accent auf der roten Sonderwünsche-Fläche.
+   Der CTA nutzt bewusst das Nestler-Rot statt des gelben Originaltons.
+   Die helle Schrift stellt dabei den nötigen Kontrast direkt auf der
+   roten Fläche her; der warme braune Bühnenverlauf bleibt unverändert.
 
-   Die Tortenbilder sind inzwischen echte Fotos (assets/img/schautorten/,
-   je Anlass eine Datei) – die früheren Platzhalter sind entfernt. Je
-   Torte steht ein <img> in der Listen- und eines in der Rasteransicht;
-   zum Austauschen nur die beiden src-Angaben tauschen.
+   Die Tortenbilder sind eigens erzeugte Freisteller
+   (assets/img/schautorten/, je Anlass eine Datei). Je Torte steht ein
+   <img> in der Listenansicht; zum Austauschen nur dessen src tauschen.
    JS-Logik: main.js, IIFE "Schautorten: Kategorie-Browser". */
 
 /* Ausnahmsweise dunkel und randlos statt creme mit eingebetteter Karte:
@@ -1484,6 +1924,9 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   color:var(--light);
   overflow:visible;
   padding-bottom:clamp(2rem,4vw,4rem);
+}
+.subpage main>.schautorten:first-of-type{
+  margin-top:0;padding-top:0;border-radius:0;
 }
 .schautorten__intro{
   max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
@@ -1596,9 +2039,26 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    Objekt, das Vorbild nutzt dafür echte Cutout-PNGs seiner Produkte,
    die wir nicht haben. */
 .stcat__scroll-img img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  border-radius:var(--r-lg);
-  box-shadow:0 1.5rem 3rem -1rem rgba(0,0,0,.5);
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  border-radius:0;pointer-events:none;
+  filter:drop-shadow(0 2.25em 2.5em rgba(32,14,5,.34));
+}
+/* Doch echte Freisteller – für die drei Fotos, bei denen eine KI-
+   Freistellung (rembg/u2net) sauber gelungen ist (Geburtstag, Kommunion,
+   Taufe; Details/Grenzen siehe Projektnotiz). Modifier statt einer
+   generellen Umstellung, weil die übrigen fünf Fotos technisch nicht
+   zuverlässig freistellbar sind (heller Kuchen vor hellem Teller, kein
+   Kantenkontrast) und bei diesen weiterhin die Foto-Karten-Optik oben
+   greift. `object-fit:contain` statt `cover`, damit die transparente
+   PNG nicht auf die quadratische Bühne aufgezogen wird; kein Radius/
+   keine rechteckige Box-Shadow mehr (gäbe es bei einer freigestellten
+   Form keinen Sinn), stattdessen `filter:drop-shadow`, die der
+   Silhouette der Torte folgt statt einem Rechteck. */
+.stcat__scroll-img--frei img{
+  object-fit:contain;
+  border-radius:0;
+  box-shadow:none;
+  filter:drop-shadow(0 1.25rem 1.75rem rgba(0,0,0,.45));
 }
 @keyframes stcat-bild-rein{
   from{transform:scale(.7) rotate(-20deg)}
@@ -1628,25 +2088,18 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .stcat__sub-content{display:flex;flex-flow:column;align-items:flex-start;gap:2em}
 .stcat__sub-title{display:none}
 
-.stcat__tags{display:flex;flex-flow:wrap;gap:.5em}
-.stcat__tag{
-  display:flex;align-items:center;justify-content:center;
-  height:2.25em;padding-inline:.75em;
-  font-size:1.5em;font-weight:600;line-height:1.5;
-  color:var(--light);border:1px solid var(--light);border-radius:100vw;
-  opacity:.75;
-}
 /* Button-Maße des Vorbilds, umgerechnet auf unsere .btn-Basis: dort
    height 4em / padding 1.5em / radius 1em / gap .75em bei 12px, hier
    dieselben Pixel über die eigene 1.25em-Schriftgröße (15px). */
 .stcat__sub .btn{
   font-size:1.25em;font-weight:700;letter-spacing:0;
   height:3.2em;padding-inline:1.2em;border-radius:.8em;gap:.6em;
+  background:var(--accent);color:var(--accent-ink);
   transition:transform .4s cubic-bezier(.19,1,.22,1),
              border-radius .3s cubic-bezier(.19,1,.22,1),
              background-color .25s var(--ease);
 }
-.stcat__sub .btn:hover{border-radius:.6em;transform:scale3d(.96,.96,.96)}
+.stcat__sub .btn:hover{background:var(--accent-dark);border-radius:.6em;transform:scale3d(.96,.96,.96)}
 .stcat__sub .btn:active{transform:scale3d(.94,.94,.94)}
 .stcat__sub .btn__arrow{width:1em;height:1em;margin-right:-.2em}
 
@@ -1656,13 +2109,14 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   display:flex;align-items:center;justify-content:center;gap:1em;
 }
 .stcat__slide-btn{
-  display:flex;align-items:center;justify-content:center;
+  position:relative;display:flex;align-items:center;justify-content:center;
   width:3em;height:3em;border-radius:50%;
   border:1px solid var(--light);color:var(--light);
   opacity:.75;cursor:pointer;pointer-events:auto;
   transition:padding-bottom .525s cubic-bezier(.175,.885,.32,1.275),
              opacity .3s cubic-bezier(.19,1,.22,1);
 }
+.stcat__slide-btn::after{content:"";position:absolute;inset:-.5em;border-radius:50%}
 .stcat__slide-btn:hover{opacity:1;padding-bottom:.5em}
 .stcat__slide-btn.is-down{transform:rotate(180deg)}
 .stcat__slide-btn svg{width:1.25em;height:1.25em}
@@ -1670,111 +2124,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   display:flex;align-items:center;justify-content:center;gap:.25em;
   font-size:1.25em;font-weight:600;opacity:.75;font-variant-numeric:tabular-nums;
 }
-
-/* ── unten rechts: Listen-/Raster-Umschalter ─────────────────────────
-   Sitzt bewusst NICHT in der angepinnten Bühne, sondern als letztes Kind
-   direkt in .stcat – sonst wäre er im Rastermodus mit ausgeblendet und
-   man käme nicht mehr zurück. Das Vorbild löst das mit position:fixed;
-   das geht hier nicht, weil der Umschalter sonst auf der ganzen Seite
-   kleben bliebe statt nur über dieser Sektion. position:sticky mit
-   bottom:2em gibt dieselbe Optik, endet aber sauber mit der Sektion.
-   Der negative margin-top hebt die Eigenhöhe wieder auf, damit der
-   Umschalter keinen Platz im Fluss belegt, sondern überlagert. */
-.stcat__toggle-wrap{
-  position:sticky;bottom:2em;z-index:20;
-  margin-top:-3.5em;
-  display:flex;justify-content:flex-end;
-  padding-inline:var(--pad);
-  pointer-events:none;
-}
-/* Die ausgeblendete Ansicht muss ausgeblendet bleiben – ohne diese Regel
-   gewinnt weiter unten .stcat__view{display:flex} aus der Statisch-Query
-   gegen das display:none des hidden-Attributs. */
-.stcat [hidden]{display:none}
-.stcat__toggle{
-  position:relative;display:flex;align-items:center;justify-content:center;
-  height:3.5em;padding:.5em;border-radius:1em;overflow:hidden;
-  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
-  pointer-events:auto;
-}
-.stcat__toggle-bg{position:absolute;inset:0;z-index:0;background:var(--light);opacity:.1}
-.stcat__toggle-border{position:absolute;inset:0;z-index:0;border:1px solid var(--light);opacity:.15;border-radius:1em}
-.stcat__toggle-knob{
-  position:absolute;z-index:0;top:.5em;bottom:.5em;left:.5em;width:calc(50% - .5em);
-  background:var(--light);opacity:.15;border-radius:.5em;
-  transition:transform .45s cubic-bezier(.19,1,.22,1);
-}
-.stcat__toggle-btn{
-  position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:.25em;
-  height:100%;padding:.5em .5em .5em .75em;border-radius:.5em;
-  font-size:1.25em;font-weight:600;color:var(--light);cursor:pointer;
-  opacity:.7;transition:opacity .3s cubic-bezier(.19,1,.22,1);
-}
-.stcat__toggle-btn[aria-pressed="true"]{opacity:1}
-.stcat__toggle-btn svg{width:1.125em;height:1.125em}
-.stcat[data-view="grid"] .stcat__toggle-knob{transform:translateX(100%)}
-
-/* ── Rasteransicht (Vorbild: .cms_list + .product-card) ─────────────── */
-.stcat__grid{padding-inline:var(--pad);padding-bottom:clamp(5rem,8vw,7rem)}
-.stgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25em}
-.stgrid__card{
-  position:relative;overflow:hidden;
-  display:flex;flex-flow:column;
-  aspect-ratio:1/1.3;padding:1.25em;border-radius:1em;
-  background:var(--card);color:var(--ink);
-  border:1px solid rgba(91,50,23,0);transition:border-color .2s;
-}
-.stgrid__card:hover{border-color:rgba(91,50,23,.15)}
-.stgrid__bg{position:absolute;inset:0;pointer-events:none}
-.stgrid__bg img{
-  width:100%;height:100%;object-fit:cover;
-  transform:scale(1) rotate(0deg);transform-origin:center center;
-  transition:transform .45s cubic-bezier(.16,1,.3,1);
-}
-.stgrid__card:hover .stgrid__bg img{transform:scale(1.03) rotate(.8deg)}
-/* Verlaufsschleier hinter Label/Titel – ohne den wäre die dunkle Schrift
-   auf einem echten Foto (statt der cremefarbenen Kartenfläche mit
-   freigestelltem Symbol) nicht zuverlässig lesbar. Dasselbe Muster wie
-   .deck__veil bei den Spezialitäten-Karten, hier als fester Verlauf statt
-   Hover-gesteuerter Deckkraft, weil hier immer ein Foto darunter liegt. */
-.stgrid__bg::after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(to top, rgba(58,32,17,.78) 0%, rgba(58,32,17,.32) 38%, transparent 62%);
-}
-/* Etiketten der Rasterkarten. Standen vorher je zweimal in der Datei
-   (.stgrid__label und .stgrid__label.is-primary), wobei die zweite
-   Fassung die erste vollständig überschrieben hat – hier auf genau die
-   Werte zusammengezogen, die vorher auch wirklich gegriffen haben. */
-.stgrid__labels,.stgrid__title{color:var(--light)}
-.stgrid__labels{position:relative;z-index:1;display:flex;flex-flow:wrap;gap:.5em}
-.stgrid__label{
-  border:1px solid var(--ink);border-radius:50vw;padding:.4em .6em;
-  font-size:1.25em;font-weight:600;line-height:1;
-}
-.stgrid__label.is-primary{background:var(--cream);border-color:transparent;color:var(--ink)}
-.stgrid__title{position:relative;z-index:1;margin-top:auto;font-size:2em;font-weight:500;line-height:1.15}
-
-/* Gestaffeltes Einblenden beim Umschalten – Vorbild: .cms_list-item,
-   opacity/transform .35s mit .04s Versatz je Karte. */
-.stgrid__item{opacity:1;transform:translateY(0);transition:opacity .35s,transform .35s}
-.stcat[data-view="list"] .stgrid__item{opacity:0;transform:translateY(8px)}
-.stgrid__item:nth-child(1){transition-delay:.04s}
-.stgrid__item:nth-child(2){transition-delay:.08s}
-.stgrid__item:nth-child(3){transition-delay:.12s}
-.stgrid__item:nth-child(4){transition-delay:.16s}
-.stgrid__item:nth-child(5){transition-delay:.20s}
-.stgrid__item:nth-child(6){transition-delay:.24s}
-.stgrid__item:nth-child(7){transition-delay:.28s}
-.stgrid__item:nth-child(8){transition-delay:.32s}
-
-@media (max-width:991px){.stgrid{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:767px){
-  .stgrid{grid-template-columns:repeat(2,1fr)}
-  .stgrid__card{padding:1em}
-  .stgrid__title{font-size:1.5em}
-  .stgrid__label{padding:.25em .5em;font-size:1em}
-}
-@media (max-width:479px){.stgrid{gap:.5em}.stgrid__card{padding:.65em}}
 
 /* ── Statischer Zustand ─────────────────────────────────────────────────
    Kein Anpinnen, kein Scroll-Bezug: die Bilder wechseln an Ort und Stelle
@@ -1785,39 +2134,60 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    rechts unten zum Inhalt). Beide Bedingungen in EINER Query, damit die
    Regeln nicht doppelt gepflegt werden müssen. */
 @media (max-width:991px), (prefers-reduced-motion:reduce){
-  .stcat__view{display:flex;flex-flow:column;gap:1.5em}
+  .schautorten{padding-bottom:0;background-attachment:scroll}
+  .stcat__view{display:flex;flex-flow:column;gap:0;min-height:100svh}
   .stcat__overlay{position:relative;inset:auto;order:2;pointer-events:auto}
-  .stcat__stage{position:relative;height:auto;padding-inline:0}
+  .stcat__stage{position:relative;display:flex;flex-direction:column;height:auto;min-height:50svh;padding:0 0 4.5em}
 
-  .stcat__scroll{order:1;position:relative;min-height:44svh;overflow:hidden}
+  .stcat__scroll{order:1;position:relative;min-height:50svh;overflow:hidden;box-sizing:border-box}
   .stcat__scroll-item{
     position:absolute;inset:0;height:auto;
     opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.19,1,.22,1);
   }
   .stcat__scroll-item.is-active{opacity:1;pointer-events:auto}
-  .stcat__scroll-content{width:100%;height:100%;aspect-ratio:auto}
+  .stcat__scroll-content{width:100%;height:100%;padding-top:12svh;aspect-ratio:auto}
   /* Nur die Größe ändert sich – die Bewegung bleibt, das Vorbild animiert
      auf Mobil mit derselben setActive-Funktion wie auf dem Desktop. */
-  .stcat__scroll-img{height:min(40svh,20em)}
+  .stcat__scroll-img{height:min(43svh,34em,76vw)}
 
   /* Kategorienliste weicht dem großen Titel im Inhaltsblock (Vorbild:
      .categories-pagination hat dort die Klasse hide-tablet-mobile). */
   .stcat__pag{display:none}
 
-  .stcat__sub{position:relative;right:auto;top:auto;translate:none;width:100%}
-  .stcat__sub-content{align-items:center;text-align:center;gap:1.25em}
+  .stcat__sub{position:relative;right:auto;top:auto;translate:none;width:100%;margin-top:auto}
+  .stcat__sub-content{align-items:center;text-align:center;gap:clamp(4.5rem,11svh,7rem)}
   .stcat__sub-title{
     display:block;font-size:clamp(1.75rem,7vw,2.5rem);font-weight:600;line-height:1.05;
   }
-  .stcat__tags{justify-content:center}
-  .stcat__tag{font-size:1.125em}
 
-  .stcat__slide{position:relative;left:auto;bottom:auto;translate:none;justify-content:center}
+  .stcat__slide{
+    position:relative;left:auto;bottom:auto;translate:none;
+    width:100%;margin-top:1.5em;padding:0 var(--pad);
+    justify-content:space-between;gap:1em;
+  }
   .stcat__slide-btn{opacity:1;padding-bottom:0}
   .stcat__slide-btn:hover{padding-bottom:0}
+  .stcat__scroll-img img{filter:drop-shadow(0 1.25em 1.5em rgba(32,14,5,.18))}
   /* Nicht mehr schwebend, sondern im Fluss unter den Pfeilen – sonst
      überlagert der Umschalter auf kleinen Bildschirmen den Inhalt. */
-  .stcat__toggle-wrap{position:static;justify-content:center;margin-top:1.5em}
+}
+
+@media (max-width:479px){
+  body.subpage main>.section.schautorten:first-of-type{padding-top:0}
+  .stcat__view{position:relative;display:block;height:100svh;min-height:100svh}
+  .stcat__overlay{position:absolute;inset:0;z-index:1}
+  .stcat__stage{height:100%;min-height:0;padding:0}
+  .stcat__scroll{position:absolute;inset:0;height:100%;min-height:0}
+  .stcat__scroll-content{align-items:flex-start;padding-top:18.5svh}
+  .stcat__scroll-img{height:min(34svh,28em,72vw)}
+  .stcat__sub{position:absolute;inset:68% 0 auto;width:100%;margin:0}
+  .stcat__sub-content{padding-inline:var(--pad);gap:3.1rem}
+  .stcat__sub-title{font-size:clamp(1.75rem,8vw,2.25rem)}
+  .stcat__slide{
+    position:absolute;left:0;bottom:1rem;translate:none;
+    width:100%;margin:0;padding:0 1rem;justify-content:space-between;
+  }
+  .schautorten + .sonderwuensche{margin-top:0}
 }
 
 /* Wer keine Bewegung möchte, bekommt auch keine: Einflug, Schweben und
@@ -1831,7 +2201,6 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   .stcat__sub-item{transition:none}
   .stcat__sub-item.is-active{animation:none;opacity:1;transform:none}
   .stcat__pag-title,.stcat__pag-dot{transition:none}
-  .stgrid__item{transition:none}
 }
 
 /* Anfahrt: zweispaltig wie Kontakt – links die Wegbeschreibung (Bahn/
@@ -1848,7 +2217,7 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 .anfahrt__route{padding:1.5rem;background:var(--card);border-radius:var(--r-lg)}
 .anfahrt__route h3{font-size:1rem;font-weight:600;margin-bottom:.6em}
 .anfahrt__route p{color:var(--ink-70);line-height:1.6}
-.anfahrt__map{border-radius:var(--r-lg);overflow:hidden;box-shadow:0 1.5rem 3rem -1.5rem rgba(58,32,17,.45)}
+.anfahrt__map{border-radius:var(--r-lg);overflow:hidden}
 .anfahrt__map img{display:block;width:100%;height:auto}
 .anfahrt__addr{margin-top:1.5rem;display:grid;gap:1rem}
 .anfahrt__addr-item{
@@ -1880,19 +2249,53 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
    vier Seiten gerundet – randlos volle Breite wirkte zwischen den
    cremefarbenen Nachbarsektionen wie ein loser Farbklotz. */
 .sonderwuensche{
-  padding:clamp(1.25rem, 3vw, 2.5rem);
+  padding:clamp(1.5rem, 3.5vw, 4rem);
 }
 .sw__card{
   position:relative;
   border-radius:var(--r-lg);
-  padding-block:clamp(3rem,7vw,6rem);
-  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
-  /* Blattmuster statt der ersten Diagonalstrich-Fassung – ein einzelnes
-     Blatt (Umriss + Mittelader) pro Kachel, tonintern kaum sichtbar,
-     dieselbe Idee wie das Adernmuster im Vorbild, nur in Nestler-Rot. */
+  padding-block:clamp(4rem,8vw,8rem);
+  /* Kundenwunsch 22.08.2026, fünfter Anlauf: der Schlagschatten unter der
+     Karte (auf dem Creme-Übergang zur nächsten Sektion sichtbar) sollte
+     weg – ersatzlos entfernt statt nur abgeschwächt, andere eingebettete
+     Karten (.oeff__card, .footer__card) sind davon nicht betroffen. */
+  /* Kundenwunsch 22.08.2026, dritter Anlauf: der Kunde wollte nicht mehr
+     "etwas Ähnliches", sondern das TATSÄCHLICHE Original von
+     modernbakery.com. Per javascript_exec direkt im Vorbild nachgesehen
+     (Element hinter "Custom bakery solutions for all"): `.partner-cta__bg`
+     lädt als Hintergrundbild exakt diese Datei –
+     https://cdn.prod.website-files.com/689ee9a10ff9618ade3a312c/68e8fe78fc7953b56250d7de_yellow-bg-pattern.svg
+     (Webflow-CDN-Asset, per WebFetch direkt abgerufen). Die dortige SVG ist
+     eine 500×500-Hülle um ein 200×299,6-Kachelmuster (helle Grundfläche
+     #f3c244 + eine einzelne, sehr lange Pfad-Form in #eda700 – ein
+     Diagonal-Flecht-/Rautenmuster, keine einzelne Blatt-Ikone). Hier 1:1
+     dieselbe Pfad-Geometrie übernommen (nichts nachgezeichnet/vereinfacht),
+     nur ohne die eigene Grundfläche – die Pfadform liegt stattdessen als
+     zweiter background-Layer auf dem schon vorhandenen Rot-Verlauf, damit
+     die Kachelstapel-Rundung/der Verlauf erhalten bleibt. Füllfarbe auf
+     einen dunklen Braunton (--deep) bei reduzierter Deckkraft gesetzt (statt
+     des Vorbild-Gelbtons #eda700) – bei voller Deckkraft in Braun wirkte die
+     Fläche zu schwer, das Vorbild selbst hat aber ebenfalls vollflächig
+     deckende Formen, nur eben Gold-auf-Gold statt Braun-auf-Rot.
+     Kundenwunsch 22.08.2026, vierter Anlauf ("verblende es wie hier und
+     mache es unauffälliger"): am Vorbild-Screenshot übersehen, dass dort
+     NICHT das rohe Pfad-Muster liegt, sondern zusätzlich ein
+     Verblassungs-Verlauf DARÜBER (im Original per javascript_exec gefunden:
+     `linear-gradient(90deg, rgba(gold,.7), rgb(gold))` vor der Muster-Datei
+     als zweiter background-Layer) – dadurch ist das Muster links (bei der
+     Überschrift) nur angedeutet sichtbar und verblasst nach rechts komplett
+     zu reiner Flächenfarbe, statt gleichmäßig kräftig über die ganze Karte
+     zu laufen. Gleiches Prinzip jetzt hier ergänzt: ein weiterer, oberster
+     Layer blendet von halbtransparentem Rot links zu volldeckendem
+     --accent-dark rechts über (gleicher 135°-Winkel wie der Grundverlauf,
+     damit es nicht mit der Diagonale bricht). Zusätzlich Musterdeckkraft
+     selbst von 0.4 auf 0.22 gesenkt (zweite Hälfte des Kundenwunsches:
+     generell unauffälliger, nicht nur am Rand ausgeblendet). */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.11)' stroke-width='1.5'%3E%3Cpath d='M36 12 C48 24 48 48 36 62 C24 48 24 24 36 12 Z'/%3E%3Cpath d='M36 15 L36 59'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(135deg, rgba(200,16,46,.5) 0%, var(--accent-dark) 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='299.6' viewBox='0 0 200 299.6'%3E%3Cpath fill='%233A2011' fill-opacity='0.22' d='M152,299.6h-3.9v-19.5c-.7,1-1.5,2-2.4,2.8l-16.7,16.7h-5.5l19.4-19.4c3.3-3.3,5.1-7.7,5.1-12.3v-13.5c0-2-.2-4-.5-5.9-.6,1.2-1.4,2.3-2.5,3.3l-38,38c-2.7,2.7-4.4,6.1-4.9,9.8h-4.3c-.5-3.7-2.2-7.1-4.9-9.8l-38-38c-1-1-1.8-2.1-2.5-3.3-.3,1.9-.5,3.9-.5,5.9v13.5c0,4.7,1.8,9,5.1,12.3l19.4,19.4h-5.5l-16.7-16.7c-.9-.9-1.7-1.8-2.4-2.8v19.5h-3.9v-19.5c-.7,1-1.5,2-2.4,2.8l-16.7,16.7h-5.5l19.4-19.4c3.3-3.3,5.1-7.7,5.1-12.3v-13.5c0-2-.2-4-.5-5.9-.6,1.2-1.5,2.3-2.5,3.3l-38,38c-2.7,2.7-4.4,6.1-4.9,9.8H0V0h2.4c-.1.8-.2,1.7-.2,2.5v19.5c.7-1,1.5-2,2.4-2.8L23.7,0h5.5L7.3,21.9c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8L43.1,12.3C46.4,9,48.3,4.7,48.3,0h0s3.9,0,3.9,0h0c0,4.7,1.8,9,5.1,12.3l38.6,38.6c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3L71.2,0h5.5l19.2,19.2c.9.9,1.7,1.8,2.4,2.8V2.5c0-.9,0-1.7-.2-2.5h4.3c-.1.8-.2,1.7-.2,2.5v19.5c.7-1,1.5-2,2.4-2.8L123.6,0h5.5l-21.9,21.9c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38.6-38.6c3.3-3.3,5.1-7.7,5.1-12.3h0s3.9,0,3.9,0h0c0,4.7,1.8,9,5.1,12.3l38.6,38.6c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3L171,0h5.5l19.2,19.2c.9.9,1.7,1.8,2.4,2.8V2.5c0-.9,0-1.7-.2-2.5h2.1v299.6h-2.1c-.5-3.7-2.2-7.1-4.9-9.8l-38-38c-1-1-1.8-2.1-2.5-3.3-.3,1.9-.5,3.9-.5,5.9v13.5c0,4.7,1.8,9,5.1,12.3l19.4,19.4h-5.5l-16.7-16.7c-.9-.9-1.7-1.8-2.4-2.8v19.5ZM144.4,238.3c-1.7-3.5-3.9-6.6-6.6-9.4h0c-.2-.2-.3-.4-.5-.6l-2.4-2.4c-.1,2.8-1.2,5.5-3.3,7.6l-24.5,24.5c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38-38c2.9-2.9,3.7-7.3,2-10.8ZM57.8,249.1l38,38c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-24.5-24.5c-2.1-2.1-3.2-4.8-3.3-7.6l-2.4,2.4c-.2.2-.3.4-.5.6h0c-2.7,2.8-4.9,5.9-6.6,9.4-1.7,3.6-.9,7.9,2,10.8ZM44.5,238.3c-1.7-3.5-3.9-6.6-6.6-9.4h0c-.2-.2-.3-.4-.5-.6l-2.3-2.3c-.2,2.9-1.3,5.5-3.4,7.6l-24.5,24.5c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38-38c2.9-2.9,3.7-7.3,2-10.8ZM198.1,104.6c0-2-.2-4-.5-5.9-.6,1.2-1.4,2.3-2.5,3.3l-38,38c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38.6-38.6c3.3-3.3,5.1-7.7,5.1-12.3v-13.5ZM198.1,131.5v-1.1c-.7,1-1.5,2-2.4,2.8l-38.6,38.6c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38.6-38.6c3.3-3.3,5.1-7.7,5.1-12.3v-18.4ZM198.1,238.7c0-4.7-1.8-9-5.1-12.3l-10-10c-1.5-1.5-2.4-3.5-2.7-5.5l-3.5,3.5h0s-5.5,5.5-5.5,5.5c-3,3-3,7.9,0,11l24.5,24.5c.9.9,1.7,1.8,2.4,2.8v-19.5ZM198.1,270.4c0-4.7-1.8-9-5.1-12.3l-24.5-24.5c-2.1-2.1-3.2-4.8-3.3-7.6l-2.4,2.4c-.2.2-.3.4-.5.6h0c-2.7,2.8-4.9,5.9-6.6,9.4-1.7,3.6-.9,7.9,2,10.8l38,38c.9.9,1.7,1.8,2.4,2.8v-19.5ZM128.9,219.9l-5.5-5.5-3.5-3.5c-.3,2-1.2,4-2.7,5.5l-10,10c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l24.5-24.5c3-3,3-7.9,0-11ZM71.4,230.9l24.5,24.5c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-10-10c-1.5-1.5-2.4-3.5-2.7-5.5l-3.5,3.5h0s-5.5,5.5-5.5,5.5c-3,3-3,7.9,0,11ZM2.2,118.1c0,4.7,1.8,9,5.1,12.3l38.6,38.6c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3L5.2,102c-1-1-1.8-2.1-2.5-3.3-.3,1.9-.5,3.9-.5,5.9v13.5ZM40.2,51.3l-4.3,4.3c-2.3,2.3-2.3,6,0,8.2l10,10c.9.9,1.7,1.8,2.4,2.8v-36.7c-2,4.2-4.7,8.1-8,11.4ZM52.1,39.9v36.7c.7-1,1.5-2,2.4-2.8l10-10c2.3-2.3,2.3-6,0-8.2l-4.3-4.3c-3.4-3.4-6.1-7.2-8-11.4ZM69.9,61c-.3,2-1.2,4-2.7,5.5l-10,10c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l24.5-24.5c1.5-1.5,2.3-3.4,2.3-5.5s-.8-4-2.3-5.5l-9-9ZM85.1,76.2c-.2,2.9-1.3,5.5-3.4,7.6l-24.5,24.5c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38-38c2.9-2.9,3.7-7.3,2-10.8-1.7-3.5-3.9-6.6-6.6-9.4h0c-.2-.2-.3-.4-.5-.6l-2.3-2.3ZM105.8,88.4c-1.7,3.6-.9,7.9,2,10.8l38,38c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-24.5-24.5c-2-2-3.2-4.7-3.4-7.6l-2.3,2.3c-.2.2-.3.4-.5.6h0c-2.7,2.8-4.9,5.9-6.6,9.4ZM126.8,64.5l-5.5,5.5c-1.5,1.5-2.3,3.4-2.3,5.5s.8,4,2.3,5.5l24.5,24.5c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-10-10c-1.5-1.5-2.4-3.4-2.7-5.5l-3.5,3.5h0ZM140.1,51.3l-4.3,4.3c-2.3,2.3-2.3,6,0,8.2l10,10c.9.9,1.7,1.8,2.4,2.8v-36.8c-2,4.2-4.7,8.1-8,11.4ZM152.9,41.7c-.3-.6-.6-1.2-.9-1.8v36.7c.7-1,1.5-2,2.4-2.8l10-10c2.3-2.3,2.3-5.9,0-8.2l-4.3-4.3c-.9-.9-1.7-1.8-2.4-2.7-.1-.2-.3-.4-.4-.5-.7-.9-1.4-1.8-2.1-2.8-.1-.2-.2-.4-.4-.5-.6-1-1.2-2-1.8-3,0,0,0,0,0-.1ZM169.8,61c-.3,2-1.2,4-2.7,5.5l-10,10c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l24.5-24.5c1.5-1.5,2.3-3.4,2.3-5.5s-.8-4-2.3-5.5l-2.2-2.2-3.4-3.4h0s-3.5-3.5-3.5-3.5ZM185,76.2c-.2,2.9-1.3,5.5-3.4,7.6l-24.5,24.5c-3.3,3.3-5.1,7.7-5.1,12.3v19.5c.7-1,1.5-2,2.4-2.8l38-38c2.8-2.8,3.6-7,2.1-10.5-.1-.2-.2-.5-.3-.7-.3-.6-.6-1.2-.9-1.7-.2-.4-.5-.8-.7-1.2-.3-.5-.6-1-1-1.5-.4-.5-.7-1-1.1-1.5-.3-.4-.6-.7-.8-1.1-.7-.9-1.5-1.7-2.3-2.5l-2.3-2.3ZM114.4,205.4l-4.3-4.3c-3.4-3.4-6.1-7.2-8-11.4v36.7c.7-1,1.5-2,2.4-2.8l10-10c2.3-2.3,2.3-6,0-8.2ZM85.9,213.6l10,10c.9.9,1.7,1.8,2.4,2.8v-36.8c-2,4.2-4.7,8.1-8,11.4l-4.3,4.3c-2.3,2.3-2.3,6,0,8.2ZM52.1,195.4v8.2c.7-1,1.5-2,2.4-2.8l38.6-38.6c3.3-3.3,5.1-7.7,5.1-12.3v-19.5c-.7,1-1.5,2-2.4,2.8l-38.6,38.6c-3.3,3.3-5.1,7.7-5.1,12.3v11.3ZM5.9,88.4c-1.7,3.6-.9,7.9,2,10.8l38,38c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-24.5-24.5c-2-2-3.2-4.7-3.4-7.6l-2.3,2.3c-.2.2-.3.4-.5.6h0c-2.7,2.8-4.9,5.9-6.6,9.4ZM21.4,70.1c-1.5,1.5-2.3,3.4-2.3,5.5s.8,4,2.3,5.5l24.5,24.5c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-10-10c-1.5-1.5-2.4-3.5-2.7-5.5l-3.5,3.5h0s-2.8,2.8-2.8,2.8l-2.8,2.8ZM50.2,163.6h0s0,0,0,0h0ZM52.1,171.8c.7-1,1.5-2,2.4-2.8l38.6-38.6c3.3-3.3,5.1-7.7,5.1-12.3v-13.5c0-2-.2-4-.5-5.9-.6,1.2-1.5,2.3-2.5,3.3l-38,38c-3.3,3.3-5.1,7.7-5.1,12.3v19.5ZM105,102c-1-1-1.8-2.1-2.5-3.3-.3,1.9-.5,3.9-.5,5.9v13.5c0,4.7,1.8,9,5.1,12.3l38.6,38.6c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3l-38-38ZM148.1,184.1c0-4.7-1.8-9-5.1-12.3l-38.6-38.6c-.9-.9-1.7-1.8-2.4-2.8v19.5c0,4.7,1.8,9,5.1,12.3l38.6,38.6c.9.9,1.7,1.8,2.4,2.8v-19.5ZM148.1,215.8c0-4.7-1.8-9-5.1-12.3l-38.6-38.6c-.9-.9-1.7-1.8-2.4-2.8v10.3c0,9.8,3.8,19.1,10.8,26l27.2,27.2c.8.8,1.5,1.6,2.2,2.4,0,.1.2.2.3.3,0,0,0,0,.1.1,0,.1.2.2.3.3.8,1,1.5,1.9,2.2,2.9,0,.1.2.2.2.4,1.1,1.6,2,3.3,2.8,5v-21.2ZM52.1,215.8v21.2c.8-1.7,1.8-3.4,2.8-5,0-.1.1-.2.2-.3.7-1,1.4-2,2.2-3,0-.1.2-.2.3-.3,0,0,0,0,.1-.1,0-.1.2-.2.3-.3.7-.8,1.4-1.6,2.2-2.4l27.2-27.2c7-7,10.8-16.2,10.8-26v-10.3c-.7,1-1.5,2-2.4,2.8l-38.6,38.6c-3.3,3.3-5.1,7.7-5.1,12.3ZM150.1,163.6h0s0,0,0,0h0ZM48.3,215.8c0-4.7-1.8-9-5.1-12.3L4.6,164.9c-.9-.9-1.7-1.8-2.4-2.8v10.3c0,9.8,3.8,19.1,10.8,26l27.2,27.2c.8.8,1.5,1.6,2.2,2.4,0,.1.2.2.3.3,0,0,0,0,0,.1,0,.1.2.2.3.3.8.9,1.5,1.9,2.2,2.9,0,.1.2.2.2.4,1.1,1.6,2,3.3,2.8,5v-21.2ZM198.1,226.5v-36.7c-2,4.2-4.7,8.1-8,11.4l-4.3,4.3c-2.3,2.3-2.3,6,0,8.2l10,10c.9.9,1.7,1.8,2.4,2.8ZM198.1,162c-.7,1-1.5,2-2.4,2.8l-38.6,38.6c-3.3,3.3-5.1,7.7-5.1,12.3v21.2c.8-1.7,1.8-3.4,2.8-5,0-.1.2-.2.2-.4.7-1,1.4-2,2.2-2.9,0-.1.2-.2.3-.3,0,0,0,0,0-.1,0-.1.2-.2.3-.3.7-.8,1.4-1.6,2.2-2.4l27.2-27.2c7-7,10.8-16.2,10.8-26v-10.3ZM2.2,149.6v.2c0,4.7,1.8,9,5.1,12.3l38.6,38.6c.9.9,1.7,1.8,2.4,2.8v-19.5c0-4.7-1.8-9-5.1-12.3L4.6,133.2c-.9-.9-1.7-1.8-2.4-2.8v19.3ZM2.2,226.5c.7-1,1.5-2,2.4-2.8l10-10c2.3-2.3,2.3-6,0-8.2l-4.3-4.3c-3.4-3.4-6.1-7.2-8-11.4v36.7ZM2.2,250v8.2c.7-1,1.5-2,2.4-2.8l24.5-24.5c1.5-1.5,2.3-3.4,2.3-5.5s-.8-4-2.3-5.5l-5.5-5.5h0s-3.5-3.5-3.5-3.5c-.3,2-1.2,4-2.7,5.5l-10,10c-3.3,3.3-5.1,7.7-5.1,12.3v11.3ZM200,131.5h0s0,0,0,0ZM200,13.8h0s0,0,0,0h0ZM152,12.2v10.3c0,9.8,3.8,19.1,10.8,26l27.2,27.2c3.4,3.4,6.1,7.2,8,11.4v-21.2c0-4.7-1.8-9-5.1-12.3l-38.6-38.6c-.9-.9-1.7-1.8-2.4-2.8ZM102.1,66v21.2c.3-.6.6-1.2.9-1.8,0,0,0,0,0-.1.5-1,1.1-2,1.8-3,.1-.2.2-.4.4-.5.2-.3.4-.5.6-.8,0,0,.1-.1.2-.2.4-.6.9-1.2,1.4-1.8.1-.2.3-.3.4-.5.1-.2.3-.3.4-.5.7-.8,1.3-1.5,2.1-2.3l22.9-22.9,4.3-4.3c7-7,10.8-16.2,10.8-26v-10.3c-.7,1-1.5,2-2.4,2.8l-38.6,38.6c-3.3,3.3-5.1,7.7-5.1,12.3ZM100.1,13.8h0s0,0,0,0h0ZM52.1,12.2v10.3c0,9.8,3.8,19.1,10.8,26l4.3,4.3s0,0,0,0l8.9,8.9h0s5.5,5.5,5.5,5.5c0,0,0,0,0,0l8.4,8.4c.7.7,1.4,1.5,2.1,2.3.1.2.3.3.4.5.1.2.3.3.4.5.5.6.9,1.2,1.4,1.8,0,0,.1.1.2.2.2.3.4.5.6.8.1.2.2.4.4.6.6,1,1.2,1.9,1.8,2.9,0,0,0,0,0,.1.3.6.6,1.2.9,1.8v-21.2c0-4.7-1.8-9-5.1-12.3L54.5,15.1c-.9-.9-1.7-1.8-2.4-2.8ZM2.2,66v21.2c.3-.6.6-1.2.9-1.8,0,0,0,0,0-.1.5-1,1.2-2,1.8-3,.1-.2.2-.4.3-.5.2-.3.4-.5.6-.8,0,0,0-.1.1-.2.4-.6.9-1.2,1.4-1.8.1-.2.3-.3.4-.5.1-.2.3-.3.4-.5.7-.8,1.4-1.5,2.1-2.3l8.4-8.4s0,0,0,0l2.8-2.8,11.7-11.7,4.3-4.3c6.1-6.1,9.8-13.9,10.6-22.4.1-1.2.2-2.4.2-3.7v-10.3c-.7,1-1.5,2-2.4,2.8L7.3,53.7c-3.3,3.3-5.1,7.7-5.1,12.3ZM.3,13.8h0s0,0,0,0h0Z'%3E%3C/path%3E%3C/svg%3E"),
     linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  background-size: cover, clamp(150px, 20vw, 227px) auto, cover;
   color:var(--light);
 }
 .sw__inner{
@@ -2032,6 +2435,12 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   .sw__lede{margin-inline:auto}
   .sw__actions{justify-content:center}
   .sw__words-list{text-align:center}
+  /* Kundenwunsch: auf dem Handy nicht nur die Laufanimation stoppen
+     (siehe die kombinierte Query unten), sondern die Wortliste ganz aus
+     der roten Karte nehmen – in der schmalen, einspaltigen Ansicht wirkte
+     sie unter Überschrift/Buttons wie ein zweiter, halb redundanter Block
+     statt wie im Vorbild eine zweite Spalte daneben. */
+  .sw__words{display:none}
 }
 /* Statischer Fallback für das Wortband – kein Laufband, alle sieben
    Begriffe offen und ruhig: Maske weg, Liste zurück in den normalen
@@ -2063,21 +2472,20 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   margin-top:calc(var(--r-lg) * -1.5);
   background:var(--cream);
   border-radius:var(--r-lg) var(--r-lg) 0 0;
-  padding:clamp(1.25rem, 3vw, 2.5rem);
+  padding:clamp(1.5rem, 3.5vw, 4rem);
 }
 .footer__card{
   position:relative;
   background:#FFF;
   border-radius:var(--r-lg);
-  box-shadow:0 1.75rem 3.5rem -2rem rgba(58,32,17,.4);
-  padding-top:clamp(3rem,6vw,5rem);
+  padding-top:clamp(4rem,7vw,6rem);
   overflow:hidden;
 }
 .footer__inner{
   max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad);
   display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;
-  gap:clamp(2rem,4vw,3rem);
-  padding-bottom:clamp(2.5rem,5vw,4rem);
+  gap:clamp(2.5rem,5vw,4rem);
+  padding-bottom:clamp(3.5rem,6vw,5rem);
 }
 .footer__logo{height:2.75rem;width:auto;margin-bottom:1.1rem}
 .footer__tagline{max-width:28ch;color:var(--ink-70);line-height:1.5;margin-bottom:1.25rem}
@@ -2109,8 +2517,64 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
 @media (max-width:900px){
   .footer__inner{grid-template-columns:repeat(2, minmax(0,1fr))}
 }
+/* Nach Live-Analyse des Vorbilds (modernbakery.com) bei 375px: dessen
+   Fußzeile stapelt auf dem Handy NICHT jeden Block einzeln übereinander –
+   nur der breite Intro-Block (dort footer-product_wrap/-newsletter) liegt
+   als eigene volle Zeile, die Navigationsspalten selbst bleiben zweispaltig
+   (footer-nav_main/-nav_sub Grid-Spalten 1/7 und 8/13, per getComputedStyle
+   direkt am Vorbild abgelesen). Vorher fiel .footer__inner hier auf EINE
+   Spalte zurück und stapelte alle vier Blöcke einzeln – dadurch wirkte die
+   Fußzeile auf dem Handy deutlich wuchtiger/länger als im Vorbild.
+   Kundenfeedback zum ersten Anlauf: Entdecken/Bäckerei füllten die zwei
+   Spalten zwar sauber, aber die dritte (Öffnungszeiten) blieb als einzige
+   allein in der linken Spalte hängen – rechts daneben blieb eine ganze
+   Spaltenbreite ungenutzt leer, "Platz nicht sinnvoll verteilt". Jetzt
+   bekommt zusätzlich zur Markenspalte auch die Öffnungszeiten-Spalte die
+   volle Breite als eigene Zeile (kein Rest mehr, der allein übrig bleibt),
+   und ihre vier Uhrzeiten-Zeilen selbst ordnen sich dort zu zweit pro Zeile
+   (Bahnhof, dann Filiale) statt einzeln untereinander – nutzt exakt die
+   Breite, die vorher leer blieb, und halbiert die Höhe dieses Blocks. */
 @media (max-width:560px){
-  .footer__inner{grid-template-columns:minmax(0,1fr);gap:2.25rem}
+  .footer__inner{gap:1.75rem 1.25rem}
+  .footer__brand{grid-column:1 / -1}
+  .footer__col:last-child{grid-column:1 / -1}
+  .footer__col:last-child .footer__hours{
+    grid-template-columns:1fr;
+    gap:0;
+  }
+  .footer__col:last-child .footer__hours div{padding:.55rem 0;border-bottom:1px solid var(--ink-25)}
+  .footer__col:last-child .footer__hours div:last-child{border-bottom:0}
+  .footer__col:last-child .footer__hours dt,.footer__col:last-child .footer__hours dd{font-size:.9375rem}
+  /* Kundenwunsch: Logo und Anschrift-Absatz nebeneinander statt
+     übereinander – in der jetzt vollen Zeilenbreite (siehe .footer__brand
+     oben) blieb sonst viel ungenutzte Breite rechts vom schmalen Logo.
+     Kontaktzeilen (Telefon/Mail/Adresse) bleiben darunter, eigene Zeile
+     (flex-basis:100% erzwingt den Umbruch im Flex-Layout). */
+  /* gap statt margin-bottom für den Abstand zur Kontaktzeile darunter:
+     ein margin-bottom AM TEXT zählt bei align-items:center mit in dessen
+     eigene Flex-Box hinein und verschiebt dadurch die gemeinsame
+     Mittellinie mit dem Logo (hier beobachtet: 10px zu tief) – als Lücke
+     ZWISCHEN den Flex-Zeilen bleibt Logo und Text exakt auf einer Linie. */
+  .footer__brand{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem}
+  .footer__logo{margin-bottom:0;flex:none}
+  /* Die feste 28ch-Maximalbreite (fürs volle Zeilenmaß gedacht) ließ den
+     Text sonst nicht neben das Logo passen, er fiel in eine eigene Zeile
+     darunter zurück – flex:1 statt fester max-width lässt ihn genau den
+     Rest neben dem Logo ausfüllen. */
+  .footer__tagline{flex:1 1 0;max-width:none;min-width:0;margin-bottom:0}
+  .footer__contact{flex-basis:100%}
+}
+
+/* ── Mobile Robustheit der Unterseiten ─────────────────────────────── */
+@media (max-width:640px){
+  html,body{overflow-x:clip}
+  .subpage main>.section:first-of-type{padding-top:clamp(7rem,20vw,8.5rem)}
+  .kontakt{padding-block:clamp(4rem,12vw,5.5rem)}
+  .kontakt__inner{gap:3rem}
+  .kontakt__quick{gap:1.65rem}
+  .kontakt__form{padding:1.4rem;gap:1.2rem}
+  .anfahrt__addr-item{align-items:flex-start;padding:1.25rem}
+  .kontakt__quick-value,.footer__contact a,.impressum__content a{overflow-wrap:anywhere}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -2121,3 +2585,4 @@ html.js .spez__stage.reveal:not(.is-in) .deck__card[data-offset]{transform:none}
   }
   .reveal{opacity:1;transform:none}
 }
+
