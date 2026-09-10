@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Von Hand gepflegt statt generiert – die Seite kommt bewusst ohne Build-
+  Schritt aus (siehe tools/bausteine.js), ein Sitemap-Generator wäre hier
+  der einzige Grund für eines. Acht öffentliche, verlinkte Seiten plus die
+  zwei Sprachfassungen der Startseite. anfahrt.html bewusst NICHT gelistet:
+  seit "So finden Sie uns" auf #oeffnungszeiten zeigt, ist die Seite aus
+  der Navigation entfernt und nur noch per Direktlink erreichbar – ihr
+  Inhalt (Karte, Adressen) deckt sich weitgehend mit der Öffnungszeiten-
+  Sektion der Startseite, eine zusätzliche indexierte Near-Duplicate-URL
+  wäre kein Gewinn.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://richard-bit-ui.github.io/nestler-baeckerei/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://richard-bit-ui.github.io/nestler-baeckerei/en/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://richard-bit-ui.github.io/nestler-baeckerei/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://richard-bit-ui.github.io/nestler-baeckerei/"/>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/en/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://richard-bit-ui.github.io/nestler-baeckerei/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://richard-bit-ui.github.io/nestler-baeckerei/en/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://richard-bit-ui.github.io/nestler-baeckerei/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://richard-bit-ui.github.io/nestler-baeckerei/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/cs/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://richard-bit-ui.github.io/nestler-baeckerei/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://richard-bit-ui.github.io/nestler-baeckerei/en/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://richard-bit-ui.github.io/nestler-baeckerei/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://richard-bit-ui.github.io/nestler-baeckerei/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/historie.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/team.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/ausbildung.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/schautorten.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/kontakt.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://richard-bit-ui.github.io/nestler-baeckerei/impressum.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+
+</urlset>

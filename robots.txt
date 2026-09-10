@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://richard-bit-ui.github.io/nestler-baeckerei/sitemap.xml

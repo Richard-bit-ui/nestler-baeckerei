@@ -6,23 +6,30 @@
 
 <title>Ausbildung – Nestler Spezialitäten-Bäckerei Geising</title>
 <meta name="description" content="Ausbildung zum Bäcker/in oder Bäckereifachverkäufer/in bei der Nestler Spezialitäten-Bäckerei Geising – jetzt bewerben.">
-<link rel="canonical" href="https://mnestler.uber.space/ausbildung.html">
+<link rel="canonical" href="https://richard-bit-ui.github.io/nestler-baeckerei/ausbildung.html">
 <meta name="theme-color" content="#F3E9D7">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nestler Spezialitäten-Bäckerei">
 <meta property="og:locale" content="de_DE">
-<meta property="og:url" content="https://mnestler.uber.space/ausbildung.html">
+<meta property="og:url" content="https://richard-bit-ui.github.io/nestler-baeckerei/ausbildung.html">
 <meta property="og:title" content="Ausbildung – Nestler Spezialitäten-Bäckerei Geising">
 <meta property="og:description" content="Ausbildung zum Bäcker/in oder Bäckereifachverkäufer/in bei der Nestler Spezialitäten-Bäckerei Geising – jetzt bewerben.">
+<meta property="og:image" content="https://richard-bit-ui.github.io/nestler-baeckerei/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://richard-bit-ui.github.io/nestler-baeckerei/assets/img/og-image.jpg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=58">
-<link rel="icon" href="assets/img/logo.png">
+<link rel="stylesheet" href="assets/css/styles.css?v=117">
+<link rel="icon" href="assets/img/favicon.png">
 </head>
 <body class="subpage">
+  <div class="page-loader" aria-hidden="true"><span class="page-loader__mark">Nestler</span><span class="page-loader__dots"><i></i><i></i><i></i></span></div>
 
 <!-- baustein:kopf -->
 <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
@@ -56,12 +63,18 @@
           </button>
           <div class="dropdown" id="menu-besuch" hidden>
             <a class="dropdown__link" href="index.html#oeffnungszeiten"><span>Öffnungszeiten</span><small>Bahnhof und Filiale Hauptstraße</small></a>
-            <a class="dropdown__link" href="anfahrt.html"><span>So finden Sie uns</span><small>Mit der Bahn oder dem Auto</small></a>
+            <a class="dropdown__link" href="index.html#oeffnungszeiten"><span>So finden Sie uns</span><small>Mit der Bahn oder dem Auto</small></a>
           </div>
         </li>
         <li class="nav__item"><a class="nav__link" href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
+
+    <div class="nav__lang" aria-label="Sprache wählen">
+      <span class="nav__lang-current" aria-current="true">DE</span>
+      <a class="nav__lang-link" href="en/index.html" hreflang="en" lang="en">EN</a>
+      <a class="nav__lang-link" href="cs/index.html" hreflang="cs" lang="cs">CZ</a>
+    </div>
 
     <a class="btn btn--accent nav__cta" href="index.html#oeffnungszeiten">
       Öffnungszeiten
@@ -75,19 +88,30 @@
 </header>
 
 <div class="mobilmenu" id="mobilmenue" data-scroll-native>
-  <ul class="mobilmenu__list">
-    <li><a href="index.html#spezialitaeten">Spezialitäten</a></li>
-    <li><a href="historie.html">Historie</a></li>
-    <li><a href="team.html">Team</a></li>
-    <li><a href="schautorten.html">Schautorten</a></li>
-    <li><a href="index.html#oeffnungszeiten">Öffnungszeiten</a></li>
-    <li><a href="anfahrt.html">So finden Sie uns</a></li>
-    <li><a href="kontakt.html">Kontakt</a></li>
-  </ul>
-  <a class="btn btn--accent mobilmenu__cta" href="tel:+493505622810">
-    035056 / 22810
-    <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </a>
+  <nav class="mobilmenu__nav" aria-label="Hauptnavigation (mobil)">
+    <ul class="mobilmenu__list">
+      <li><a href="index.html#spezialitaeten">Spezialitäten</a></li>
+      <li><a href="schautorten.html">Schautorten</a></li>
+      <li><a href="kontakt.html">Kontakt</a></li>
+    </ul>
+    <p class="mobilmenu__label">Bäckerei</p>
+    <ul class="mobilmenu__list mobilmenu__list--sub">
+      <li><a href="historie.html">Historie</a></li>
+      <li><a href="team.html">Team</a></li>
+      <li><a href="ausbildung.html" aria-current="page">Ausbildung</a></li>
+    </ul>
+    <p class="mobilmenu__label">Besuch</p>
+    <ul class="mobilmenu__list mobilmenu__list--sub">
+      <li><a href="index.html#oeffnungszeiten">Öffnungszeiten</a></li>
+      <li><a href="index.html#oeffnungszeiten">So finden Sie uns</a></li>
+    </ul>
+    <p class="mobilmenu__label">Sprache</p>
+    <div class="mobilmenu__lang">
+      <span class="mobilmenu__lang-current" aria-current="true">Deutsch</span>
+      <a class="mobilmenu__lang-link" href="en/index.html" hreflang="en" lang="en">English</a>
+      <a class="mobilmenu__lang-link" href="cs/index.html" hreflang="cs" lang="cs">Čeština</a>
+    </div>
+  </nav>
 </div>
 <!-- /baustein:kopf -->
 
@@ -100,40 +124,119 @@
        unterlagen. Verweis auf back-dir-deine-zukunft.de wie im Original. -->
   <section class="section ausbildung" id="ausbildung" data-nav-theme="light" aria-labelledby="ausbildung-heading">
     <div class="ausbildung__inner">
-      <p class="pill">Ausbildung</p>
-      <h2 class="ausbildung__heading" id="ausbildung-heading">Wir bilden aus</h2>
-      <p class="ausbildung__lede">Lerne das Bäckerhandwerk von Grund auf – bei uns in der Backstube oder im Verkauf. Zwei staatlich anerkannte Ausbildungsberufe, praxisnah und mit persönlicher Betreuung.</p>
+      <p class="pill reveal editorial-reveal" style="--reveal-delay:.04s">Ausbildung</p>
+      <h1 class="ausbildung__heading reveal editorial-reveal" id="ausbildung-heading" style="--reveal-delay:.1s">Wir bilden aus</h1>
+      <p class="ausbildung__lede reveal editorial-reveal" style="--reveal-delay:.18s">Lerne das Bäckerhandwerk von Grund auf – bei uns in der Backstube oder im Verkauf. Zwei staatlich anerkannte Ausbildungsberufe, praxisnah und mit persönlicher Betreuung.</p>
 
-      <div class="ausbildung__grid">
-        <div class="ausbildung__block">
-          <h3>Bäcker/in</h3>
-          <p>Der Beruf des Bäckers ist ein staatlich anerkannter Ausbildungsberuf. Die dreijährige duale Ausbildung verbindet praktische Arbeit in der Backstube mit der Berufsschule – dort geht es um Backtechnologie, Fachrechnen und Wirtschafts-/Sozialkunde. Die praktischen Fertigkeiten lernst du bei uns in strukturierten Übungseinheiten.</p>
+      <div class="ausbildung__grid" id="ausbildungswege">
+        <div class="ausbildung__block reveal editorial-reveal" style="--reveal-delay:.04s">
+          <article class="training-card interactive-card" data-interactive-card>
+            <div class="training-card__top"><span class="training-card__index">01</span><span class="training-card__duration">3 Jahre</span></div>
+            <p class="training-card__eyebrow">Backstube</p>
+            <h3>Bäcker/in</h3>
+            <p>Der Beruf des Bäckers ist ein staatlich anerkannter Ausbildungsberuf. Die dreijährige duale Ausbildung verbindet praktische Arbeit in der Backstube mit der Berufsschule – dort geht es um Backtechnologie, Fachrechnen und Wirtschafts-/Sozialkunde. Die praktischen Fertigkeiten lernst du bei uns in strukturierten Übungseinheiten.</p>
+            <div class="training-card__facts" aria-label="Ausbildungsform"><span>Praxis</span><span>Berufsschule</span><span>Abschluss</span></div>
+            <button class="training-card__choose" type="button" data-choose-role="Bäcker/in">
+              Diesen Weg wählen
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </article>
         </div>
-        <div class="ausbildung__block">
-          <h3>Bäckereifachverkäufer/in</h3>
-          <p>Ein anerkannter Ausbildungsberuf im Bäckerei-Einzelhandel. Der Schwerpunkt der dreijährigen dualen Ausbildung liegt auf der betrieblichen Praxis: Warenkunde, Herstellungsprozesse, Verkaufspsychologie und Marketing gehören ebenso dazu wie der Berufsschulunterricht.</p>
+        <div class="ausbildung__block reveal editorial-reveal" style="--reveal-delay:.12s">
+          <article class="training-card interactive-card" data-interactive-card>
+            <div class="training-card__top"><span class="training-card__index">02</span><span class="training-card__duration">3 Jahre</span></div>
+            <p class="training-card__eyebrow">Verkauf</p>
+            <h3>Bäckereifachverkäufer/in</h3>
+            <p>Ein anerkannter Ausbildungsberuf im Bäckerei-Einzelhandel. Der Schwerpunkt der dreijährigen dualen Ausbildung liegt auf der betrieblichen Praxis: Warenkunde, Herstellungsprozesse, Verkaufspsychologie und Marketing gehören ebenso dazu wie der Berufsschulunterricht.</p>
+            <div class="training-card__facts" aria-label="Ausbildungsinhalte"><span>Warenkunde</span><span>Beratung</span><span>Marketing</span></div>
+            <button class="training-card__choose" type="button" data-choose-role="Bäckereifachverkäufer/in">
+              Diesen Weg wählen
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </article>
         </div>
       </div>
 
-      <div class="cta-box">
-        <div>
-          <h3>So bewirbst du dich</h3>
-          <p>Wir freuen uns auf deine Bewerbung – per Post, E-Mail oder persönlich in der Backstube. Mehr über die Ausbildungsberufe erfährst du auch auf <a href="https://www.back-dir-deine-zukunft.de" target="_blank" rel="noopener">back-dir-deine-zukunft.de</a>.</p>
-          <ul>
-            <li>Anschreiben</li>
-            <li>Lebenslauf mit Foto</li>
-            <li>Zeugnisse</li>
-            <li>Nachweise über Praktika (falls vorhanden)</li>
-            <li>Referenzen/Empfehlungen (falls vorhanden)</li>
-          </ul>
+      <section class="application-flow reveal editorial-reveal" id="bewerbung" data-application-flow aria-labelledby="bewerbung-heading" style="--reveal-delay:.08s">
+        <header class="application-flow__intro">
+          <p class="pill">Deine Bewerbung</p>
+          <h2 id="bewerbung-heading">In drei Schritten zu uns</h2>
+          <p>Für den ersten Kontakt genügen ein paar Angaben. Lebenslauf und Zeugnisse kannst du anschließend bequem an die vorbereitete E-Mail anhängen.</p>
+        </header>
+
+        <div class="application-flow__shell">
+          <div class="application-progress" aria-label="Bewerbungsfortschritt">
+            <span class="application-progress__track" aria-hidden="true"><i data-application-progress></i></span>
+            <ol>
+              <li class="is-active" data-progress-step aria-current="step"><span>01</span><strong>Beruf</strong></li>
+              <li data-progress-step><span>02</span><strong>Kontakt</strong></li>
+              <li data-progress-step><span>03</span><strong>Motivation</strong></li>
+            </ol>
+          </div>
+
+          <form class="application-form" data-application-form novalidate>
+            <div class="application-form__stage" data-application-stage>
+              <fieldset class="application-step" data-application-step>
+                <legend class="visually-hidden">Ausbildungsberuf wählen</legend>
+                <p class="application-step__kicker">Schritt 01</p>
+                <h3 tabindex="-1">Welcher Weg passt zu dir?</h3>
+                <div class="application-role-grid">
+                  <label class="application-role">
+                    <input type="radio" name="beruf" value="Bäcker/in" required>
+                    <span class="application-role__number">01</span>
+                    <span><strong>Bäcker/in</strong><small>Handwerk in der Backstube</small></span>
+                    <i aria-hidden="true">✓</i>
+                  </label>
+                  <label class="application-role">
+                    <input type="radio" name="beruf" value="Bäckereifachverkäufer/in" required>
+                    <span class="application-role__number">02</span>
+                    <span><strong>Bäckereifachverkäufer/in</strong><small>Beratung und Verkauf</small></span>
+                    <i aria-hidden="true">✓</i>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="application-step" data-application-step hidden>
+                <legend class="visually-hidden">Kontaktdaten eingeben</legend>
+                <p class="application-step__kicker">Schritt 02</p>
+                <h3 tabindex="-1">Wie erreichen wir dich?</h3>
+                <div class="application-fields">
+                  <label class="application-field"><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Vor- und Nachname" required></label>
+                  <label class="application-field"><span>E-Mail</span><input type="email" name="email" autocomplete="email" placeholder="name@beispiel.de" required></label>
+                  <label class="application-field application-field--wide"><span>Telefon <small>optional</small></span><input type="tel" name="telefon" autocomplete="tel" placeholder="Deine Telefonnummer"></label>
+                </div>
+              </fieldset>
+
+              <fieldset class="application-step" data-application-step hidden>
+                <legend class="visually-hidden">Motivation ergänzen</legend>
+                <p class="application-step__kicker">Schritt 03</p>
+                <h3 tabindex="-1">Erzähl uns kurz von dir</h3>
+                <label class="application-field application-field--message"><span>Motivation</span><textarea name="motivation" rows="5" placeholder="Warum möchtest du das Bäckerhandwerk kennenlernen?" required></textarea></label>
+                <label class="application-consent"><input type="checkbox" name="einwilligung" required><span>Ich bin einverstanden, dass meine Angaben zur Bearbeitung meiner Bewerbung verwendet werden.</span></label>
+              </fieldset>
+            </div>
+
+            <div class="application-controls" data-application-controls>
+              <button class="btn application-controls__back" type="button" data-application-back disabled>Zurück</button>
+              <span class="application-controls__count" aria-live="polite" data-application-count>1 / 3</span>
+              <button class="btn btn--accent" type="button" data-application-next>Weiter <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="btn btn--accent" type="submit" data-application-submit hidden>Bewerbung vorbereiten <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+
+            <div class="application-success" data-application-success hidden aria-live="polite">
+              <span class="application-success__mark" aria-hidden="true">✓</span>
+              <p class="application-step__kicker">Alles bereit</p>
+              <h3 tabindex="-1">Deine Bewerbung ist vorbereitet</h3>
+              <p>Öffne jetzt dein E-Mail-Programm. Dort kannst du Lebenslauf, Zeugnisse und weitere Unterlagen anhängen, bevor du die Nachricht sendest.</p>
+              <div class="application-success__actions">
+                <a class="btn btn--accent" data-application-mail-link href="mailto:nestler-baecker@web.de">E-Mail öffnen <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                <button class="btn application-controls__back" type="button" data-application-edit>Angaben ändern</button>
+              </div>
+            </div>
+          </form>
         </div>
-        <div class="cta-box__actions">
-          <a class="btn btn--accent" href="kontakt.html">
-            Jetzt bewerben
-            <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4.2 4L9 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-      </div>
+        <p class="application-flow__footnote">Du kannst dich auch persönlich in der Backstube vorstellen. Weitere Berufsinformationen findest du auf <a href="https://www.back-dir-deine-zukunft.de" target="_blank" rel="noopener">back-dir-deine-zukunft.de</a>.</p>
+      </section>
     </div>
   </section>
 
@@ -242,7 +345,7 @@
       <ul>
         <li><a href="team.html">Team</a></li>
         <li><a href="ausbildung.html" aria-current="page">Ausbildung</a></li>
-        <li><a href="anfahrt.html">So finden Sie uns</a></li>
+        <li><a href="index.html#oeffnungszeiten">So finden Sie uns</a></li>
         <li><a href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
@@ -250,10 +353,10 @@
     <div class="footer__col">
       <p class="footer__col-title pill">Öffnungszeiten</p>
       <dl class="footer__hours">
-        <div><dt>Bahnhof Mo–Sa</dt><dd>06:00–18:00</dd></div>
+        <div><dt>Bahnhof Mo–Sa</dt><dd>06–18</dd></div>
         <div><dt>Bahnhof So</dt><dd>07–10 &amp; 14–18</dd></div>
-        <div><dt>Filiale Mo–Fr</dt><dd>07:00–13:00</dd></div>
-        <div><dt>Filiale Sa</dt><dd>07:00–11:00</dd></div>
+        <div><dt>Filiale Mo–Fr</dt><dd>07–13</dd></div>
+        <div><dt>Filiale Sa</dt><dd>07–11</dd></div>
       </dl>
     </div>
 
@@ -269,6 +372,6 @@
 
 
 
-<script src="assets/js/main.js?v=58" defer></script>
+<script src="assets/js/main.js?v=117" defer></script>
 </body>
 </html>

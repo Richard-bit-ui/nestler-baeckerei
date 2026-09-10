@@ -11,6 +11,39 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  function ladeansichtBeenden() {
+    window.setTimeout(function () {
+      document.documentElement.classList.add('is-loaded');
+    }, reduceMotion ? 0 : 220);
+  }
+  if (document.readyState === 'complete') ladeansichtBeenden();
+  else window.addEventListener('load', ladeansichtBeenden, { once: true });
+
+  /* ── Sprache ───────────────────────────────────────────────────────────
+     Dieses Skript wird unverändert von allen drei Sprachfassungen der
+     Startseite eingebunden (/, /en/, /cs/) sowie von den bislang nur
+     deutschen Unterseiten. Die paar Textstücke, die main.js selbst zur
+     Laufzeit setzt (nicht schon fertig im HTML stehen – dort übersetzt
+     jede Sprachfassung ganz normal ihr eigenes Markup), holt es sich hier
+     über <html lang="…">, statt eine zweite main.js pro Sprache zu
+     pflegen. Unbekannte/fehlende Sprache fällt auf Deutsch zurück. */
+  var SPRACHE = (document.documentElement.lang || 'de').slice(0, 2).toLowerCase();
+  var TEXTE = {
+    de: { menuOeffnen: 'Menü öffnen', menuSchliessen: 'Menü schließen',
+          geoeffnet: 'Geöffnet', geschlossen: 'Geschlossen',
+          heuteBis: 'Heute bis {zeit} Uhr geöffnet', heuteAb: 'Öffnet heute um {zeit} Uhr', morgenAb: 'Öffnet morgen um {zeit} Uhr', naechsteOeffnung: 'Öffnet {tag} um {zeit} Uhr', heuteGeschlossen: 'Heute geschlossen',
+          karussell: 'Karussell', spezialitaeten: 'Unsere Spezialitäten' },
+    en: { menuOeffnen: 'Open menu', menuSchliessen: 'Close menu',
+          geoeffnet: 'Open', geschlossen: 'Closed',
+          heuteBis: 'Open today until {zeit}', heuteAb: 'Opens today at {zeit}', morgenAb: 'Opens tomorrow at {zeit}', naechsteOeffnung: 'Opens {tag} at {zeit}', heuteGeschlossen: 'Closed today',
+          karussell: 'Carousel', spezialitaeten: 'Our specialities' },
+    cs: { menuOeffnen: 'Otevřít menu', menuSchliessen: 'Zavřít menu',
+          geoeffnet: 'Otevřeno', geschlossen: 'Zavřeno',
+          heuteBis: 'Dnes otevřeno do {zeit}', heuteAb: 'Dnes otevírá v {zeit}', morgenAb: 'Zítra otevírá v {zeit}', naechsteOeffnung: 'Otevírá {tag} v {zeit}', heuteGeschlossen: 'Dnes zavřeno',
+          karussell: 'Kolotoč', spezialitaeten: 'Naše speciality' }
+  };
+  var T = TEXTE[SPRACHE] || TEXTE.de;
+
   /* ── Kleine Helfer ────────────────────────────────────────────────────
      Drei Muster wiederholten sich vorher fast wörtlich über die ganze
      Datei verteilt: eine NodeList in ein echtes Array wandeln, einen
@@ -61,8 +94,10 @@
   }
 
   /* ── Sanftes Scrollen ────────────────────────────────────────────────
-     Das Mausrad setzt ein Ziel, die Seite zieht mit fester Rate nach.
-     Touch, Tastatur und Scrollbalken bleiben unangetastet.              */
+     Lenis-artiges Prinzip ohne Abhängigkeit: Das Mausrad verschiebt nur
+     ein Ziel; die sichtbare Position folgt diesem Ziel zeitbasiert. Die
+     exponentielle Kurve fühlt sich auf 60/120/144-Hz-Displays gleich an.
+     Touch, Tastatur und Scrollbalken bleiben bewusst nativ.             */
   var smooth = reduceMotion ? null : createSmoothScroll();
 
   function createSmoothScroll() {
@@ -74,6 +109,7 @@
     var last = 0;
     var lastTick = 0;
     var notfall = null;
+    var SMOOTH_MS = 175;
 
     root.classList.add('has-smooth');
 
@@ -100,8 +136,8 @@
         last = 0;
         return;
       }
-      /* bildratenunabhängig: bei 60 Hz entspricht das einem Lerp von 0,12 */
-      current += diff * (1 - Math.pow(1 - 0.12, dt / 16.667));
+      /* Zeitkonstante statt festem Lerp: kein anderes Gefühl bei hoher Hz. */
+      current += diff * (1 - Math.exp(-dt / SMOOTH_MS));
       apply(current);
       window.requestAnimationFrame(tick);
     }
@@ -113,15 +149,25 @@
       window.requestAnimationFrame(tick);
     }
 
+    function nativUebernehmen() {
+      window.clearTimeout(notfall);
+      running = false;
+      last = 0;
+      target = current = window.scrollY;
+    }
+
     window.addEventListener('wheel', function (e) {
       if (e.ctrlKey || e.metaKey) return;                       /* Zoomen */
       if (e.target.closest && e.target.closest('[data-scroll-native]')) return;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;      /* horizontale Geste */
       if (limit() <= 0) return;
       e.preventDefault();
       var d = e.deltaY;
       if (e.deltaMode === 1) d *= 16;                           /* Zeilen */
       else if (e.deltaMode === 2) d *= window.innerHeight;      /* Seiten */
-      target = clamp(target + d);
+      var maxSchritt = window.innerHeight * .9;
+      d = Math.max(-maxSchritt, Math.min(maxSchritt, d));
+      target = clamp(target + d * .92);
       start();
 
       /* Sicherheitsnetz: läuft die Animationsschleife nicht (Tab im
@@ -143,6 +189,16 @@
       target = current = window.scrollY;
     }, { passive: true });
 
+    /* Direkte Eingaben sollen niemals gegen eine noch auslaufende
+       Mausradbewegung kämpfen. */
+    window.addEventListener('pointerdown', nativUebernehmen, { passive: true });
+    window.addEventListener('keydown', function (e) {
+      if (/^(Arrow|Page|Home|End|Space)/.test(e.key)) nativUebernehmen();
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) nativUebernehmen();
+    });
+
     window.addEventListener('resize', function () { target = clamp(target); }, { passive: true });
 
     return {
@@ -155,6 +211,42 @@
     if (smooth) smooth.to(y);
     else window.scrollTo(0, y);
   }
+
+  /* ── Interaktive Redaktionskarten ───────────────────────────────────
+     Team und Ausbildung reagieren wie die großen Karten der Startseite
+     auf den Zeiger: minimale perspektivische Neigung plus ein weicher
+     Lichtpunkt. Nur auf präzisen Zeigegeräten; Touch bleibt vollständig
+     frei fürs Scrollen und reduzierte Bewegung wird respektiert.       */
+  (function () {
+    var cards = alleEl('[data-interactive-card]');
+    if (!cards.length || reduceMotion || !window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+
+    cards.forEach(function (card) {
+      var frame = 0;
+      var px = .5;
+      var py = .5;
+
+      function zeichnen() {
+        frame = 0;
+        card.style.setProperty('--card-x', (px * 100).toFixed(2) + '%');
+        card.style.setProperty('--card-y', (py * 100).toFixed(2) + '%');
+        card.style.setProperty('--card-rx', ((.5 - py) * 4).toFixed(2) + 'deg');
+        card.style.setProperty('--card-ry', ((px - .5) * 5).toFixed(2) + 'deg');
+      }
+
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        px = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+        py = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+        if (!frame) frame = window.requestAnimationFrame(zeichnen);
+      }, { passive: true });
+
+      card.addEventListener('pointerleave', function () {
+        if (frame) window.cancelAnimationFrame(frame);
+        frame = 0;px = py = .5;zeichnen();
+      }, { passive: true });
+    });
+  })();
 
   /* ── Navigation ──────────────────────────────────────────────────────
      Blendet beim Runterscrollen aus, beim Hochscrollen wieder ein.
@@ -280,10 +372,18 @@
 
   /* ── Mobilmenü ───────────────────────────────────────────────────── */
   var burger = document.querySelector('.burger');
+  var languageSheet = null;
+
+  function closeLanguageSheet() {
+    if (!languageSheet) return;
+    languageSheet.classList.remove('is-open');
+    var trigger = document.querySelector('.mobilmenu__language-trigger');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  }
 
   function toggleMobile(open) {
     burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+    burger.setAttribute('aria-label', open ? T.menuSchliessen : T.menuOeffnen);
     document.body.style.overflow = open ? 'hidden' : '';
     nav.dataset.hidden = 'false';
 
@@ -293,6 +393,7 @@
       nav.dataset.theme = 'light';
       mobilmenue.setAttribute('data-open', '');
     } else {
+      closeLanguageSheet();
       mobilmenue.removeAttribute('data-open');
       updateTheme();
     }
@@ -304,6 +405,44 @@
   mobilmenue.addEventListener('click', function (e) {
     if (e.target.closest('a')) toggleMobile(false);
   });
+
+  (function () {
+    var source = document.querySelector('.mobilmenu__lang');
+    if (!source) return;
+    var label = source.previousElementSibling;
+    var current = source.querySelector('[aria-current="true"]');
+    var nav = source.parentElement;
+    var trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'mobilmenu__language-trigger';
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-controls', 'language-sheet');
+    trigger.innerHTML = '<span class="mobilmenu__language-label">Sprache</span><span class="mobilmenu__language-current">' + (current ? current.textContent : '') + '</span><span class="mobilmenu__language-arrow" aria-hidden="true">›</span>';
+
+    if (label && label.classList.contains('mobilmenu__label')) label.classList.add('is-language-source');
+    source.classList.add('is-language-source');
+    nav.insertBefore(trigger, nav.firstChild);
+
+    languageSheet = document.createElement('section');
+    languageSheet.className = 'language-sheet';
+    languageSheet.id = 'language-sheet';
+    languageSheet.setAttribute('aria-label', label ? label.textContent : 'Sprache');
+    var heading = document.createElement('div');
+    heading.className = 'language-sheet__heading';
+    heading.innerHTML = '<span>' + (label ? label.textContent : 'Sprache') + '</span><button type="button" aria-label="Auswahl schließen">×</button>';
+    var options = source.cloneNode(true);
+    options.className = 'language-sheet__options';
+    options.classList.remove('is-language-source');
+    languageSheet.appendChild(heading);
+    languageSheet.appendChild(options);
+    mobilmenue.appendChild(languageSheet);
+
+    trigger.addEventListener('click', function () {
+      var open = languageSheet.classList.toggle('is-open');
+      trigger.setAttribute('aria-expanded', String(open));
+    });
+    heading.querySelector('button').addEventListener('click', closeLanguageSheet);
+  })();
 
   /* ── Öffnungszeiten: Live-Status ─────────────────────────────────────
      Ersetzt den früheren Telefon-Button: zeigt je Standort, ob gerade
@@ -321,6 +460,11 @@
       timeZone: 'Europe/Berlin', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false
     });
     var TAGE = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    var WOCHENTAGE = {
+      de: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+      en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      cs: ['v neděli', 'v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu']
+    };
 
     function jetztInBerlin() {
       var teile = berlin.formatToParts(new Date());
@@ -332,6 +476,7 @@
     function aktualisieren(el, plan) {
       var status = el.querySelector('[data-status]');
       var text = el.querySelector('[data-status-text]');
+      var heuteText = el.querySelector('[data-status-today]');
       var jetzt = jetztInBerlin();
       var heute = plan[jetzt.tag] || [];
 
@@ -342,13 +487,41 @@
       for (var i = 0; i < heute.length; i++) {
         if (jetzt.minute >= heute[i][0] && jetzt.minute < heute[i][1]) {
           status.setAttribute('data-open', 'true');
-          text.textContent = 'Geöffnet';
+          text.textContent = T.geoeffnet;
+          if (heuteText) heuteText.textContent = T.heuteBis.replace('{zeit}', zeit(heute[i][1]));
           return;
         }
       }
 
       status.setAttribute('data-open', 'false');
-      text.textContent = 'Geschlossen';
+      text.textContent = T.geschlossen;
+      if (!heuteText) return;
+
+      for (var n = 0; n < heute.length; n++) {
+        if (jetzt.minute < heute[n][0]) {
+          heuteText.textContent = T.heuteAb.replace('{zeit}', zeit(heute[n][0]));
+          return;
+        }
+      }
+
+      for (var tageDanach = 1; tageDanach <= 7; tageDanach++) {
+        var naechsterTag = (jetzt.tag + tageDanach) % 7;
+        var zeiten = plan[naechsterTag] || [];
+        if (!zeiten.length) continue;
+        var naechsteZeit = zeit(zeiten[0][0]);
+        if (tageDanach === 1) {
+          heuteText.textContent = T.morgenAb.replace('{zeit}', naechsteZeit);
+        } else {
+          heuteText.textContent = T.naechsteOeffnung.replace('{tag}', WOCHENTAGE[SPRACHE][naechsterTag]).replace('{zeit}', naechsteZeit);
+        }
+        return;
+      }
+
+      heuteText.textContent = T.heuteGeschlossen;
+    }
+
+    function zeit(minuten) {
+      return String(Math.floor(minuten / 60)).padStart(2, '0') + ':' + String(minuten % 60).padStart(2, '0');
     }
 
     var eintraege = orte.map(function (el) {
@@ -366,6 +539,40 @@
     setInterval(tick, 30000);
   })();
 
+  /* ── Mobile Standortkarten ───────────────────────────────────────── */
+  alleEl('[data-location-details-toggle]').forEach(function (button) {
+    var details = document.getElementById(button.getAttribute('aria-controls'));
+    if (!details) return;
+    button.addEventListener('click', function () {
+      var open = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', open ? 'false' : 'true');
+      if (open) {
+        details.classList.remove('is-open');
+        window.setTimeout(function () { details.hidden = true; }, reduceMotion ? 0 : 380);
+      } else {
+        details.hidden = false;
+        window.requestAnimationFrame(function () { details.classList.add('is-open'); });
+      }
+    });
+  });
+  alleEl('.mobile-location-card').forEach(function (card) {
+    if (card.querySelector('[data-location-details-toggle]')) return;
+    card.classList.add('is-collapsible');
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-expanded', 'false');
+    function umschalten() {
+      var open = card.classList.toggle('is-expanded');
+      card.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return;
+      umschalten();
+    });
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); umschalten(); }
+    });
+  });
   /* ── Geising-Karte: Pin-Popups ─────────────────────────────────────
      Auf dem Desktop sind beide Popups durchgängig offen – die Karte
      zeigt beide Standorte fest auf einen Blick, der Pin lässt sich dort
@@ -384,6 +591,7 @@
   (function () {
     var marker = alleEl('.geismap__marker');
     if (!marker.length) return;
+    var karte = document.querySelector('.geismap') || marker[0].parentElement;
 
     function markerOeffnen() {
       marker.forEach(function (m, i) {
@@ -403,7 +611,6 @@
         return;
       }
 
-      var karte = document.querySelector('.geismap') || marker[0].parentElement;
       var abmelden = null;
       var geoeffnet = false;
 
@@ -440,38 +647,90 @@
      im Track) braucht dabei kein eigenes JS – sie blendet über das
      allgemeine .reveal-System ein.
 
-     NEU (1:1 aus dem Original-Script übernommen, siehe Projektnotizen):
-     jeder Zeitstrahl-Punkt bekommt nicht mehr EINEN gemeinsamen
-     Einblend-Trigger, sondern vier einzelne – Jahr bei 85% Bildschirm-
-     breite, Titel bei 80%, Punkt bei 90%, Foto sofort bei Kanteneintritt
-     (100%) – über eigene is-in-year/-title/-dot/-img-Klassen auf dem
-     Punkt (siehe styles.css für Timing/Easing/Zielzustände je Teil).
+     NEU (aus den echten GSAP-ScrollTrigger-Vars des Vorbilds ausgelesen,
+     nicht mehr nur geschätzt – siehe Projektnotizen für die volle
+     Introspektion per ScrollTrigger.getAll()/anim.vars): jeder
+     Zeitstrahl-Punkt bekommt drei einzelne Einblend-Trigger – Jahr bei
+     75% Bildschirmbreite, Titel bei 70%, Punkt ebenfalls bei 70%, je
+     einmalig über eigene is-in-year/-title/-dot-Klassen (siehe styles.css
+     für Timing/Easing/Zielzustände je Teil). Das Foto bekommt dort KEINEN
+     Einmal-Trigger, sondern eine per Scroll-Fortschritt "geschrubbte"
+     Rotation (ease:none, scrub:true) zwischen 60% und 40% Bildschirm-
+     breite – dreht sich also gleichmäßig MIT dem Scrollen. Dafür gibt es
+     hier keine is-in-img-Klasse mehr, sondern eine direkt pro Tick
+     berechnete Inline-Rotation (siehe rotStart/rotEnd unten).
 
-     Bewusst NICHT auf Mobil oder bei reduzierter Bewegung: horizontales
-     Scroll-Hijacking ist auf einem Touch-Screen kein Vergnügen, und wer
-     keine Bewegung möchte, soll auch keine bekommen. In beiden Fällen
-     setzt dieser Block nur [data-static] auf die Sektion (siehe CSS für
-     den ruhigen Fließ-Fallback) und hängt gar keinen Scroll-Handler ein. */
+     Bewusst KEIN horizontales Scroll-Hijacking auf Mobil: auf einem
+     Touch-Screen kein Vergnügen. Aber (Kundenwunsch „auch mobil 1:1
+     nachbauen"): das Vorbild deaktiviert unterhalb 992px zwar den
+     horizontalen Pin, NICHT aber die einzelnen Jahr/Titel/Punkt/Foto-
+     Trigger selbst – die laufen dort unverändert weiter (identische
+     `anim.vars`/Trigger-Zahl bei 375/768/1280px per Introspektion
+     bestätigt, siehe Projektnotizen), nur eben an normalem senkrechtem
+     statt horizontal-gejacktem Scroll gemessen ("top X%" heißt dann
+     wieder wörtlich X % der Fensterhöhe statt unserer Breiten-Umrechnung
+     fürs Desktop-Pinning). Deshalb unten ein zweiter, eigenständiger
+     Vertikal-Handler statt eines reinen `data-static`-Kurzschlusses.
+     NUR bei reduzierter Bewegung bleibt es komplett bewegungslos (siehe
+     [data-nomotion] in styles.css) – wer keine Bewegung möchte, soll auch
+     keine bekommen, das war schon vorher so und bleibt bestehen. */
   (function () {
     var story = document.getElementById('historie');
     if (!story) return;
 
-    var schmal = !window.matchMedia('(min-width: 901px)').matches;
-    if (reduceMotion || schmal) {
+    function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+
+    if (reduceMotion) {
       story.setAttribute('data-static', '');
+      story.setAttribute('data-nomotion', '');
       return;
     }
 
-    function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+    /* 992px = exakt der Breakpoint, ab dem das Vorbild (GSAP-ScrollTrigger-
+       Introspektion, siehe Projektnotizen) das horizontale Scroll-Jacking
+       selbst aktiviert (matchMedia dort intern ebenfalls auf 992px). */
+    var schmal = !window.matchMedia('(min-width: 992px)').matches;
+    if (schmal) {
+      story.setAttribute('data-static', '');
+
+      var itemsV = alleEl('[data-storyhz-item]', story);
+      var bilderV = itemsV.map(function (item) { return item.querySelector('.storyhz__image'); });
+
+      function updateVertikal() {
+        var hoeheFenster = window.innerHeight;
+        var schwelleYear = hoeheFenster * 0.75;
+        var schwelleTitle = hoeheFenster * 0.70;
+        var schwelleDot = hoeheFenster * 0.70;
+        var rotStart = hoeheFenster * 0.60;
+        var rotEnd = hoeheFenster * 0.40;
+        itemsV.forEach(function (item, i) {
+          var oben = item.getBoundingClientRect().top;
+          if (!item.classList.contains('is-in-dot') && oben < schwelleDot) item.classList.add('is-in-dot');
+          if (!item.classList.contains('is-in-year') && oben < schwelleYear) item.classList.add('is-in-year');
+          if (!item.classList.contains('is-in-title') && oben < schwelleTitle) item.classList.add('is-in-title');
+
+          var bild = bilderV[i];
+          if (bild) {
+            var t = clamp01((rotStart - oben) / (rotStart - rotEnd));
+            bild.style.transform = 'rotate(' + (-3 + t * 6) + 'deg)';
+          }
+        });
+      }
+
+      beiScrollUndResize(updateVertikal);
+      updateVertikal();
+      return;
+    }
 
     /* ── Horizontale Zeitleiste ── */
     var hz = story.querySelector('[data-storyhz]');
-    var spacer, track, line, items, maxShift = 0;
+    var spacer, track, line, items, bilder, maxShift = 0;
     if (hz) {
       spacer = hz.querySelector('.storyhz__spacer');
       track = hz.querySelector('[data-storyhz-track]');
       line = hz.querySelector('[data-storyhz-line]');
       items = alleEl('[data-storyhz-item]', hz);
+      bilder = items.map(function (item) { return item.querySelector('.storyhz__image'); });
 
       var messen = function () {
         var breite = track.scrollWidth;
@@ -494,15 +753,28 @@
       track.style.transform = 'translateX(' + (-progress * maxShift) + 'px)';
 
       var breiteFenster = window.innerWidth;
-      var schwelleYear = breiteFenster * 0.85;
-      var schwelleTitle = breiteFenster * 0.80;
-      var schwelleDot = breiteFenster * 0.90;
-      items.forEach(function (item) {
+      var schwelleYear = breiteFenster * 0.75;
+      var schwelleTitle = breiteFenster * 0.70;
+      var schwelleDot = breiteFenster * 0.70;
+      /* Foto-Rotation: kein Einmal-Trigger, sondern ein durchgehender
+         Fortschritt zwischen zwei Schwellen (60%/40% Bildschirmbreite,
+         1:1 vom Vorbild), linear auf -3deg…3deg abgebildet – "ease:none,
+         scrub:true" lässt sich hier am einfachsten als direkte, ungefederte
+         Inline-Rotation pro Scroll-Tick nachbauen statt über eine
+         CSS-Transition (die würde bei jedem Tick neu anspringen). */
+      var rotStart = breiteFenster * 0.60;
+      var rotEnd = breiteFenster * 0.40;
+      items.forEach(function (item, i) {
         var links = item.getBoundingClientRect().left;
-        if (!item.classList.contains('is-in-img') && links < breiteFenster) item.classList.add('is-in-img');
         if (!item.classList.contains('is-in-dot') && links < schwelleDot) item.classList.add('is-in-dot');
         if (!item.classList.contains('is-in-year') && links < schwelleYear) item.classList.add('is-in-year');
         if (!item.classList.contains('is-in-title') && links < schwelleTitle) item.classList.add('is-in-title');
+
+        var bild = bilder[i];
+        if (bild) {
+          var t = clamp01((rotStart - links) / (rotStart - rotEnd));
+          bild.style.transform = 'rotate(' + (-3 + t * 6) + 'deg)';
+        }
       });
     }
 
@@ -537,6 +809,136 @@
         + '&body=' + encodeURIComponent(zeilen.join('\n'));
       window.location.href = url;
     });
+  })();
+
+  /* ── Ausbildung: geführte Bewerbung ────────────────────────────────
+     Der Ablauf bleibt vollständig lokal. Erst der abschließende, klar
+     bezeichnete Link öffnet das E-Mail-Programm; bis dahin werden keine
+     Angaben übertragen. Das ist für die statische Website ehrlicher und
+     zuverlässiger als ein scheinbarer AJAX-Versand ohne Backend. */
+  (function () {
+    var flow = document.querySelector('[data-application-flow]');
+    if (!flow) return;
+
+    var form = flow.querySelector('[data-application-form]');
+    var stage = flow.querySelector('[data-application-stage]');
+    var controls = flow.querySelector('[data-application-controls]');
+    var steps = alleEl('[data-application-step]', flow);
+    var progressSteps = alleEl('[data-progress-step]', flow);
+    var progress = flow.querySelector('[data-application-progress]');
+    var next = flow.querySelector('[data-application-next]');
+    var back = flow.querySelector('[data-application-back]');
+    var submit = flow.querySelector('[data-application-submit]');
+    var count = flow.querySelector('[data-application-count]');
+    var success = flow.querySelector('[data-application-success]');
+    var mailLink = flow.querySelector('[data-application-mail-link]');
+    var edit = flow.querySelector('[data-application-edit]');
+    var shell = flow.querySelector('.application-flow__shell');
+    var current = 0;
+
+    function invalidBewegen() {
+      shell.classList.remove('is-invalid');
+      void shell.offsetWidth;
+      shell.classList.add('is-invalid');
+      window.setTimeout(function () { shell.classList.remove('is-invalid'); }, 450);
+    }
+
+    function stepGueltig(step) {
+      var fields = alleEl('input,textarea,select', step);
+      for (var i = 0; i < fields.length; i += 1) {
+        if (!fields[i].checkValidity()) {
+          invalidBewegen();
+          fields[i].reportValidity();
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function zeigen(index, fokus) {
+      current = Math.max(0, Math.min(steps.length - 1, index));
+      steps.forEach(function (step, i) { step.hidden = i !== current; });
+      progressSteps.forEach(function (item, i) {
+        item.classList.toggle('is-active', i === current);
+        item.classList.toggle('is-complete', i < current);
+        if (i === current) item.setAttribute('aria-current', 'step');
+        else item.removeAttribute('aria-current');
+      });
+      flow.style.setProperty('--app-progress', ((current + 1) / steps.length).toFixed(3));
+      if (progress) progress.style.transform = 'scaleX(' + ((current + 1) / steps.length).toFixed(3) + ')';
+      back.disabled = current === 0;
+      next.hidden = current === steps.length - 1;
+      submit.hidden = current !== steps.length - 1;
+      count.textContent = (current + 1) + ' / ' + steps.length;
+      if (fokus) {
+        var heading = steps[current].querySelector('h3');
+        if (heading) window.setTimeout(function () { heading.focus({ preventScroll: true }); }, 80);
+      }
+    }
+
+    next.addEventListener('click', function () {
+      if (stepGueltig(steps[current])) zeigen(current + 1, true);
+    });
+    back.addEventListener('click', function () { zeigen(current - 1, true); });
+
+    form.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' || e.target.tagName === 'TEXTAREA') return;
+      if (current >= steps.length - 1) return;
+      e.preventDefault();
+      next.click();
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      for (var i = 0; i < steps.length; i += 1) {
+        if (!stepGueltig(steps[i])) { zeigen(i, false);return; }
+      }
+
+      var beruf = form.elements.beruf.value;
+      var name = form.elements.name.value.trim();
+      var email = form.elements.email.value.trim();
+      var telefon = form.elements.telefon.value.trim();
+      var motivation = form.elements.motivation.value.trim();
+      var zeilen = [
+        'Bewerbung für: ' + beruf,
+        '',
+        'Name: ' + name,
+        'E-Mail: ' + email
+      ];
+      if (telefon) zeilen.push('Telefon: ' + telefon);
+      zeilen.push('', 'Motivation:', motivation, '', 'Viele Grüße', name);
+      mailLink.href = 'mailto:nestler-baecker@web.de'
+        + '?subject=' + encodeURIComponent('Bewerbung Ausbildung: ' + beruf + ' – ' + name)
+        + '&body=' + encodeURIComponent(zeilen.join('\n'));
+
+      stage.hidden = true;
+      controls.hidden = true;
+      success.hidden = false;
+      flow.style.setProperty('--app-progress', '1');
+      if (progress) progress.style.transform = 'scaleX(1)';
+      progressSteps.forEach(function (item) {
+        item.classList.remove('is-active');item.classList.add('is-complete');item.removeAttribute('aria-current');
+      });
+      var successHeading = success.querySelector('h3');
+      if (successHeading) window.setTimeout(function () { successHeading.focus({ preventScroll: true }); }, 80);
+    });
+
+    edit.addEventListener('click', function () {
+      success.hidden = true;stage.hidden = false;controls.hidden = false;zeigen(steps.length - 1, true);
+    });
+
+    alleEl('[data-choose-role]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var value = button.getAttribute('data-choose-role');
+        var radios = alleEl('input[name="beruf"]', form);
+        radios.forEach(function (radio) { radio.checked = radio.value === value;});
+        success.hidden = true;stage.hidden = false;controls.hidden = false;zeigen(0, false);
+        var padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        scrollToY(flow.getBoundingClientRect().top + window.scrollY - padding);
+      });
+    });
+
+    zeigen(0, false);
   })();
 
   /* ── Sonderwünsche: Wortliste ────────────────────────────────────────
@@ -823,12 +1225,10 @@
     var navs   = alleEl('[data-stcat-nav]', stcat);
     var subs   = alleEl('.stcat__sub-item', stcat);
     var slides = alleEl('.stcat__scroll-item', stcat);
-    var ansichtBtns = alleEl('[data-stcat-view]', stcat);
     var scrollSpalte = stcat.querySelector('.stcat__scroll');
     var aktuellEl = stcat.querySelector('[data-stcat-current]');
     var gesamtEl  = stcat.querySelector('[data-stcat-total]');
     var listeEl   = stcat.querySelector('[data-stcat-list]');
-    var rasterEl  = stcat.querySelector('[data-stcat-grid]');
 
     var gesamt = slides.length;
     if (!gesamt) return;
@@ -842,29 +1242,23 @@
       i = Math.max(0, Math.min(gesamt - 1, i));
       if (i === index) return;
       index = i;
-      navs.forEach(function (el, n) { el.classList.toggle('is-active', n === i); });
-      subs.forEach(function (el, n) { el.classList.toggle('is-active', n === i); });
-      slides.forEach(function (el, n) { el.classList.toggle('is-active', n === i); });
+      navs.forEach(function (el, n) {
+        var aktiv = n === i;
+        el.classList.toggle('is-active', aktiv);
+        el.setAttribute('aria-pressed', aktiv ? 'true' : 'false');
+      });
+      subs.forEach(function (el, n) {
+        var aktiv = n === i;
+        el.classList.toggle('is-active', aktiv);
+        el.setAttribute('aria-hidden', aktiv ? 'false' : 'true');
+      });
+      slides.forEach(function (el, n) {
+        var aktiv = n === i;
+        el.classList.toggle('is-active', aktiv);
+        el.setAttribute('aria-hidden', aktiv ? 'false' : 'true');
+      });
       if (aktuellEl) aktuellEl.textContent = zwei(i + 1);
     }
-
-    /* ── Listen-/Rasteransicht ── */
-    ansichtBtns.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var ziel = btn.getAttribute('data-stcat-view');
-        stcat.setAttribute('data-view', ziel);
-        ansichtBtns.forEach(function (b) {
-          b.setAttribute('aria-pressed', b.getAttribute('data-stcat-view') === ziel ? 'true' : 'false');
-        });
-        if (ziel === 'grid') {
-          if (rasterEl) rasterEl.hidden = false;
-          if (listeEl) listeEl.hidden = true;
-        } else {
-          if (listeEl) listeEl.hidden = false;
-          if (rasterEl) rasterEl.hidden = true;
-        }
-      });
-    });
 
     /* Dieselbe Bedingung wie die Media-Query in styles.css – so können
        Layout und Verhalten nicht auseinanderlaufen. */
@@ -898,7 +1292,10 @@
     });
     alleEl('[data-stcat-dir]', stcat).forEach(function (btn) {
       btn.addEventListener('click', function () {
-        springen(index + parseInt(btn.getAttribute('data-stcat-dir'), 10));
+        var ziel = index + parseInt(btn.getAttribute('data-stcat-dir'), 10);
+        if (ziel < 0) ziel = gesamt - 1;
+        if (ziel >= gesamt) ziel = 0;
+        springen(ziel);
       });
     });
 
@@ -1038,8 +1435,8 @@
   });
 
   deck.setAttribute('role', 'group');
-  deck.setAttribute('aria-roledescription', 'Karussell');
-  deck.setAttribute('aria-label', 'Unsere Spezialitäten');
+  deck.setAttribute('aria-roledescription', T.karussell);
+  deck.setAttribute('aria-label', T.spezialitaeten);
   deck.setAttribute('tabindex', '0');
 
   function pad(n) { return n < 10 ? '0' + n : String(n); }
@@ -1102,6 +1499,7 @@
     if (!delta) return;
     active = ((active + delta) % total + total) % total;
     render(true);
+    restartAuto();
   }
 
   /* Auf eine bestimmte Karte – immer über den kürzeren Weg */
@@ -1161,6 +1559,7 @@
   deck.addEventListener('pointerdown', function (e) {
     if (e.button !== undefined && e.button !== 0) return;
     drag = { x: e.clientX, y: e.clientY, id: e.pointerId, dx: 0, achse: null };
+    stopAuto();
     if (deck.setPointerCapture) {
       try { deck.setPointerCapture(e.pointerId); } catch (err) { /* egal */ }
     }
@@ -1192,14 +1591,20 @@
     if (deck.releasePointerCapture && e && e.pointerId !== undefined) {
       try { deck.releasePointerCapture(e.pointerId); } catch (err) { /* egal */ }
     }
-    if (achse !== 'x') return;
+    /* Kein waagerechtes Ziehen (z. B. nur ein Klick ohne Bewegung, oder
+       senkrechtes Scrollen) – trotzdem den Auto-Takt wieder anstoßen,
+       sonst bliebe der Fächer nach einem bloßen Klick auf freie Fläche
+       im Deck dauerhaft pausiert (pointerdown pausiert immer, s.o.). */
+    if (achse !== 'x') { restartAuto(); return; }
 
     deck.classList.remove('is-dragging');   /* Übergänge wieder an … */
     ziehenLoesen();                         /* … dann die Steuerung ans CSS */
 
     if (Math.abs(dx) / buehne() > SCHWELLE) {
       draggedAt = Date.now();
-      step(dx < 0 ? 1 : -1);
+      step(dx < 0 ? 1 : -1);       /* ruft restartAuto() bereits mit auf */
+    } else {
+      restartAuto();
     }
   }
   deck.addEventListener('pointerup', dragEnde);
@@ -1209,7 +1614,118 @@
   /* Bild-Ziehen des Browsers unterbinden */
   deck.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
+  /* ── Automatischer Weiterlauf ──────────────────────────────────────
+     Der Fächer dreht sich von allein weiter, auch während man mit der
+     Maus darüber steht (Kundenwunsch: Hover soll NICHT pausieren,
+     sondern der Lauf soll einfach weitergehen – anfangs pausierte er bei
+     Hover und startete beim Verlassen wieder bei null, was sich wie ein
+     Neustart statt einer Bewegung anfühlte). Pausiert nur noch bei
+     Tastaturfokus (damit Tastaturnutzer nicht von einem Sprung mitten in
+     der Bedienung überrascht werden) und während des Ziehens (der
+     Stapel wird dabei direkt per `ziehen()` transformiert – ein
+     gleichzeitiger Auto-Schritt würde sich mit dieser Handsteuerung
+     beißen). Respektiert weiterhin „reduzierte Bewegung". setInterval
+     genügt hier (anders als beim Sonderwünsche-Textband) – es wird nur
+     alle paar Sekunden EINMAL `step()` aufgerufen, keine Dauerbewegung
+     pro Frame, die mit dem eigenen Smooth-Scroll um den Hauptthread
+     konkurrieren könnte.                                                */
+  var AUTO_MS = 3000;
+  var autoTimer = null;
+  var focusPause = false;
+  var autobar = section.querySelector('[data-autobar]');
+
+  function autoErlaubt() {
+    return !reduceMotion && !focusPause && !drag;
+  }
+  /* Balken pausiert = leer statt mitten im Lauf eingefroren (Klasse weg,
+     CSS-Grundzustand ist scaleX(0)) – so kann er nie einen Zeitpunkt
+     versprechen, an dem in Wahrheit (noch) nicht weitergedreht wird. */
+  function pauseBar() {
+    if (autobar) autobar.classList.remove('is-filling');
+  }
+  /* Läuft immer exakt AUTO_MS, synchron zum gerade gestarteten Intervall –
+     via Klasse entfernen/reflow-erzwingen/wieder hinzufügen neu gestartet,
+     wie schon beim „.is-swapping"-Textwechsel weiter oben. */
+  function fillBar() {
+    if (!autobar) return;
+    autobar.classList.remove('is-filling');
+    autobar.style.animationDuration = AUTO_MS + 'ms';
+    void autobar.offsetWidth;
+    autobar.classList.add('is-filling');
+  }
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    pauseBar();
+  }
+  function startAuto() {
+    stopAuto();
+    if (autoErlaubt()) {
+      autoTimer = window.setInterval(function () { step(1); }, AUTO_MS);
+      fillBar();
+    }
+  }
+  /* Nach jeder Drehung (ob automatisch oder manuell) den Takt neu starten,
+     damit auf eine manuelle Aktion nicht sofort der nächste Auto-Schritt folgt. */
+  function restartAuto() { startAuto(); }
+
+  /* Nur bei ECHTEM Tastaturfokus pausieren (`:focus-visible`), nicht bei
+     jedem Fokus. Grund: `deck` hat `tabindex="0"` fürs Tastatur-Wischen –
+     auf echten Touch-Geräten setzen viele Browser beim Antippen/Wischen
+     selbst den Fokus auf so ein Element, OHNE dass danach je ein „blur"
+     folgt (anders als bei Hover gibt es nach einer Wischgeste kein
+     natürliches Verlassen-Ereignis). Ohne diese Einschränkung blieb
+     `focusPause` nach jeder Wischgeste auf einem Touchscreen für immer
+     hängen und der Balken dauerhaft pausiert. `:focus-visible` ist genau
+     dafür da: der Browser setzt es nur bei erkennbar tastaturbasiertem
+     Fokus (z. B. Tab), nicht bei Zeiger-/Touch-Interaktion. */
+  deck.addEventListener('focusin', function () {
+    if (deck.matches(':focus-visible')) { focusPause = true; startAuto(); }
+  });
+  deck.addEventListener('focusout', function () { focusPause = false; startAuto(); });
+
+  /* ── Einmaliges Anblättern direkt nach der Auffächer-Animation ────────
+     Kundenwunsch: sobald der Nutzer heruntergescrollt hat und die Karten
+     fertig aufgefächert sind (.spez__stage bekommt .is-in, siehe das
+     generische .reveal-System weiter oben in dieser Datei), soll der
+     Fächer einmal sofort weiterblättern – ein kleiner Hinweis "das
+     bewegt sich", statt bis zu AUTO_MS auf den ersten regulären
+     Auto-Schritt zu warten. Ein MutationObserver statt eines eigenen
+     IntersectionObservers, weil .is-in ohnehin schon vom generischen
+     .reveal-System gesetzt wird – hier wird nur abgewartet, bis genau
+     DAS passiert, statt die Sichtbarkeitslogik ein zweites Mal zu bauen.
+     Respektiert „reduzierte Bewegung" wie der Rest des Auto-Laufs. */
+  if (stage && !reduceMotion) {
+    var geblaettert = false;
+    var revealBeob = null;
+    function einmalBlaettern() {
+      if (geblaettert) return;
+      geblaettert = true;
+      if (revealBeob) revealBeob.disconnect();
+      /* Den seit dem Laden schon laufenden Hintergrund-Takt sofort
+         anhalten: er tickt unabhängig von der Sichtbarkeit weiter, sein
+         nächster Schritt könnte sonst rein zufällig fast genau in dieses
+         700ms-Fenster fallen und zusammen mit dem gezielten Blättern
+         unten zu ZWEI sichtbaren Schritten statt einem führen (genau so
+         beobachtet beim ersten Verifikationslauf). step() unten startet
+         den Takt am Ende ohnehin frisch neu (restartAuto()). */
+      stopAuto();
+      /* Die Elastic-Transition der Karten dauert 0.6s (siehe .deck__card
+         in styles.css) – etwas Puffer, damit das Blättern erst startet,
+         wenn das Auffächern wirklich zur Ruhe gekommen ist. */
+      window.setTimeout(function () { step(1); }, 700);
+    }
+    if (stage.classList.contains('is-in')) {
+      einmalBlaettern();
+    } else {
+      revealBeob = new MutationObserver(function () {
+        if (stage.classList.contains('is-in')) einmalBlaettern();
+      });
+      revealBeob.observe(stage, { attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
   slots.total.textContent = pad(unique);
   render(false);
+  startAuto();
   })();
 })();
